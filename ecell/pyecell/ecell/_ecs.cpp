@@ -3084,6 +3084,7 @@ BOOST_PYTHON_MODULE( _ecs )
         .add_property( "SizeN_A",     &System::getSizeN_A )
         .add_property( "StepperID",   &System::getStepperID, &System::setStepperID )
         .def( "registerEntity",       ( void( System::* )( Entity* ) )&System::registerEntity )
+        .def( "configureSize",           &System::configureSizeVariable )
         ;
 
     py::class_< Process, py::bases< Entity >, Process, boost::noncopyable >
