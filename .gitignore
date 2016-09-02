@@ -10,6 +10,7 @@
 *.eml
 aclocal.m4
 autom4te.cache
+/compile
 config.guess
 config.h
 config-h.in
@@ -27,12 +28,17 @@ depcomp
 /ecell/bin/ecell3-dmc
 /ecell/configure.ac
 /ecell/ecell_config.*
+/ecell/frontend/model-editor/setup.py
+/ecell/frontend/session-monitor/ecell3-session-monitor
+/ecell/frontend/session-monitor/setup.py
 /ecell/libecs/Defs.hpp
 /ecell/pyecell/build
+/ecell/pyecell/ecell3-cellml2eml
 /ecell/pyecell/ecell3-em2eml
 /ecell/pyecell/ecell3-em2python
 /ecell/pyecell/ecell3-eml2em
 /ecell/pyecell/ecell3-eml2sbml
+/ecell/pyecell/ecell3-ipython
 /ecell/pyecell/ecell3-python
 /ecell/pyecell/ecell3-sbml2eml
 /ecell/pyecell/ecell3-session
@@ -43,6 +49,7 @@ depcomp
 /ecell/pyecell/setup.py
 /ecell/tmp
 install-sh
+/libltdl/compile
 libtool
 ltmain.sh
 Makefile
@@ -50,4 +57,5 @@ Makefile.in
 missing
 mkinstalldirs
 stamp-h1
+/test-driver
 .DS_Store
