@@ -285,6 +285,7 @@ public:
     */
     GET_METHOD( Real, NumberConc )
     {
+        getSuperSystem()->configureSizeVariable();
         return getValue() / getSizeOfSuperSystem();
     }
 
@@ -296,6 +297,7 @@ public:
 
     SET_METHOD( Real, NumberConc )
     {
+        getSuperSystem()->configureSizeVariable();
         setValue( value * getSizeOfSuperSystem() );
     }
 
