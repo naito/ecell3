@@ -212,6 +212,25 @@ Entity* Model::createEntity( String const& aClassname, FullID const& aFullID )
     return retval;
 }
 
+Entity* Model::createSystemEntity( FullID const& aFullID, Real aSize )
+{
+    Entity* retval( createEntity( "System", aFullID ));
+
+    String aSystemPathString = aFullID.getSystemPath().asString();
+    if( aSystemPathString == "/" ) { aSystemPathString = ""; }
+	aSystemPathString += "/" + aFullID.getID();
+
+    FullID aFullIDOfSIZEVariable( "Variable:" + aSystemPathString + ":SIZE" );
+    
+    createEntity( "Variable", aFullIDOfSIZEVariable );
+
+    System* const aSystem( getSystem( SystemPath( aSystemPathString )));
+    Variable* aSIZEVariable( aSystem->getVariable( "SIZE" ));
+    aSIZEVariable->setValue( aSize );
+    aSystem->configureSizeVariable();
+
+    return retval;
+}
 
 System* Model::getSystem( SystemPath const& aSystemPath ) const
 {

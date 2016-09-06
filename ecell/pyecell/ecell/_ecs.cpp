@@ -3187,6 +3187,9 @@ BOOST_PYTHON_MODULE( _ecs )
         .def( "createSystem",
               &AbstractSimulator::createSystem,
               py::return_value_policy< py::reference_existing_object >() )
+        .def( "createSystemEntity",
+              &AbstractSimulator::createSystemEntity,
+              return_entity() )
         .def( "getEntity",
               &AbstractSimulator::getEntity,
               return_entity() )

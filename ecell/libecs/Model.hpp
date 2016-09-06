@@ -189,6 +189,17 @@ public:
 
 
     /**
+       Creates a new Entity object, register it in an appropriate System
+       in the Model, create SIZE Variable in the new System, and set Value
+       of the SIZE Variable.
+
+       @param aFullID
+       @param aSize
+    */
+    Entity* createSystemEntity( FullID const& aFullID, Real aSize );
+
+
+    /**
        detach an EcsObject from the Model
     */
     void detachObject( EcsObject* anObject );
