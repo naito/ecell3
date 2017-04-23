@@ -657,7 +657,7 @@ class SessionManager( object ):
         For example, if the 'environment' is Local, try to LocalSystemProxy
         and call constroctor of it.
 
-        environment(str) -- Local,SMP,SGE,Globus,etc.
+        environment(str) -- Local,SMP,SGE,Globus,Torque,etc.
         Return None
         '''
 
@@ -680,7 +680,7 @@ class SessionManager( object ):
     def getEnvironment( self ):
         '''Return current environment parameter as str.
 
-        Return str : 'Local','SMP','SGE','Globus', etc.
+        Return str : 'Local','SMP','SGE','Globus', 'Torque', etc.
         '''
 
         # get class name of system proxy

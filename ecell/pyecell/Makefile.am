@@ -52,6 +52,7 @@ EXTRA_DIST = \
 	ecell/session_manager/LocalProxy.py \
 	ecell/session_manager/SGEProxy.py \
 	ecell/session_manager/SessionManager.py \
+	ecell/session_manager/TorqueProxy.py \
 	ecell/session_manager/Util.py \
 	ecell/session_manager/__init__.py \
 	ecell/analysis/ControlCoefficient.py \
