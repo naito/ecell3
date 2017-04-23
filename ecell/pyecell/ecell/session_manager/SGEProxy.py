@@ -242,7 +242,7 @@ class SystemProxy( AbstractSystemProxy ):
         hostname = None
         queueList = {}
         for line in lines:
-            m = re.match( r'^([^ ]*) *([^ ]*)' )
+            m = re.match( r'^([^ ]*) *([^ ]*)', line )
             if m != None:
                 if m.groups( 0 ) != '':
                     if hostname != None:
