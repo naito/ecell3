@@ -38,6 +38,7 @@ import signal
 import sys
 import time
 from itertools import ifilter
+#import json
 
 from ecell.session_manager.Util import *
 from ecell.session_manager.SessionManager import *
@@ -59,6 +60,7 @@ class SessionProxy( AbstractSessionProxy ):
         self.__theSessionProxyName = "script." + os.path.basename( getCurrentShell() )
 
     def __del__( self ):
+        # print "SessionProxy.__del__() is called."
         self.__cancel()
 
     def getToqueJobID(self):    # getSGEJobID(self)
@@ -75,31 +77,43 @@ class SessionProxy( AbstractSessionProxy ):
 
         # save current directory
         aCwd = os.getcwd()
+        #print "\nFirst: {}".format( aCwd )
 
         try:
             os.chdir( self.getJobDirectory() )
+            #print "JobDirStr: {}".format( self.getJobDirectory() )
+            #print "JobDirFull: {}\n".format( os.getcwd() )
 
             args = [ QSUB ]
             for key, val in self.getEnvironmentVariables().iteritems():  # EnvironmentVariables: e.g. 'ECELL3_DM_PATH' = dmpath
                 args.extend( ( '-v', key + '=' + val ) )                 # -v [variable_list] Expands the list of environment variables that are exported to the job.
-            # args.append( '-cwd' )                                        # PBS_O_WORKDIR = The absolute path of the current working directory of the qsub command.
-            args.extend( ( '-S', self.getInterpreter()) )                # -S [path_list] Declares the path to the desires shell for this job.
+            args.extend( ( '-d', os.getcwd() ) )                         # PBS_O_WORKDIR = The absolute path of the current working directory of the qsub command.
+            # args.extend( ( '-S', self.getInterpreter()) )                # -S [path_list] Declares the path to the desires shell for this job.
                                                                          #     e.g. qsub script.sh -S /bin/tcsh@node1,/usr/bin/tcsh@node2
             args.extend( ( '-o', self.getStdoutFileName() ) )            # -o [path] Defines the path to be used for the standard output stream of the batch job. 
                                                                          #     The path argument is of the form: [hostname:]path_name
             args.extend( ( '-e', self.getStderrFileName() ) )            # -e [path] Standard Error File
                                                                          #     Defines the path to be used for the standard error stream 
                                                                          #     of the batch job. The path argument is of the form:
+            args.extend( ( '-l', "ncpus=1" ) )
             args.extend( ifilter(
-                    lambda x: x not in ( '-s' '-v', '-cwd', '-o', '-e' ),
+                    lambda x: x not in ( '-v', '-d', '-o', '-l' ),
                     self.getOptionList() ) )
-            args.append( self.getScriptFileName() )
-            args.extend( self.getArguments() )
+
+            if len( self.getArguments() ):
+                #anArguments = json.loads(self.getArguments()[0][13:].replace("'",'"'))
+                args.append( '-F' )
+                args.append( '"--parameters=\\\"{}\\\""'.format( self.getArguments()[0][13:].replace('"','\\\\\\\"') ))
+
+            args.append( self.getScriptFileName())
+            #args.extend( self.getArguments() )
+            #print "CMD: " + ' '.join( args )
 
             msg = raiseExceptionOnError(
                 RuntimeError,
-                pollForOutputs( popen2.Popen3( args, True ) )
+                pollForOutputs( popen2.Popen3( ' '.join( args ), True ) )
                 )
+            #print "MSG: " + msg
             m = re.match(
                 r'^(\d+\.\w+)$', msg
                 )
@@ -112,12 +126,24 @@ class SessionProxy( AbstractSessionProxy ):
         return True
 
     def __cancel( self ):
-        if self.__theTorqueJobID >= 0:
-            raiseExceptionOnError( RuntimeError,
+        #print self.getOwner()
+	if self.__theTorqueJobID >= 0:
+            # reads the result of qstat
+            aCommandLine = "{} {}".format( QSTAT, self.__theTorqueJobID )
+            out = raiseExceptionOnError(
+                RuntimeError,
                 pollForOutputs(
-                    popen2.Popen3( ( QDEL, self.__theTorqueJobID ), True )
+                    popen2.Popen3( aCommandLine, True )
                     )
-                )
+                ).split( "\n" )
+            aStatus = out[ 2 ].split()[ 4 ]
+            if aStatus not in ( 'C', 'E' ):
+                #print "DEL: {} {}".format( QDEL, self.__theTorqueJobID )
+                raiseExceptionOnError( RuntimeError,
+                    pollForOutputs(
+                        popen2.Popen3( "{} {}".format( QDEL, self.__theTorqueJobID ), True )
+                        )
+                    )
 
     def stop(self):
         '''stop the job
@@ -211,19 +237,28 @@ class SystemProxy( AbstractSystemProxy ):
 
         # reads the result of qstat
         aCommandLine = [ QSTAT ]
-        #if self.getOwner() is not None:
-        #    aCommandLine.extend( [ '-u', self.getOwner() ] )
+        #print "Owner: " + self.getOwner()
+        if self.getOwner() is not None:
+            aCommandLine.extend( [ '-u', self.getOwner() ] )
+        #print "Owner: " + ' '.join( aCommandLine )
         out = raiseExceptionOnError(
             RuntimeError,
             pollForOutputs(
-                popen2.Popen3( aCommandLine, True )
+                popen2.Popen3( ' '.join( aCommandLine ), True )
                 )
             ).split( "\n" )
+        #print out
 
         # When there are running jobs, gets Torque job id and status
-        for aLine in out[ 2: -1 ]:
-            comps = aLine.split()
-            aStatusDict[ comps[ 0 ] ] = comps[ 4 ]  # key = JobID, item = Status
+        if self.getOwner() is not None:
+            for aLine in out[ 5: -1 ]:
+                comps = aLine.split()
+                aStatusDict[ comps[ 0 ] ] = comps[ 9 ]  # key = JobID, item = Status
+        else:
+            for aLine in out[ 2: -1 ]:
+                comps = aLine.split()
+                aStatusDict[ comps[ 0 ] ] = comps[ 4 ]  # key = JobID, item = Status
+                # print "Status({}): {}".format( comps[ 0 ], comps[ 4 ] )
 
         # checks ths status of each SessionProxy
         for job in self.getSessionProxies():
@@ -232,24 +267,21 @@ class SystemProxy( AbstractSystemProxy ):
                 # gets Torgue job id
                 aTorqueJobID = job.getToqueJobID()
 
-                # there is no Torque job id in the result of qstat, the job is 
+                # if there is no Torque job id in the result of qstat, the job is
                 # considered to be finished
+                # else if Status is 'C' or 'E', the job has been finished.
                 if not aStatusDict.has_key( aTorqueJobID ):
                     # read standard error file
                     aStderrFile = job.getStderrFilePath()
                     # When something is written in standard error,
                     if os.path.exists( aStderrFile ) and \
-                       os.stat( aStderrFile )[ 6 ] > 0:
+                       os.stat( aStderrFile )[ 6 ] > 0:  # stat[6] = st_size
                         job.setStatus( ERROR )
                     else:
                         job.setStatus( FINISHED )
-                else:
-                    # When job is running,
-                    if aStatusDict[ aTorqueJobID ].find( 'E' ) != -1:
-                        # When character 'E' is included in the status,
-                        job.stop()
-                    else:
-                        pass
+                elif aStatusDict[ aTorqueJobID ] in ('C','E'):  # C:completed; E:exiting
+                    #time.sleep(2)  # wait filing
+                    job.setStatus( FINISHED )
 
     def __populateQueueList( self ):
         ''' Get queue list.
