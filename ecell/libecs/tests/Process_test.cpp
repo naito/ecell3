@@ -2,8 +2,8 @@
 //
 //       This file is part of the E-Cell MockProcess
 //
-//       Copyright (C) 1996-2016 Keio University
-//       Copyright (C) 2008-2016 RIKEN
+//       Copyright (C) 1996-2017 Keio University
+//       Copyright (C) 2008-2017 RIKEN
 //       Copyright (C) 2005-2009 The Molecular Sciences Institute
 //
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
