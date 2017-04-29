@@ -245,16 +245,13 @@ def main( argv ):
             optionList[:] = re.findall( r'(?:"(?:[^"]|\\")*"|\'(?:[^\']|\\\')*\'|(?:[^\s"\']|\\[\s"\'])+)+', anArg )
 
     # check EMS file
-    if anEsmFile == None and ( len( argv ) >= ( len(opts) * 2 + 2 ) ):
-        if ( len( argv ) != 2 and not argv[ -1 ][ 0 ] == "-" ) or \
-                len( argv ) == 2:
-            if not os.path.isfile( argv[-1] ):
-                sys.stderr.write( "%s: %s does not exist.\n" %
-                    ( programName, argv[ -1 ] ) )
-                return 1  
-
-            if argv[ -1 ] != argv[ 0 ]:
-                anEsmFile = argv[ -1 ]
+    if anEsmFile == None:
+        if len( args ) == 1:
+            if not os.path.isfile( args[ 0 ] ):
+                sys.stderr.write( "{}: {} does not exist.\n".format( programName, args[ 0 ] ) )
+                return 1
+            else:
+                anEsmFile = args[ 0 ]
 
     aModulePath = [ os.path.join( ecell.__path__[ 0 ], "session_manager" ) ]
 
