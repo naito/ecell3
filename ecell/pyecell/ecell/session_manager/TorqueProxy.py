@@ -85,19 +85,14 @@ class SessionProxy( AbstractSessionProxy ):
             #print "JobDirFull: {}\n".format( os.getcwd() )
 
             args = [ QSUB ]
-            for key, val in self.getEnvironmentVariables().iteritems():  # EnvironmentVariables: e.g. 'ECELL3_DM_PATH' = dmpath
-                args.extend( ( '-v', key + '=' + val ) )                 # -v [variable_list] Expands the list of environment variables that are exported to the job.
-            args.extend( ( '-d', os.getcwd() ) )                         # PBS_O_WORKDIR = The absolute path of the current working directory of the qsub command.
-            # args.extend( ( '-S', self.getInterpreter()) )                # -S [path_list] Declares the path to the desires shell for this job.
-                                                                         #     e.g. qsub script.sh -S /bin/tcsh@node1,/usr/bin/tcsh@node2
-            args.extend( ( '-o', self.getStdoutFileName() ) )            # -o [path] Defines the path to be used for the standard output stream of the batch job. 
-                                                                         #     The path argument is of the form: [hostname:]path_name
-            args.extend( ( '-e', self.getStderrFileName() ) )            # -e [path] Standard Error File
-                                                                         #     Defines the path to be used for the standard error stream 
-                                                                         #     of the batch job. The path argument is of the form:
+            args.append( '-V' )
+            args.extend( ( '-d', os.getcwd() ) )
+            # args.extend( ( '-S', self.getInterpreter()) )
+            args.extend( ( '-o', self.getStdoutFileName() ) )
+            args.extend( ( '-e', self.getStderrFileName() ) )
             args.extend( ( '-l', "ncpus=1" ) )
             args.extend( ifilter(
-                    lambda x: x not in ( '-v', '-d', '-o', '-l' ),
+                    lambda x: x not in ( '-V', '-d', '-S', '-o', '-l' ),
                     self.getOptionList() ) )
 
             if len( self.getArguments() ):
