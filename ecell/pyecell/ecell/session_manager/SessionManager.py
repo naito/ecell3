@@ -299,12 +299,26 @@ class AbstractSessionProxy:
     def getStdout( self ):
         '''Return stdout(str)
         '''
-        return open( self.getStdoutFilePath(), 'rb' ).read()
+        p = self.getStdoutFilePath()
+        if os.path.exists( p ):
+            return open( p, 'rb' ).read()
+        for i in range( 0, 60 ):
+            time.sleep(1.0)
+            if os.path.exists( p ):
+                return open( p, 'rb' ).read()
+        return None
 
     def getStderr( self ):
         '''Return stderr(str)
         '''
-        return open( self.getStderrFilePath(), 'rb' ).read()
+        p = self.getStderrFilePath()
+        if os.path.exists( p ):
+            return open( p, 'rb' ).read()
+        for i in range( 0, 60 ):
+            time.sleep(1.0)
+            if os.path.exists( p ):
+                return open( p, 'rb' ).read()
+        return None
 
     def setOptionList( self, optionlist ):
         '''Set an option list.
