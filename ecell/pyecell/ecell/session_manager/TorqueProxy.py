@@ -114,13 +114,9 @@ class SessionProxy( AbstractSessionProxy ):
                 pollForOutputs( popen2.Popen3( ' '.join( args ), True ) )
                 )
             #print "MSG: " + msg
-            m = re.match(
-                r'^(\d+\.\w+)$', msg
-                )
-            if m == None:
-                raise RuntimeError, '%s returned unexpected result: %s' % (
-                        QSUB, msg )
-            self.__theTorqueJobID = m.group( 1 )
+            if msg == None:
+                raise RuntimeError, '{} returned no result.'.format( QSUB )
+            self.__theTorqueJobID = msg
         finally:
             os.chdir( aCwd )
         return True
