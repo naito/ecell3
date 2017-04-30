@@ -308,12 +308,14 @@ class SystemProxy( AbstractSystemProxy ):
         '''
         if interpreterPath is not None  and \
            os.access( dstScriptFileName, os.R_OK ) and os.access( dstScriptFileName, os.W_OK ):
+            theShebang = '#!' +interpreterPath
             f = open( dstScriptFileName, 'r' )
-            s = f.read()
+            s = f.readlines()
             f.close()
-            f = open( dstScriptFileName, 'w' )
-            f.write( '#!{}\n\n{}'.format( interpreterPath, s ) )
-            f.close()
+            if theShebang is not s[ 0 ].rstrip():
+                f = open( dstScriptFileName, 'w' )
+                f.write( '{}\n\n{}'.format( theShebang, "\n".join( s ) ) )
+                f.close()
             #print "Shebang is inserted."
             return True
         else:
