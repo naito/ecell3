@@ -4,7 +4,7 @@
 
 import os
 
-MODEL_FILE = 'model.eml'
+MODEL_FILE = 'model.em'
 ESS_FILE = 'runsession.py'
 
 # Register jobs.
