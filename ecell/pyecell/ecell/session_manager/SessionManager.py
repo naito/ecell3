@@ -40,6 +40,7 @@ import time
 import weakref
 import signal
 import inspect
+import commands
 import ecell.eml
 
 from ecell.session_manager.Constants import *
@@ -587,6 +588,10 @@ class AbstractSystemProxy:
         self.__theSessionProxyCountByStatus[ oldStatus ] -= 1
         self.__theSessionProxyCountByStatus[ job.getStatus() ] += 1
 
+    def _modifyDstScriptFile( self, dstScriptFileName, interpreter ):
+        # print "Original (dummy) modifyDstScriptFile() invoked."
+        pass
+
 class SessionManager( object ):
     '''SessionManager class
     Provide API to execute multiple jobs concurrently.
@@ -1071,6 +1076,7 @@ class SessionManager( object ):
 
             # copie script
             shutil.copyfile( job.getScriptFileName(), aDstFileName )
+            self.__theSystemProxy._modifyDstScriptFile( aDstFileName, commands.getoutput('which ' + ECELL3_SESSION ) )
 
             # sets up extra files
             for anExtraFile in job.getExtraFileList():

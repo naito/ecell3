@@ -301,3 +301,21 @@ class SystemProxy( AbstractSystemProxy ):
                 m.groups( 6 ), m.groups( 7 ), m.groups( 8 ), m.groups( 9 ), m.groups( 10 ) ]
         lines.close()
         self.__theQueueList = queueList
+
+    def _modifyDstScriptFile( self, dstScriptFileName, interpreterPath ):
+        '''insert shebang into the script file
+        Return True or False
+        '''
+        if interpreterPath is not None  and \
+           os.access( dstScriptFileName, os.R_OK ) and os.access( dstScriptFileName, os.W_OK ):
+            f = open( dstScriptFileName, 'r' )
+            s = f.read()
+            f.close()
+            f = open( dstScriptFileName, 'w' )
+            f.write( '#!{}\n\n{}'.format( interpreterPath, s ) )
+            f.close()
+            #print "Shebang is inserted."
+            return True
+        else:
+            #print "Shebang insertion is failed."
+            return False
