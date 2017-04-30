@@ -59,3 +59,4 @@ mkinstalldirs
 stamp-h1
 /test-driver
 .DS_Store
+/tmp
