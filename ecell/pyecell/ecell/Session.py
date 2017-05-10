@@ -38,7 +38,7 @@ import ecell.ecs
 import ecell.config as config
 
 from ecell.ecssupport import *
-from ecell.emparser import Preprocessor, convertEm2Eml
+from ecell.emparser import Preprocessor, Preprocessor_StringIO, convertEm2Eml
 from ecell.DataFileManager import *
 from ecell.ECDDataFile import *
 
@@ -109,6 +109,34 @@ class Session:
         self.theModelName = aModelName
 
     # end of loadModel
+        
+
+    def setModel( self, anEM, aModelName ):
+        # aModel : an EM string
+        # return -> None
+        # This method can thwor exceptions. 
+
+        # checks the type of aModel
+
+        if isinstance( anEM, str ) or isinstance( anEM, unicode ):
+            aPreprocessor = Preprocessor_StringIO( anEM, aModelName )
+            anEmFile = aPreprocessor.preprocess()
+            anEmFile.seek( 0 )
+            anEml = convertEm2Eml( anEmFile, False )
+        else:
+            # When the type doesn't match
+            raise TypeError, "The type of anEM must be EM string."
+    
+        # calls load methods
+        self.__loadStepper( anEml )
+        self.__loadEntity( anEml )
+        self.__loadAllProperty( anEml )
+        self.theSimulator.initialize()
+
+        # saves ModelName 
+        self.theModelName = aModelName
+
+    # end of setModel
         
 
     def saveModel( self , aModel ):

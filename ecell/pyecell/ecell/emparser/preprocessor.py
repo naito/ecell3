@@ -83,5 +83,38 @@ class Preprocessor( object ):
         
         self.interpreter.shutdown()
 
+class Preprocessor_StringIO( Preprocessor ):
+
+    def __init__( self, em_str, model_name ):
+        self.need_linecontrol = 0
+        self.em_str = em_str
+        self.filename = model_name
+        self.interpreter = None
+
+    def preprocess( self ):
+
+        #
+        # init
+        #
+        Output = StringIO.StringIO()
+        self.interpreter = em.Interpreter( output = Output )
+        self.interpreter.flatten()
+        self.interpreter.addHook(ecellHookClass(self, self.interpreter))   # pseudo.addHook(ecellHookClass(self, self.interpreter))
+
+        #
+        # processing
+        #
+
+        # write first line
+        self.lineControl( self.interpreter, self.filename, 1 )
+
+        if self.em_str is not None:
+            self.interpreter.wrap( self.interpreter.file,\
+                      ( StringIO.StringIO( self.em_str ), self.filename ) )
+
+        self.interpreter.flush()
+
+        return Output
+
 
 
