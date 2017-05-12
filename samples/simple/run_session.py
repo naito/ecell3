@@ -1,6 +1,6 @@
 
 # load the model
-loadModel( 'simple.eml' )
+loadModel( 'simple.em' )
 
 # create stubs
 S_Logger = createLoggerStub( 'Variable:/:S:Value' )
