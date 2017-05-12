@@ -31,14 +31,14 @@ import eml
 import sys
 import os
 import time
-
+import StringIO
 
 from numpy import *
 import ecell.ecs
 import ecell.config as config
 
 from ecell.ecssupport import *
-from ecell.emparser import Preprocessor, Preprocessor_StringIO, convertEm2Eml
+from ecell.emparser import Preprocessor, convertEm2Eml
 from ecell.DataFileManager import *
 from ecell.ECDDataFile import *
 
@@ -111,21 +111,29 @@ class Session:
     # end of loadModel
         
 
-    def setModel( self, anEM, aModelName ):
-        # aModel : an EM string
+    def setModel( self, aModelStr, aModelName ):
+        # aModelStr : an EM or EML string
         # return -> None
         # This method can thwor exceptions. 
 
         # checks the type of aModel
 
-        if isinstance( anEM, str ) or isinstance( anEM, unicode ):
-            aPreprocessor = Preprocessor_StringIO( anEM, aModelName )
-            anEmFile = aPreprocessor.preprocess()
-            anEmFile.seek( 0 )
-            anEml = convertEm2Eml( anEmFile, False )
+        if isinstance( aModelStr, str ):
+            aModel_StringIO = StringIO.StringIO( aModelStr )
+            if aModelStr.strip()[ 0:5 ] == "<?xml":
+                anEml = eml.Eml( aModel_StringIO )
+            else:
+                aPreprocessor = Preprocessor( aModel_StringIO, aModelName )
+                anEmFile = aPreprocessor.preprocess()
+                anEmFile.seek( 0 )
+                anEml = convertEm2Eml( anEmFile, False )
+            aModel_StringIO.close()
+        elif isinstance( aModelStr, unicode ):
+            # When aModelStr is unicode
+            raise TypeError, "setModel() can't process unicode string at present."
         else:
             # When the type doesn't match
-            raise TypeError, "The type of anEM must be EM string."
+            raise TypeError, "The type of a model string must be a string object."
     
         # calls load methods
         self.__loadStepper( anEml )
