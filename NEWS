@@ -1,3 +1,9 @@
+ecell-3.2.4c: 12-May-2017
+
+ * Improve setModel() (add EML support)
+
+ * Update samples/simple
+
 ecell-3.2.4b: 11-May-2017
 
  * Add setModel()
