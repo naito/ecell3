@@ -17,12 +17,10 @@ Files and directories
 Running this model
 ------------------
 
-* Run the model with EM file.
+* Run the model with EM/EML file.
     * GUI mode  `$ ecell3-session-monitor -f simple.em`
     * Script mode  `$ ecell3-session run_session.py`
 
-* Run the model using script file including EM (without separated EM file).
-
-```
-$ ecell3-session one_file_simulation.py
-```
+* Run the model using script file including EM/EML (without separated EM/EML file).
+    * EM   `$ ecell3-session one_file_simulation_em.py`
+    * EML  `$ ecell3-session one_file_simulation_eml.py`
