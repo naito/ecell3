@@ -40,6 +40,8 @@ P_MUT_IND = 0.5  # 変異個体の各パラメータの変異確率
 MUT_MU    = 0.0  # 変異量（正規分布）のパラメータ μ
 MUT_SIGMA = 1.0  # 変異量（正規分布）のパラメータ σ
 
+TOURNAMENT_SIZE = 4  # 選択のトーナメントサイズ
+
 # --------------------------------------------------------
 # (1) メタファクトリcreatorを用いて必要なクラスを作成する
 # --------------------------------------------------------
@@ -124,7 +126,12 @@ toolbox.register( "prepareParameterDict",
 # 評価関数（適応度関数）
 def evaluate( ind ):
     # ind - creator.Individualインスタンス
-    return float( getStdout( ind.jobID ).split()[ -1 ].strip() ),  # 標準出力の最後の１行
+    try:
+        return float( getStdout( ind.jobID ).split()[ -1 ].strip() ),  # 標準出力の最後の１行
+    except ValueError:
+        pass
+
+    return 0.0,
 
 toolbox.register( "evaluate", evaluate )
 
@@ -152,7 +159,7 @@ def mutate( ind, mu, sigma ):
 toolbox.register( "mutate", mutate, mu = MUT_MU, sigma = MUT_SIGMA )
 
 # 選択
-toolbox.register( "select", tools.selTournament, tournsize=4 )  # 選択関数
+toolbox.register( "select", tools.selTournament, tournsize = TOURNAMENT_SIZE )  # 選択関数
 
 
 # --------------------------------------------------------
