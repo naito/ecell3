@@ -11,6 +11,7 @@ SAMPLES = \
 	Toy_Hybrid \
 	branchG \
 	ga \
+	ga-deap \
 	heatshock \
 	session_manager \
 	simple \
