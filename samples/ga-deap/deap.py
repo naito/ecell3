@@ -8,6 +8,7 @@ from ecell.ECDDataFile import *
 import numpy as np
 import os
 import random
+import copy
 
 from deap import base
 from deap import creator
@@ -131,21 +132,22 @@ def evaluate( ind ):
     except ValueError:
         pass
 
-    return 0.0,
+    return float('inf'),
 
 toolbox.register( "evaluate", evaluate )
 
 # 交叉（１点交叉）
 def cxOnePoint( ind1, ind2 ):
     # i1, 12 - creator.Individualインスタンス
+    _ind1 = copy.deepcopy( ind1 )
+    _ind2 = copy.deepcopy( ind2 )
     FullPNs = ind1.keys()
     random.shuffle( FullPNs )
     point = random.randrange( 1, len( FullPNs ))
     # print "[{}] / [{}]".format( ",".join( FullPNs[ : point ] ), ",".join( FullPNs[ point : ] ) )
     for f in FullPNs[ : point ]:
-        ind1[ f ] = ind2[ f ]
-    for f in FullPNs[ point : ]:
-        ind2[ f ] = ind1[ f ]
+        ind1[ f ] = _ind2[ f ]
+        ind2[ f ] = _ind1[ f ]
 
 toolbox.register( "mate", cxOnePoint )
 
