@@ -170,7 +170,7 @@ for FullPN in TRAINING_TIME_COURSE_DATA_DICT.keys():
             aDenominator = t
         # print "t : p = {0:<10} : {0:<10}".format( t, p )
         # add the difference of predicted S and predicted S
-        aDifference += abs( ( t - p ) / aDenominator )
+        aDifference += pow( ( t - p ) / aDenominator, 2.0 )
 
 aDifference /= data_size
 
