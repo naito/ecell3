@@ -100,13 +100,23 @@ class StepperStub( ObjectStub ):
 
 
     # ---------------------------------------------------------------
-    # getClassname
+    # getClassName
     #
     # return -> None
     # This method can throw exceptions.
     # ---------------------------------------------------------------
-    def getClassname( self ):
+    def getClassName( self ):
         return self.theSimulator().getStepperClassName( self.theID )
+
+    # end of setClassname
+
+    # ---------------------------------------------------------------
+    # getClassname
+    #
+    # Alias of getClassName( self )
+    # ---------------------------------------------------------------
+    def getClassname( self ):
+        return self.getClassName()
 
     # end of setClassname
 

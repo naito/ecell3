@@ -69,12 +69,18 @@ class EntityStub( ObjectStub ):
         """
         self.theSimulator().deleteEntity( self.theFullIDString ) 
 
-    def getClassname( self ):
+    def getClassName( self ):
         """
         return -> None
         This method can throw exceptions.
         """
         return self.theSimulator().getEntityClassName( self.theFullIDString )
+
+    def getClassname( self ):
+        """
+        Alias of getClassName( self )
+        """
+        return self.getClassName()
 
     def getPropertyList( self ):
         """
