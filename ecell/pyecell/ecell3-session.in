@@ -1,9 +1,11 @@
 #!/usr/bin/env @prefix@/bin/ecell3-python
 
 import sys
+import os
 import getopt
 import code
-import os
+import readline
+import atexit
 
 import ecell.config
 import ecell.ecs
@@ -22,6 +24,25 @@ class Prompt:
                    ( self.theSession.theModelName, \
                      self.theSession.getCurrentTime() )
 
+class InteractiveConsoleWithHistory( code.InteractiveConsole ):
+    def __init__( self, locals ):
+        code.InteractiveConsole.__init__( self, locals )
+        self.init_history()
+
+    def init_history( self, session_history_file = os.path.expanduser('~/.ecell/session-history') ):
+        readline.parse_and_bind( "tab: complete" )
+        if hasattr( readline, "read_history_file" ):
+            try:
+                print "session_history_file : {}".format( session_history_file )
+                readline.read_history_file( session_history_file )
+            except IOError:
+                pass
+            atexit.register( self.save_history, session_history_file )
+
+    def save_history( self, session_history_file ):
+        readline.set_history_length( 1000 )
+        readline.write_history_file( session_history_file )
+
 class Console:
     def __init__( self, session, banner ):
         self.session = session
@@ -34,12 +55,8 @@ class Console:
 
     def interact( self, parameters = {} ):
         aContext = createScriptContext( self.session, parameters )
-        try:
-            import readline # to provide convenient commandline editing :)
-        except:
-            pass
         aContext[ '__prompt__' ] = Prompt( self.session )
-        anInterpreter = code.InteractiveConsole( aContext )
+        anInterpreter = InteractiveConsoleWithHistory( aContext )
         anInterpreter.runsource( 'import sys; sys.ps1 = __prompt__; del sys, __prompt__' )
         anInterpreter.interact( self.banner )
 

@@ -86,6 +86,7 @@ class Session:
                 anEmFile = aPreprocessor.preprocess()
                 anEmFile.seek( 0 )
                 anEml = convertEm2Eml( anEmFile, False )
+                aPreprocessor.shutdown()
             else:
                 raise Exception( "Unsupported file type: %s" % ext )
             aModelName = aModel
@@ -127,6 +128,7 @@ class Session:
                 anEmFile = aPreprocessor.preprocess()
                 anEmFile.seek( 0 )
                 anEml = convertEm2Eml( anEmFile, False )
+                aPreprocessor.shutdown()
             aModel_StringIO.close()
         elif isinstance( aModelStr, unicode ):
             # When aModelStr is unicode

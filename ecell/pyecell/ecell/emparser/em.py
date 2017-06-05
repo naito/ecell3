@@ -2016,6 +2016,8 @@ class Interpreter:
 
     _wasProxyInstalled = False # was a proxy installed?
 
+    _original_stdout = None
+
     # Construction, initialization, destruction.
 
     def __init__(self, output=None, argv=None, prefix=DEFAULT_PREFIX, \
@@ -2141,6 +2143,8 @@ class Interpreter:
                     stream.close()
             finally:
                 self.streams = None
+        sys.stdout = self._original_stdout
+        self._original_stdout = None
 
     def ok(self):
         """Is the interpreter still active?"""
@@ -2677,6 +2681,7 @@ class Interpreter:
                 raise Error, "interpreter stdout proxy lost"
             else:
                 # Otherwise, install the proxy and set the flag.
+                self._original_stdout = sys.stdout
                 sys.stdout = ProxyFile(sys.stdout)
                 Interpreter._wasProxyInstalled = True
 
