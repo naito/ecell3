@@ -4,8 +4,10 @@ import sys
 import os
 import getopt
 import code
+import rlcompleter
 import readline
 import atexit
+import inspect
 
 import ecell.config
 import ecell.ecs
@@ -25,11 +27,15 @@ class Prompt:
                      self.theSession.getCurrentTime() )
 
 class InteractiveConsoleWithHistory( code.InteractiveConsole ):
-    def __init__( self, locals ):
+    def __init__( self, locals, session ):
         code.InteractiveConsole.__init__( self, locals )
         self.init_history()
 
-    def init_history( self, session_history_file = os.path.expanduser('~/.ecell/session-history') ):
+    def init_history( self, session, session_history_file = os.path.expanduser('~/.ecell/session-history') ):
+        session_namespace = {}
+        for m in inspect.getmembers( session ):
+            session_namespace[ m[ 0 ]] = m[ 1 ]
+        readline.set_completer( rlcompleter.Completer( session_namespace ).complete )
         readline.parse_and_bind( "tab: complete" )
         if hasattr( readline, "read_history_file" ):
             try:
@@ -56,7 +62,7 @@ class Console:
     def interact( self, parameters = {} ):
         aContext = createScriptContext( self.session, parameters )
         aContext[ '__prompt__' ] = Prompt( self.session )
-        anInterpreter = InteractiveConsoleWithHistory( aContext )
+        anInterpreter = InteractiveConsoleWithHistory( aContext, self.session )
         anInterpreter.runsource( 'import sys; sys.ps1 = __prompt__; del sys, __prompt__' )
         anInterpreter.interact( self.banner )
 
