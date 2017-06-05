@@ -1,3 +1,8 @@
+ecell-3.2.4d: 05-Jun-2017
+ * Fix an ecell3-session bug that destroy the readline function after load/setModel().
+ * Add three new samples: ga-deap, SRES, steady_state
+ * Add an alias to Python API: getClassName() -> getClasname()
+
 ecell-3.2.4c: 12-May-2017
 
  * Improve setModel() (add EML support)
