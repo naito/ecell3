@@ -29,7 +29,7 @@ class Prompt:
 class InteractiveConsoleWithHistory( code.InteractiveConsole ):
     def __init__( self, locals, session ):
         code.InteractiveConsole.__init__( self, locals )
-        self.init_history()
+        self.init_history( session )
 
     def init_history( self, session, session_history_file = os.path.expanduser('~/.ecell/session-history') ):
         session_namespace = {}
