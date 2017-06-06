@@ -2,11 +2,12 @@ samplesdir = $(docdir)/samples
 
 SAMPLES = \
 	CoupledOscillator \
-	Drosophila-cpp \
 	Drosophila \
+	Drosophila-cpp \
 	Heinrich \
 	LTD \
 	Pendulum \
+	SRES \
 	SSystem \
 	Toy_Hybrid \
 	branchG \
@@ -15,6 +16,7 @@ SAMPLES = \
 	heatshock \
 	session_manager \
 	simple \
+	steady_state \
 	tauleap
 
 EXTRA_DIST = $(SAMPLES)
