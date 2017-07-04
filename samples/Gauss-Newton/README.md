@@ -45,3 +45,10 @@ $ ecell3-session-manager -E Torque Gauss-Newton_osc.py
 - `MAX_GENERATION`  反復計算の最大回数
 - `ENOUGH_S`  反復計算を打ち切る残差平方和Sの値
 - `DELTA`  残差のヤコビアンを求める際のパラメータの差分の割合
+
+
+反復計算で発生するjobの数
+-----------------------
+- 最適化対象の時系列データの点の数 _m_ は、おおむね次の値になる：<img src="https://latex.codecogs.com/gif.latex?m={N}_\mathtt{CURVE\_DATA\_DICT}\times\frac{\mathtt{T\_END}-\mathtt{T\_START}}{\mathtt{T\_INTERVAL}}" />
+  - ただし、 <img src="https://latex.codecogs.com/gif.latex?m={N}_\mathtt{CURVE\_DATA\_DICT}" /> は `CURVE_DATA_DICT` の要素数。
+- 最適化対象のパラメータ数（`PARAMETERS`の要素数）は、 _m_ 以下でなければならない（Gause-Newton法の制約）。
