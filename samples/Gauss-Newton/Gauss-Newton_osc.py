@@ -159,15 +159,20 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
     # すべてのjobの終了を待つ。
     run()
 
-    # residuals_dict = json.loads( getStdout( r_ID ).split()[ -1 ].strip() )
-    residuals_dict = json.loads( getStdout( r_ID ) )
+    is_JSON_only = True  # シミュレーション結果のファイル内容。0: JSONのみ, 1: JSON以外の情報あり
+    residuals_dict = getStdout( r_ID ).strip()
+    if residuals_dict.find("\n") > -1:
+        is_JSON_only = False
+        residuals_dict = json.loads( residuals_dict.split()[ -1 ] )
     
     # print residuals_dict
     
     del_residuals_dict = {}
     for beta_FullPN, a_job_ID in J_IDs.items():
-        # del_residuals_dict[ beta_FullPN ] = json.loads( getStdout( r_ID ).split()[ -1 ].strip() )
-        del_residuals_dict[ beta_FullPN ] = json.loads( getStdout( a_job_ID ) )
+        if is_JSON_only:
+            del_residuals_dict[ beta_FullPN ] = json.loads( getStdout( a_job_ID ) )
+        else:
+            del_residuals_dict[ beta_FullPN ] = json.loads( getStdout( a_job_ID ).strip().split()[ -1 ] )
 
     # 最適化対象のデータ y
     # print del_residuals_dict
