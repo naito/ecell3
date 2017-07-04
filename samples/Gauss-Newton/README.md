@@ -51,4 +51,5 @@ $ ecell3-session-manager -E Torque Gauss-Newton_osc.py
 -----------------------
 - 最適化対象の時系列データの点の数 _m_ は、おおむね次の値になる：<img src="https://latex.codecogs.com/gif.latex?m={N}_\mathtt{CURVE\_DATA\_DICT}\times\frac{\mathtt{T\_END}-\mathtt{T\_START}}{\mathtt{T\_INTERVAL}}" />
   - ただし、 <img src="https://latex.codecogs.com/gif.latex?m={N}_\mathtt{CURVE\_DATA\_DICT}" /> は `CURVE_DATA_DICT` の要素数。
-- 最適化対象のパラメータ数（`PARAMETERS`の要素数）は、 _m_ 以下でなければならない（Gause-Newton法の制約）。
+- 最適化対象のパラメータ数 _n_ （`PARAMETERS`の要素数）は、 _m_ 以下でなければならない（Gause-Newton法の制約）。
+- 反復計算の１世代あたり、_m_ × _n_ 個の job が発生する。現実的な数に収まるように、_m_, _n_ を調整すること。
