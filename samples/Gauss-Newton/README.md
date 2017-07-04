@@ -36,9 +36,9 @@ $ ecell3-session-manager -E Torque Gauss-Newton_osc.py
 - `CURVE_DATA_DICT`  最適化対象データに関する辞書
   - キー：FullPN
   - 値：時系列（ECD）ファイル名
-- T_START：最適化に用いる最初の時点（Noneの場合、先頭のデータから）
-- T_END：最適化に用いる最後の時点（Noneの場合、末尾のデータまで）
-- T_INTERVAL：最適化に用いるデータの間隔（Noneの場合、すべてのデータポイント）
+- `T_START`：最適化に用いる最初の時点（Noneの場合、先頭のデータから）
+- `T_END`：最適化に用いる最後の時点（Noneの場合、末尾のデータまで）
+- `T_INTERVAL`：最適化に用いるデータの間隔（Noneの場合、すべてのデータポイント）
 - `PARAMETERS`  最適化するパラメータに関する辞書
   - キー：FullPN
   - 値：初期値
