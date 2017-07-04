@@ -4,6 +4,7 @@ SAMPLES = \
 	CoupledOscillator \
 	Drosophila \
 	Drosophila-cpp \
+	Gauss-Newton \
 	Heinrich \
 	LTD \
 	Pendulum \
