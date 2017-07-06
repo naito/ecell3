@@ -12,9 +12,9 @@ Gause-Newton 法によるパラメータ最適化
 - `osc_session.py`  セッション スクリプト（EMを内包している）
 - `Data`  最適化対象データ格納ディレクトリ
   - `osc_s1.ecd`, `osc_s2.ecd`, `osc_s3.ecd`  最適化対象データ（ECDファイル）
-- `generate_osc_data.py`  最適化対象データを生成するセッションスクリプト（EMを内包している）
-- `osc.em`  モデルのEMファイル
-- `Gauss-Newton_wo-ecell3.py`  E-Cell3を用いないセッションマネージャ スクリプト。Wikidediaの「[ガウス・ニュートン法](https://ja.wikipedia.org/wiki/ガウス・ニュートン法)」にある例と同じ問題を解く。
+- （参考）`generate_osc_data.py`  最適化対象データを生成するセッションスクリプト（EMを内包している）
+- （参考）`osc.em`  モデルのEMファイル
+- （参考）`Gauss-Newton_wo-ecell3.py`  E-Cell3を用いないセッションマネージャ スクリプト。Wikidediaの「[ガウス・ニュートン法](https://ja.wikipedia.org/wiki/ガウス・ニュートン法)」にある例と同じ問題を解く。
 - `README.md`  このファイル
 
 
