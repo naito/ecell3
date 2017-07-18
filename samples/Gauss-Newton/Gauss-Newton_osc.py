@@ -240,14 +240,9 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
     # print "J_r"
     # print J_r
 
-    beta_next = np.dot( np.linalg.inv( np.dot( J_r.T, J_r ) ), J_r.T )
-    # print "beta_next (1):  {}".format( beta_next.shape )
-    # print "beta_next (1):"
-    # print beta_next
+    # beta_next = np.dot( np.linalg.inv( np.dot( J_r.T, J_r ) ), J_r.T )
+    beta_next = np.linalg.pinv( J_r )
     beta_next = np.dot( beta_next, r )
-    # print "beta_next (2):  {}".format( beta_next.shape )
-    # print "beta_next (2):"
-    # print beta_next
     beta_next = beta.T - beta_next
     # print "beta_next (3):  {}".format( beta_next.shape )
     # print "beta_next (3):"
