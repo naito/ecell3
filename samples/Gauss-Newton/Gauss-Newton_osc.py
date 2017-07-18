@@ -211,9 +211,6 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
     # 残差の平方和 S
     S = np.sum( np.square( r ) )
 
-    print "S"
-    print S
-
     # 最適化対象パラメータのベクトル beta
     beta = np.array( [ beta_dict.values() ] )
 
@@ -259,6 +256,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
 
     # sys.exit()
 
+    print "  S = {}".format( S )
+
     return S, beta_next_dict
 
 
@@ -300,15 +299,28 @@ for FullPN, tc in target_data_dict.items():
 # (3) 反復計算
 # --------------------------------------------------------
 
+beta_prev = copy.deepcopy( beta_dict )
+
 for i in range( MAX_GENERATION ):
     
-    # 現ラウンドの残差平方和 S と、次ラウンドのパラメータセットβ(S+1)（beta_dict_next）を算出
-    S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA )
+    print "Round {}".format( i + 1 )
     
-    if S <= ENOUGH_S:
-        break
-    else:
-        beta_dict = beta_dict_next
+    # エラーが出たらδβを減らして再試行
+    try:
+        # 現ラウンドの残差平方和 S と、次ラウンドのパラメータセットβ(S+1)（beta_dict_next）を算出
+        S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA )
+        
+        if S <= ENOUGH_S:
+            break
+        else:
+            beta_prev = beta_dict
+            beta_dict = beta_dict_next
+    
+     except:
+        for a_beta_FullPN in beta_dict.keys():
+            beta_dict[ a_beta_FullPN ] = 0.5 * beta_dict[ a_beta_FullPN ] + 0.5 * beta_prev[ a_beta_FullPN ]
+        
+        print "  beta is devalued..."
 
 
 # --------------------------------------------------------
