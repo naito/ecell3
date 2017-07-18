@@ -195,7 +195,7 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
 
     # 残差 r
     # 辞書のキーの順序が維持されている保証がない（？未確認）ので、
-    # 順序が変わっていて正しく動作する実装にしておく。
+    # 順序が変わっていても正しく動作する実装にしておく。
     f = np.zeros( y.shape )
     # print y.shape
     i = 0
@@ -222,7 +222,7 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, other_f
 
     # ヤコビアン J_r
     # 辞書のキーの順序が維持されている保証がない（？未確認）ので、
-    # 順序が変わっていて正しく動作する実装にしておく。
+    # 順序が変わっていても正しく動作する実装にしておく。
     J_r = np.zeros( ( len( beta_dict ), n_y ) )
     i = 0
     for beta_FullPN, beta_value in beta_dict.items():
