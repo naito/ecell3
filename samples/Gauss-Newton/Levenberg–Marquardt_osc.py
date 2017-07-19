@@ -47,9 +47,9 @@ T_INTERVAL =  0.5       # Noneの場合、すべてのデータポイント
 #             キー：FullPN
 #             値：初期値
 PARAMETERS = { 
-    'Process:/:re11:k11' :  0.5,   #  1.0
-    'Process:/:re21:k21' : -0.5,   # -1.0
-    'Process:/:re32:k32' :  0.5    #  1.0
+    'Process:/:re11:k11' :  0.4,   #  1.0
+    'Process:/:re21:k21' : -0.4,   # -1.0
+    'Process:/:re32:k32' :  0.4    #  1.0
 }
 
 # 最大世代数
@@ -261,7 +261,7 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
 
     # sys.exit()
 
-    print "S = {} ( lambda = {} )".format( S, lam )
+    print "  S = {} ( lambda = {} )".format( S, lam )
 
     return S, beta_next_dict
 
@@ -305,23 +305,51 @@ for FullPN, tc in target_data_dict.items():
 # --------------------------------------------------------
 
 LAMBDA = LAMBDA_0
-S_prev = float( "inf" )
+beta_prev = copy.deepcopy( beta_dict )
+S_prev = float('inf')
+
+S0, beta_dict_1 = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, 0.0 )
+S1, beta_dict_2 = calc_next_beta( ESS_FILE, target_data_dict, beta_dict_1, DELTA, 0.0 )
+
+while True:
+    try:
+        S_lam0, beta_dict_lam1 = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
+        S_lam1, beta_dict_lam2 = calc_next_beta( ESS_FILE, target_data_dict, beta_dict_lam1, DELTA, LAMBDA )
+        if S_lam1 < S1:
+            LAMBDA *= LAMBDA_v
+        else:
+            break
+    except:
+        break
+
+LAMBDA /= LAMBDA_v
+
+print "lambda0 = {}".format( LAMBDA )
 
 for i in range( MAX_GENERATION ):
     
-    # 現ラウンドの残差平方和 S と、次ラウンドのパラメータセットβ(S+1)（beta_dict_next）を算出
-    S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
+    print "Round {}".format( i + 1 )
     
-    if S > S_prev:
-        LAMBDA *= LAMBDA_v
-    else:
-        LAMBDA /= LAMBDA_v
+    try:
+        # 現ラウンドの残差平方和 S と、次ラウンドのパラメータセットβ(S+1)（beta_dict_next）を算出
+        S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
+        
+        if S > S_prev:
+            LAMBDA /= LAMBDA_v
+            S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
+        
+        if S <= ENOUGH_S:
+            break
+        else:
+            beta_prev = beta_dict
+            beta_dict = beta_dict_next
+            S_prev = S
     
-    if S <= ENOUGH_S:
-        break
-    else:
-        beta_dict = beta_dict_next
-        S_prev = S
+    except:
+        for a_beta_FullPN in beta_dict.keys():
+            beta_dict[ a_beta_FullPN ] = 0.5 * beta_dict[ a_beta_FullPN ] + 0.5 * beta_prev[ a_beta_FullPN ]
+        
+        print "  beta is devalued..."
 
 
 # --------------------------------------------------------
