@@ -512,7 +512,7 @@ class GtkSessionMonitor(object):
     def saveModel( self , aModel ):
         if self.theSession is None:
             raise Exception( "Model is not loaded" )
-        self.theSession.saveModel( self , aModel )
+        self.theSession.saveModel( aModel )
 
     def setMessageMethod( self, aMethod ):
         self.theMessageMethod = aMethod
