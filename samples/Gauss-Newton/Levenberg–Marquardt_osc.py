@@ -47,13 +47,13 @@ T_INTERVAL =  0.5       # Noneの場合、すべてのデータポイント
 #             キー：FullPN
 #             値：初期値
 PARAMETERS = { 
-    'Process:/:re11:k11' :  0.4,   #  1.0
-    'Process:/:re21:k21' : -0.4,   # -1.0
-    'Process:/:re32:k32' :  0.4    #  1.0
+    'Process:/:re11:k11' :  0.5,   #  1.0
+    'Process:/:re21:k21' : -0.5,   # -1.0
+    'Process:/:re32:k32' :  0.5    #  1.0
 }
 
 # 最大世代数
-MAX_GENERATION   = 100
+MAX_GENERATION   = 20
 
 # 終了条件（充分に小さい残差平方和）
 ENOUGH_S = 0.01
@@ -334,13 +334,16 @@ for i in range( MAX_GENERATION ):
         # 現ラウンドの残差平方和 S と、次ラウンドのパラメータセットβ(S+1)（beta_dict_next）を算出
         S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
         
-        if S > S_prev:
-            LAMBDA /= LAMBDA_v
-            S, beta_dict_next = calc_next_beta( ESS_FILE, target_data_dict, beta_dict, DELTA, LAMBDA )
-        
         if S <= ENOUGH_S:
             break
+        
+        if S > S_prev:
+            LAMBDA *= LAMBDA_v
+            for a_beta_FullPN in beta_dict.keys():
+                beta_dict[ a_beta_FullPN ] = 0.5 * beta_dict[ a_beta_FullPN ] + 0.5 * beta_prev[ a_beta_FullPN ]
+        
         else:
+            LAMBDA /= LAMBDA_v
             beta_prev = beta_dict
             beta_dict = beta_dict_next
             S_prev = S
