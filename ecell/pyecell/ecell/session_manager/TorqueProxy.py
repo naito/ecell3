@@ -118,7 +118,7 @@ class SessionProxy( AbstractSessionProxy ):
 
     def __cancel( self ):
         #print self.getOwner()
-	if self.__theTorqueJobID >= 0:
+        if self.__theTorqueJobID >= 0:
             # reads the result of qstat
             aCommandLine = "{} {}".format( QSTAT, self.__theTorqueJobID )
             out = raiseExceptionOnError(
