@@ -121,12 +121,7 @@ class SessionProxy( AbstractSessionProxy ):
         if self.__theTorqueJobID >= 0:
             # reads the result of qstat
             aCommandLine = "{} {}".format( QSTAT, self.__theTorqueJobID )
-            out = raiseExceptionOnError(
-                RuntimeError,
-                pollForOutputs(
-                    popen2.Popen3( aCommandLine, True )
-                    )
-                ).split( "\n" )
+            out =  pollForOutputs( popen2.Popen3( aCommandLine, True ))[ 1 ].split( "\n" )
             aStatus = out[ 2 ].split()[ 4 ]
             if aStatus not in ( 'C', 'E' ):
                 #print "DEL: {} {}".format( QDEL, self.__theTorqueJobID )
