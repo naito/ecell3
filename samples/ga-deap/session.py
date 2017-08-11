@@ -178,6 +178,10 @@ aDifference /= data_size
 # (8) output the value of fitness function
 # --------------------------------------------------------
 #open('result.dat','w').write(str(aDifference))
+#f = open( getStdoutFileName(), 'w' )
+#f.write( aDifference )
+#f.close()
+
 print aDifference
 
 # end of this file

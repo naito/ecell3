@@ -128,6 +128,8 @@ toolbox.register( "prepareParameterDict",
 def evaluate( ind ):
     # ind - creator.Individualインスタンス
     try:
+        print 'job ID = {}'.format( ind.jobID )
+        print getStdout( ind.jobID )
         return float( getStdout( ind.jobID ).split()[ -1 ].strip() ),  # 標準出力の最後の１行
     except ValueError:
         pass
