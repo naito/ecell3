@@ -76,6 +76,7 @@ class AbstractSessionProxy:
         self.__theEnvironmentVariables = {}
         self.__theOptionList = []
         self.__theArguments = []
+        self.__theStdoutTimeout = 0
 
     def __del__( self ):
         '''Before destractor, this method is called. 
@@ -184,6 +185,24 @@ class AbstractSessionProxy:
 
         # return the time out
         return self.__theTimeout 
+
+    def setStdoutTimeout( self, timeout ):
+        '''Set a stdout writing timeout.
+        When timeout is 0, no limit is set.
+        timeout(int) -- time out (sec.)
+        Return None
+        '''
+
+        # set a timeout
+        self.__theStdoutTimeout = timeout
+
+    def getStdoutTimeout( self ):
+        '''Return the stdout writing timeout.
+        Return int : time out (sec.)
+        '''
+
+        # return the time out
+        return self.__theStdoutTimeout 
 
     def run( self ):
         '''run process
@@ -795,13 +814,14 @@ class SessionManager( object ):
         return self.__theTmpRemovable 
 
     def registerSessionProxy( self, scriptfile, interpreter, arguments = None,
-                     extrafilelist = [], timeout = 0 ):
+                     extrafilelist = [], timeout = 0, stdout_timeout = 0 ):
         '''registers a new job
         scriptfile(str)            -- script file name
         interpreter(str)           -- interpreter name to run script
         argument(str)              -- argument set be set to script
         extrafilelist(list of str) -- list of extra file name
         timeout(int)               -- set time out (sec.). When timeout<=0, no limit is set.
+        stdout_timeout(int)        -- set time out (sec.) to write stdout/stderr file. When timeout<=0, no limit is set.
         return int : job id
         '''
         # creates AbstractSessionProxy
@@ -815,6 +835,7 @@ class SessionManager( object ):
             job.setArguments( arguments )
         job.setExtraFileList( extrafilelist )
         job.setTimeout( timeout )
+        job.setStdoutTimeout( stdout_timeout )
 
         # creates job directory name
         job.setJobDirectory(
@@ -822,13 +843,14 @@ class SessionManager( object ):
         return job.getJobID()
 
     def registerEcellSession( self, ess, arguments = {},
-                              extrafilelist = [], dmpath = "", timeout = 0 ):
+                              extrafilelist = [], dmpath = "", timeout = 0, stdout_timeout = 0 ):
         '''registers a new Ecell Session
         ess(str)                   -- ess file name
         arguments                  -- arguments to be set to script
         extrafilelist(list of str) -- list of extra file name
         dmpath(str)            -- set the ECELL3_DM_PATH
         timeout(int)               -- set time out (sec.). When timeout=0, no limit is set.
+        stdout_timeout(int)        -- set time out (sec.) to write stdout/stderr file. When timeout<=0, no limit is set.
         return int : job id
         '''
 
@@ -847,6 +869,7 @@ class SessionManager( object ):
                 job.setEnvironmentVariable( i, val )
         job.setExtraFileList( extrafilelist )
         job.setTimeout( timeout )
+        job.setStdoutTimeout( stdout_timeout )
 
         job.setJobDirectory(
             os.path.join( self.__theTmpDir, str( job.getJobID() ) ) )

@@ -44,10 +44,6 @@ MUT_SIGMA = 1.0  # 変異量（正規分布）のパラメータ σ
 TOURNAMENT_SIZE = 4  # 選択のトーナメントサイズ
 
 STDOUT_TIMEOUT = 120
-try:
-    setStdoutTimeout( STDOUT_TIMEOUT )
-except:
-    pass
 
 # --------------------------------------------------------
 # (1) メタファクトリcreatorを用いて必要なクラスを作成する
@@ -187,7 +183,8 @@ p = toolbox.createPopulation( n = POPULATION_SIZE )
 for i in p:
     i.jobID = registerEcellSession( ESS_FILE, 
                   toolbox.prepareParameterDict( i ), 
-                  [ TRAINING_DATA_DIR, ])
+                  [ TRAINING_DATA_DIR, ],
+                  stdout_timeout = STDOUT_TIMEOUT )
 
 run()
 
@@ -248,7 +245,8 @@ for g in range( MAX_GENERATION ):
     for i in invalid_ind:
         i.jobID = registerEcellSession( ESS_FILE, 
                       toolbox.prepareParameterDict( i ), 
-                      [ TRAINING_DATA_DIR, ])
+                      [ TRAINING_DATA_DIR, ], 
+                      stdout_timeout = STDOUT_TIMEOUT )
 
     run()
 
