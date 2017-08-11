@@ -58,6 +58,7 @@ class SessionProxy( AbstractSessionProxy ):
         AbstractSessionProxy.__init__( self, dispatcher, jobID )
         self.__theTorqueJobID = -1
         self.__theSessionProxyName = "script." + os.path.basename( getCurrentShell() )
+        self.__theStdoutTimeout= 0
 
     def __del__( self ):
         # print "SessionProxy.__del__() is called."
@@ -136,6 +137,39 @@ class SessionProxy( AbstractSessionProxy ):
                         )
                     )
 
+    def __getStdfile( self, p ):
+        if os.path.exists( p ):
+            return open( p, 'rb' ).read()
+        elif self.getStdoutTimeout() > 0:
+            for i in range( 0, self.getStdoutTimeout() ):
+                time.sleep( 1.0 )
+                if os.path.exists( p ):
+                    return open( p, 'rb' ).read()
+        else:
+            while True:
+                if os.path.exists( p ):
+                    return open( p, 'rb' ).read()
+        
+        return None
+
+    def setStdoutTimeout( self, timeout ):
+        '''Set a stdout writing timeout.
+        When timeout is 0, no limit is set.
+        timeout(int) -- time out (sec.)
+        Return None
+        '''
+
+        # set a timeout
+        self.__theStdoutTimeout = timeout
+
+    def getStdoutTimeout( self ):
+        '''Return the stdout writing timeout.
+        Return int : time out (sec.)
+        '''
+
+        # return the time out
+        return self.__theStdoutTimeout 
+
     def stop(self):
         '''stop the job
         Return None
@@ -147,6 +181,16 @@ class SessionProxy( AbstractSessionProxy ):
 
         # set error status
         self.setStatus( ERROR ) 
+
+    def getStdout( self ):
+        '''Return stdout(str)
+        '''
+        return self.__getStdfile( self.getStdoutFilePath() )
+
+    def getStderr( self ):
+        '''Return stderr(str)
+        '''
+        return self.__getStdfile( self.getStderrFilePath() )
 
 class SystemProxy( AbstractSystemProxy ):
     def __init__( self, sessionManager ):
