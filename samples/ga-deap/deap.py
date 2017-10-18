@@ -183,8 +183,7 @@ p = toolbox.createPopulation( n = POPULATION_SIZE )
 for i in p:
     i.jobID = registerEcellSession( ESS_FILE, 
                   toolbox.prepareParameterDict( i ), 
-                  [ TRAINING_DATA_DIR, ],
-                  stdout_timeout = STDOUT_TIMEOUT )
+                  [ TRAINING_DATA_DIR, ] )
 
 run()
 
@@ -245,8 +244,7 @@ for g in range( MAX_GENERATION ):
     for i in invalid_ind:
         i.jobID = registerEcellSession( ESS_FILE, 
                       toolbox.prepareParameterDict( i ), 
-                      [ TRAINING_DATA_DIR, ], 
-                      stdout_timeout = STDOUT_TIMEOUT )
+                      [ TRAINING_DATA_DIR, ] )
 
     run()
 
