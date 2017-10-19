@@ -53,7 +53,7 @@ PARAMETERS = {
 }
 
 # 最大世代数
-MAX_GENERATION   = 20
+MAX_GENERATION   = 1
 
 # 終了条件（充分に小さい残差平方和）
 ENOUGH_S = 0.01
@@ -163,7 +163,7 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
     # すべてのjobの終了を待つ。
     run()
 
-    is_JSON_only = True  # シミュレーション結果のファイル内容。0: JSONのみ, 1: JSON以外の情報あり
+    is_JSON_only = True  # シミュレーション結果のファイル内容。1: JSONのみ, 0: JSON以外の情報あり
     residuals_dict = getStdout( r_ID ).strip()
     if residuals_dict.find("\n") > -1:
         is_JSON_only = False
@@ -194,8 +194,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
     y = np.reshape( y, ( n_y, 2 ) )
     y = y[ :, 1 : ]
 
-    # print "y"
-    # print y
+    print "y"
+    print y
 
     # 残差 r
     # 辞書のキーの順序が維持されている保証がない（？未確認）ので、
@@ -209,8 +209,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
 
     r = y - f
 
-    # print "r"
-    # print r
+    print "r"
+    print r
 
     # 残差の平方和 S
     S = np.sum( np.square( r ) )
@@ -218,8 +218,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
     # 最適化対象パラメータのベクトル beta
     beta = np.array( [ beta_dict.values() ] )
 
-    # print "beta"
-    # print beta
+    print "beta"
+    print beta
 
     # ヤコビアン J_r
     # 辞書のキーの順序が維持されている保証がない（？未確認）ので、
@@ -238,8 +238,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
 
     J_r = J_r.T
 
-    # print "J_r"
-    # print J_r
+    print "J_r"
+    print J_r
 
     beta_next = np.dot( J_r.T, J_r )
     beta_next = np.dot( np.linalg.inv( beta_next + lam * np.diag( beta_next ) ), J_r.T )
@@ -247,8 +247,8 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
     beta_next = np.dot( beta_next, r )
     beta_next = beta.T - beta_next
     # print "beta_next (3):  {}".format( beta_next.shape )
-    # print "beta_next (3):"
-    # print beta_next
+    print "beta_next (3):"
+    print beta_next
 
     # beta_next = beta - np.dot( np.dot( np.linalg.inv( np.dot( J_r.T, J_r ) ), J_r.T ), beta )
 
@@ -257,7 +257,7 @@ def calc_next_beta( ess_file, target_data_dict, beta_dict, delta = 0.01, lam = 0
     for a_beta_FullPN, a_beta_next_value in zip( beta_dict.keys(), beta_next.reshape((beta_next.shape[0],)).tolist() ):
         beta_next_dict[ a_beta_FullPN ] = a_beta_next_value
 
-    # print "beta_next:\n{}".format( beta_next_dict )
+    print "beta_next:\n{}".format( beta_next_dict )
 
     # sys.exit()
 
