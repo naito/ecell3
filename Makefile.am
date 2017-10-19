@@ -1,4 +1,4 @@
-SUBDIRS = libltdl dmtool ecell osdep doc build
+SUBDIRS = libltdl dmtool ecell osdep doc samples build
 
 BASIC_DOCS = \
 	AUTHORS \

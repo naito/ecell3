@@ -7,6 +7,7 @@ SAMPLES = \
 	Gauss-Newton \
 	Heinrich \
 	LTD \
+	Oscillation \
 	Pendulum \
 	SRES \
 	SSystem \
