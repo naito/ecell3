@@ -129,14 +129,17 @@ def pollForOutputs( proc, timeout = 15.0 ):
                 pass
 
     proc.tochild.close()
+#   proc.tochild.close()
     msgs = { 'fromchild': '', 'childerr': '' }
 
     threads = []
 
     timer = threading.Timer( timeout, lambda: os.kill( proc.pid, signal.SIGKILL ) )
+#   timer = threading.Timer( timeout, lambda: proc.kill() )
     timer.start()
     try:
         for key in msgs.iterkeys():
+#       for key in msgs.keys():  # iterkeys() is deprecated in Python3 
             thr = threading.Thread( target = msg_fetch, args = ( msgs, key, ) )
             threads.append( thr )
             thr.start()
