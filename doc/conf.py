@@ -11,8 +11,8 @@ master_doc = 'index'
 project = 'ecell3'
 copyright = '2017, E-Cell project'
 
-version = '3.2.5'
-release = '3.2.5'
+version = '3.2.6'
+release = '3.2.6'
 
 exclude_trees = ['_build']
 
