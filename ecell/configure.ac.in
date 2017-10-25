@@ -137,8 +137,6 @@ if test "$enable_pyecell" = "yes"; then
     AM_CHECK_PYMOD(gtk,,,[AC_MSG_ERROR([could not find Python gtk module])])
     AM_CHECK_PYMOD(gtk.gdk,,,
                    [AC_MSG_ERROR([could not find Python gtk.gdk module])])
-    AM_CHECK_PYMOD(gnomecanvas,,,[AC_MSG_WARN(could not find gnomecanvas module. model-editor will not work. )])
-    AM_CHECK_PYMOD(xml.dom.minidom,,,[AC_MSG_WARN(could not find xml.dom.minidom module. model-editor will not work.)])
   fi
 fi
 
@@ -321,11 +319,6 @@ AC_CONFIG_FILES([
     frontend/session-monitor/ecell3-session-monitor
     frontend/session-monitor/glade/Makefile
     frontend/session-monitor/plugins/Makefile
-    frontend/model-editor/Makefile
-    frontend/model-editor/setup.py
-    frontend/model-editor/doc/Makefile
-    frontend/model-editor/glade/Makefile
-    frontend/model-editor/plugins/Makefile
 ])
 AC_CONFIG_FILES([bin/ecell3-dmc], [chmod +x bin/ecell3-dmc])
 AC_CONFIG_FILES([pyecell/ecell3-python], [chmod +x pyecell/ecell3-python])
