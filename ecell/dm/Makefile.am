@@ -16,6 +16,8 @@ DM_SRC_DIR =  ${datadir}/${ECELL_DIRNAME}/dms
 PYTHON_INCLUDES = @PYTHON_INCLUDES@
 PYTHON_LIBS = @PYTHON_LIBS@
 
+LTDL_SHLIB_MD_EXT = .o.d
+
 DMS = \
 	ConstantFluxProcess.cpp \
 	DAEStepper.cpp \
@@ -78,10 +80,38 @@ SOS = \
 	ExpressionAssignmentProcess$(LTDL_SHLIB_EXT) \
 	ExpressionEventProcess$(LTDL_SHLIB_EXT)
 
+ODS = \
+	MassActionFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	MichaelisUniUniFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	ConstantFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	DecayFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	SSystemProcess$(LTDL_SHLIB_MD_EXT) \
+	GillespieProcess$(LTDL_SHLIB_MD_EXT) \
+	TauLeapProcess$(LTDL_SHLIB_MD_EXT) \
+	TauLeapStepper$(LTDL_SHLIB_MD_EXT) \
+	FixedODE1Stepper$(LTDL_SHLIB_MD_EXT) \
+	FixedDAE1Stepper$(LTDL_SHLIB_MD_EXT) \
+	ODE23Stepper$(LTDL_SHLIB_MD_EXT) \
+	ODE45Stepper$(LTDL_SHLIB_MD_EXT) \
+	DAEStepper$(LTDL_SHLIB_MD_EXT) \
+	ODEStepper$(LTDL_SHLIB_MD_EXT) \
+	ESSYNSStepper$(LTDL_SHLIB_MD_EXT) \
+	GMAProcess$(LTDL_SHLIB_MD_EXT) \
+	SSystemProcess$(LTDL_SHLIB_MD_EXT) \
+	FluxDistributionStepper$(LTDL_SHLIB_MD_EXT) \
+	QuasiDynamicFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	ExpressionFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	ExpressionAlgebraicProcess$(LTDL_SHLIB_MD_EXT) \
+	ExpressionAssignmentProcess$(LTDL_SHLIB_MD_EXT) \
+	ExpressionEventProcess$(LTDL_SHLIB_MD_EXT)
+
 if HAVE_PYTHON_LIB
 SOS += \
 	PythonFluxProcess$(LTDL_SHLIB_EXT) \
 	PythonProcess$(LTDL_SHLIB_EXT)
+ODS += \
+	PythonFluxProcess$(LTDL_SHLIB_MD_EXT) \
+	PythonProcess$(LTDL_SHLIB_MD_EXT)
 endif
 
 EXTRA_DIST = ${DMS} ${DMH}
@@ -122,4 +152,5 @@ uninstall-local:
 
 clean-local:
 	${RM} -rf ${SOS}
+	${RM} -rf ${ODS}
 

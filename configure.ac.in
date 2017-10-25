@@ -61,6 +61,7 @@ AC_CONFIG_FILES([
 Makefile
 doc/Makefile
 doc/users-manual/Makefile
+samples/Makefile
 osdep/Makefile
 osdep/win32/Makefile
 build/Makefile
