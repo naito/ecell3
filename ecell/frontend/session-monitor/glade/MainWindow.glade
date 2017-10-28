@@ -14,7 +14,6 @@
             <property name="width_request">282</property>
             <property name="height_request">30</property>
             <property name="visible">True</property>
-            <property name="ubuntu_local">True</property>
             <child>
               <widget class="GtkMenuItem" id="file_menu">
                 <property name="visible">True</property>
