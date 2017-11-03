@@ -94,7 +94,10 @@ class SystemPath( tuple ):
         return self.getFullID().getFullPN( aPropertyName )
 
     def getString( self ):
-        return '/' + '/'.join( self[ 1 : ] )
+        if len( self ) == 0:
+            return ''
+        else:
+            return '/' + '/'.join( self[ 1 : ] )
 
     def isAbsolute( self ):
         if self[0] == '/':
