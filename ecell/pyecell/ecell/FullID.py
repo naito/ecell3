@@ -197,10 +197,12 @@ def convertToSystemPathList( aValue ):
 
     else:
         if isinstance( aValue , str ):
-            aList = aValue.split( '/' )
             if aValue == '':
                 return []
+            elif aValue == '/':
+                return ['/']
 
+            aList = aValue.split( '/' )
             if aList[ 0 ] == '':
                 del( aList[ 0 ])
 
