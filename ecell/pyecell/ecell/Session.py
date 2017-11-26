@@ -112,7 +112,7 @@ class Session:
     # end of loadModel
         
 
-    def setModel( self, aModelStr, aModelName ):
+    def setModel( self, aModelStr, aModelName = 'a_model' ):
         # aModelStr : an EM or EML string
         # return -> None
         # This method can thwor exceptions. 
