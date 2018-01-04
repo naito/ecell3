@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2017 Keio University
-#       Copyright (C) 2008-2017 RIKEN
+#       Copyright (C) 2017-2018 Keio University
+#       Copyright (C) 2017-2018 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
