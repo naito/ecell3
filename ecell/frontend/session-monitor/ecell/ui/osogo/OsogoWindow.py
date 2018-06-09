@@ -56,7 +56,7 @@ class OsogoWindow(Window):
 		aGladeFile   -- a glade file name (str)
 		"""
 		if gladeFile == None:
-			gladeFile = self.__class__.__name__ + '.glade'
+			gladeFile = self.__class__.__name__ + '.ui'
 
 		# calls superclass's constructor
 		Window.__init__(

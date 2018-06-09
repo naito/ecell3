@@ -1,16 +1,16 @@
 EXTRA_DIST =\
-	AboutSessionMonitor.glade \
-	BoardWindow.glade \
-	EntityListWindow.glade \
-	InterfaceWindow.glade \
-	LoggerWindow.glade \
-	LoggingPolicy.glade \
-	MainWindow.glade \
-	MessageWindow.glade \
-	PluginInstanceSelection.glade \
-	PluginWindowPopupMenu.glade \
-	StepperWindow.glade \
-	board.glade
+	AboutSessionMonitor.ui \
+	BoardWindow.ui \
+	EntityListWindow.ui \
+	InterfaceWindow.ui \
+	LoggerWindow.ui \
+	LoggingPolicy.ui \
+	MainWindow.ui \
+	MessageWindow.ui \
+	PluginInstanceSelection.ui \
+	PluginWindowPopupMenu.ui \
+	StepperWindow.ui \
+	board.ui
 
 EXTRA_DIST +=\
 	ecell.png \

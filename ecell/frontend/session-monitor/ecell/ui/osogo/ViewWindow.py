@@ -40,7 +40,7 @@ class ViewWindow( Window ):
 
     def __init__( self, gladefile=None, rootWidget=None ):
         if gladefile == None:
-            gladefile = self.__class__.__name__ + '.glade'
+            gladefile = self.__class__.__name__ + '.ui'
         self.theGladeFile = os.path.join( GLADEFILE_PATH, gladefile )
         self.theRoot = root
         

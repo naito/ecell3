@@ -67,7 +67,7 @@ class StepperWindow(OsogoWindow):
         """
 
         # calls superclass's constructor
-        OsogoWindow.__init__( self, aSession, 'StepperWindow.glade' )
+        OsogoWindow.__init__( self, aSession, 'StepperWindow.ui' )
 
         self.theSession = aSession
 

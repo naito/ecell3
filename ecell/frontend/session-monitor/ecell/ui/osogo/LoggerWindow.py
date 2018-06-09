@@ -59,7 +59,7 @@ class LoggerWindow(OsogoWindow):
 	# ---------------------------------------------------------------
 	def __init__( self, aSession ): 
 
-		OsogoWindow.__init__( self, aSession, 'LoggerWindow.glade' )
+		OsogoWindow.__init__( self, aSession, 'LoggerWindow.ui' )
 		self.theDefaultSaveDirectory='Data'
 		self.thePopupMenu = PopupMenu( self )
 		self.theList = []

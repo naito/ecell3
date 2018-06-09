@@ -160,7 +160,7 @@ class MainWindow(OsogoWindow):
     """
     def __init__( self, aSession ):
         # calls super class's constructor
-        OsogoWindow.__init__( self, self, 'MainWindow.glade' )
+        OsogoWindow.__init__( self, self, 'MainWindow.ui' )
 
                 # -------------------------------------
         # stores pointer to Session
