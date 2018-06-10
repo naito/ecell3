@@ -197,7 +197,7 @@ class OsogoWindow(Window):
 
 		pass
 
-	def close ( self ):
+	def close( self ):
 		""" destroys Widgets and sets __theExist False"""
 		if self.exists():
 			self[self.theTopWidget].destroy()

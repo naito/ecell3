@@ -311,13 +311,13 @@ class EntityListWindow(OsogoWindow):
         if self.thePropertyWindow != None:
             return
         self.thePropertyWindow = self.thePluginManager.createInstance(
-            'PropertyWindow', [], rootWidget='top_frame', parent=self ) 
+            'PropertyWindow', [], rootWidget='PropertyWindow', parent=self ) 
         if self.theStatusbar is not None:
             self.thePropertyWindow.setStatusBar( self.theStatusbar )
 
-        aPropertyWindowTopVBox = self.thePropertyWindow['top_frame']
-        self['property_area'].add( aPropertyWindowTopVBox )
+        self.thePropertyWindow['top_frame'].reparent( self['property_area'] )
         self.thePropertyWindow.setParent( self )
+        self.thePropertyWindow['PropertyWindow'].destroy()
 
 
 
