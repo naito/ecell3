@@ -427,8 +427,8 @@ class SBML_Model( SBML_Base ):
         if ( self.FunctionDefinitionList != [] ):
 
             for aFunctionDefinition in ( self.FunctionDefinitionList ):
-                self.FunctionDefinition[ aFunctionDefinition.get_ID() ] = aFunctionDefinition[ 'Math' ]
 
+                self.FunctionDefinition[ aFunctionDefinition[ 'Id' ] ] = aFunctionDefinition[ 'Math' ]
 
 
     # =========================================================
