@@ -13,17 +13,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 import libsbml
 from SbmlFunctions import *
@@ -68,7 +68,7 @@ class SBML_Base( object ):
             if ( aCompartment[ aModel.keys[ 'ID' ] ] == aCompartmentID ):
                 if aCompartment[ 'Outside' ] in ( '', 'default' ):
                     return '/' + aCompartmentID
-                
+
                 else:
                     return '%s/%s' % ( self.get_path( aCompartment[ 'Outside' ] ), aCompartmentID )
 
@@ -103,7 +103,7 @@ class SBML_Base( object ):
 
 
     # =========================================================
-    
+
     def get_ID( self, anEntity, aModel ):
         return anEntity[ aModel.keys[ 'ID' ] ]
 
@@ -119,7 +119,7 @@ class SBML_Base( object ):
     def get_variable_type( self, aName, aModel ):
 
 ##        print "SBML_Base.get_variable_type( %s )" % aName
-        
+
         IdKey = aModel.keys[ 'ID' ]
 
         for aSpecies in aModel.SpeciesList:
@@ -180,10 +180,10 @@ class SBML_Base( object ):
             raise TypeError,\
                 "Variable type must be Species, Parameter, or Compartment"
 
-        anEntity = filter( 
+        anEntity = filter(
             lambda anElement: self.get_ID( anElement ) == anID,
             anEntityList )[ 0 ]
-        
+
         aVariableReference = filter(
             lambda aVariableReference: aVariableReference[ 1 ].split(':')[ 2 ] == anID,
             aVariableReferenceList )
@@ -197,7 +197,7 @@ class SBML_Base( object ):
             aVariableReference.append( anID )
             aVariableReference.append( self.get_variable_FullID( anEntity ) )
             aVariableReference.append( aStoichiometry )
-            
+
             aVariableReferenceList.append( aVariableReference )
 
         return aVariableReference[ 0 ]
@@ -206,15 +206,15 @@ class SBML_Base( object ):
     # =========================================================
 
     def convert_SBML_Formula_to_ecell_Expression( self, formula, aModel, aLocalParameterList = [], aDenominator = 1.0 ):
-        
+
         '''## =================================================
           formula: string or libsbml.ASTNode
         '''## =================================================
-        
+
         if isinstance( formula, str ):
             if aDenominator != 1.0:
                 formula = '( 1.0 / %s ) * ( %s )' % ( aDenominator, formula )
-        
+
             preprocessedFormula = formula.replace( '<t>', self.Model.TimeSymbol )
             aASTRootNode = libsbml.parseFormula( preprocessedFormula )
 
@@ -251,29 +251,29 @@ class SBML_Base( object ):
             if ( anASTNode.getType() == libsbml.AST_CONSTANT_E ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( math.e )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_PI ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( math.pi )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_FALSE ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 0.0 )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_TRUE ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 1.0 )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_NAME_AVOGADRO ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 6.0221367e+23 )
-            
+
             elif ( anASTNode.isNumber() == 1 ):
                 pass
-            
+
             else:
                 aName = anASTNode.getName()
-                
+
                 # Time
                 if ( aName == self.Model.TimeSymbol ):
                     anASTNode.setType( libsbml.AST_NAME_TIME )
@@ -310,7 +310,7 @@ class SBML_Model( SBML_Base ):
         self.FunctionDefinition = {}
 
         self.Level = aSBMLDocument.getLevel()
-        self.Version = aSBMLDocument.getVersion() 
+        self.Version = aSBMLDocument.getVersion()
 
         self.DerivedValueDic = {}
         self.TimeSymbol = get_TimeSymbol( aSBMLmodel )
@@ -372,11 +372,11 @@ class SBML_Model( SBML_Base ):
     def get_Entity_by_ID( self, anID ):
 
         for ( anEntityType, anEntityList ) in self.EntityDic.items():
-        
-            hit = filter( 
+
+            hit = filter(
                 lambda anElement: anElement[ self.keys[ 'ID' ] ] == anID,
                 anEntityList )
-            
+
             if len( hit ):
                 return ( anEntityType, hit[ 0 ] )
 
@@ -416,7 +416,7 @@ class SBML_Model( SBML_Base ):
         return SBML_Base.get_variable_type( self, aName, self )
 
     # =========================================================
-    
+
     def get_ID( self, anEntity ):
         return SBML_Base.get_ID( self, anEntity, self )
 
@@ -427,9 +427,9 @@ class SBML_Model( SBML_Base ):
         if ( self.FunctionDefinitionList != [] ):
 
             for aFunctionDefinition in ( self.FunctionDefinitionList ):
-                
                 self.FunctionDefinition[ aFunctionDefinition.get_ID() ] = aFunctionDefinition[ 'Math' ]
-            
+
+
 
     # =========================================================
 
@@ -476,9 +476,9 @@ class SBML_Compartment( SBML_Base ):
         return super( SBML_Compartment, self ).get_ID( aSpecies, self.Model )
 
     # =========================================================
-    
+
     def get_System_FullID( self, aCompartment ):
-        
+
         anEntityDic = dict(
             Type       = 'System',
             EntityName = aCompartment[ self.Model.keys[ 'ID' ] ] )
@@ -492,7 +492,7 @@ class SBML_Compartment( SBML_Base ):
 
 
     # =========================================================
-    
+
     def _set_Compartment_size( self, aCompartment ):
 
         if( aCompartment[ self.Model.keys[ 'Size' ] ] != "Unknown" ):
@@ -503,7 +503,7 @@ class SBML_Compartment( SBML_Base ):
 
 
     # =========================================================
-    
+
     def _set_Compartment_unit( self, aCompartment ):
 
         aCompartmentID = aCompartment[ self.Model.keys[ 'ID' ] ]
@@ -516,9 +516,9 @@ class SBML_Compartment( SBML_Base ):
 
 
     # =========================================================
-    
+
     def _get_outside_Compartment_size( self, anOutsideCompartment ):
-        
+
         if ( anOutsideCompartment == '' ):
 
             return float( 1 )
@@ -528,7 +528,7 @@ class SBML_Compartment( SBML_Base ):
 
 
     # =========================================================
-    
+
     def _get_outside_compartment_unit( self, anOutsideCompartment ):
 
         if ( anOutsideCompartment == '' ):
@@ -538,21 +538,21 @@ class SBML_Compartment( SBML_Base ):
         else:
             return self.Model.CompartmentUnit[ anOutsideCompartment ]
 
-    # =========================================================    
+    # =========================================================
 
     def get_Compartment_size( self, aCompartment ):
 
         return self.Model.CompartmentSize[ aCompartment[ self.Model.keys[ 'ID' ] ] ]
 
 
-    # =========================================================    
+    # =========================================================
 
     def get_Compartment_unit( self, aCompartment ):
 
         return self.Model.CompartmentUnit[ aCompartment[ self.Model.keys[ 'ID' ] ] ]
 
 
-    # =========================================================    
+    # =========================================================
 
 
 # --------------------------------
@@ -564,7 +564,7 @@ class SBML_Species( SBML_Base ):
     def __init__( self, aModel ):
         SBML_Base.__init__( self )
         self.Model = aModel
-    
+
 
     # =========================================================
 
@@ -587,7 +587,7 @@ class SBML_Species( SBML_Base ):
         return SBML_Base.get_ID( self, aSpecies, self.Model )
 
     # =========================================================
-    
+
     def generate_FullID_from_SBML_entity( self, aSpecies ):
 
         aCompartmentID = aSpecies[ 'Compartment' ]
@@ -604,22 +604,22 @@ class SBML_Species( SBML_Base ):
 
 
     # =========================================================
-    
+
     def get_initial_value( self, aSpecies ):
 
         if ( aSpecies[ 'InitialAmount' ] != 'Unknown' ): # initialAmount
-            return { 
+            return {
                 'Property' : 'Value',
                 'Value'    : float( aSpecies[ 'InitialAmount' ] ) }
-        
+
         elif ( self.Model.Level >= 2 ):
             if ( aSpecies[ 'InitialConcentration' ] != 'Unknown' ): # initialConcentration
 
                 if ( aSpecies[ 'Unit' ] in [ '', 'substance' ] ):
-                
+
                     # spatialSizeUnits and hasOnlySubstanceUnits should be checked
-                
-                    return { 
+
+                    return {
                         'Property' : 'NumberConc',
                         'Value'    : float( aSpecies[ 'InitialConcentration' ] ) }
                 else:
@@ -657,7 +657,7 @@ class SBML_Rule( SBML_Base ):
 
 
     # =========================================================
-    
+
     def get_System_FullID( self ):
 
         anEntityDic = dict(
@@ -701,7 +701,7 @@ class SBML_Rule( SBML_Base ):
 
 
     # =========================================================
-    
+
     def generate_FullID_from_SBML_entity( self, aRule ):
         if ( aRule[ 'Type' ] == libsbml.SBML_ALGEBRAIC_RULE ):
             anIDHeader = 'Algebraic'
@@ -750,7 +750,7 @@ class SBML_Reaction( SBML_Base ):
 
 
     # =========================================================
-    
+
     def initialize( self ):
 
         self.ProductNumber = 0
@@ -792,7 +792,7 @@ class SBML_Reaction( SBML_Base ):
 
 
     # =========================================================
-    
+
     def generate_FullID_from_SBML_entity( self, aReaction ):
 
         if ( aReaction[ self.Model.keys[ 'ID' ] ] != '' ):
@@ -804,7 +804,7 @@ class SBML_Reaction( SBML_Base ):
     # =========================================================
 
     def _convert_SBML_variable_to_ecell_Expression( self, anASTNode, aLocalParameterList = [] ):
-        
+
         aNumChildren = anASTNode.getNumChildren()
 
         if ( aNumChildren > 0 ):
@@ -819,40 +819,40 @@ class SBML_Reaction( SBML_Base ):
                 self._convert_SBML_variable_to_ecell_Expression( anASTNode.getChild( n ), aLocalParameterList )
 
             return anASTNode
-        
+
 
         elif ( aNumChildren == 0 ):
             if ( anASTNode.getType() == libsbml.AST_CONSTANT_E ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( math.e )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_PI ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( math.pi )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_FALSE ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 0.0 )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_CONSTANT_TRUE ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 1.0 )
-            
+
             elif ( anASTNode.getType() == libsbml.AST_NAME_AVOGADRO ):
                 anASTNode.setType( libsbml.AST_REAL )
                 anASTNode.setValue( 6.0221367e+23 )
-            
+
             elif ( anASTNode.isNumber() == 1 ):
                 pass
-                
+
             else:
                 aName = anASTNode.getName()
-                
+
 ##                print "Local Parameter: %s" % aLocalParameterList
                 for aLocalParameter in aLocalParameterList:
                     if aLocalParameter[ self.Model.keys[ 'ID' ] ] == aName:
                         return anASTNode
-                        
+
                 variableName = ''
 
                 for aSpecies in self.Model.SpeciesList:
@@ -871,17 +871,17 @@ class SBML_Reaction( SBML_Base ):
                             aModifierList.append(
                                 'C' + str( self.ModifierNumber ) )
                             self.ModifierNumber = self.ModifierNumber + 1
-                            
+
                             aModifierID = self.get_SpeciesReference_ID( aName )
                             aModifierList.append( 'Variable:' + aModifierID )
                             aModifierList.append( '0' )
                             self.VariableReferenceList.append( aModifierList )
-                            
+
                             variableName = aModifierList[0]
 
                         anASTNode.setType( libsbml.AST_NAME )
                         anASTNode.setName( '%s.NumberConc' % ( variableName ) )
-                        
+
                         return anASTNode
 
 ##                if variableName == '':
@@ -896,12 +896,12 @@ class SBML_Reaction( SBML_Base ):
 
                             aParameterList = []
                             aParameterList.append( aName )
-                            
+
 ##                            self.ParameterNumber = self.ParameterNumber + 1
 
                             aParameterList.append(
                                 'Variable:/SBMLParameter:' + aName )
-                            
+
                             aParameterList.append( '0' )
                             self.VariableReferenceList.append( aParameterList )
 
@@ -909,7 +909,7 @@ class SBML_Reaction( SBML_Base ):
 
 
                         anASTNode.setName( '%s.Value' % ( variableName ) )
-                        
+
                         return anASTNode
 
 ##                if variableName == '':
@@ -917,7 +917,7 @@ class SBML_Reaction( SBML_Base ):
                 if variableName != '':
                     anASTNode.setName( '%s.Value' % ( variableName ) )
                     return anASTNode
-                
+
                 return anASTNode
 
     # =========================================================
@@ -933,7 +933,7 @@ class SBML_Reaction( SBML_Base ):
         for aVariableReference in self.VariableReferenceList:
             if( aVariableReference[0] == anID ):
                 return aVariableReference
-        
+
         return False
 
 
@@ -1033,7 +1033,7 @@ class SBML_Parameter( SBML_Base ):
             raise NameError, "Parameter must set the Parameter Name"
 
     # =========================================================
-    
+
     def get_System_FullID( self ):
 
         anEntityDic = dict(
@@ -1071,7 +1071,7 @@ class SBML_Event( SBML_Base ):
 
 
     # =========================================================
-    
+
     def get_System_FullID( self ):
 
         anEntityDic = dict(
@@ -1145,4 +1145,3 @@ class SBML_Event( SBML_Base ):
 
 
     # =========================================================
-
