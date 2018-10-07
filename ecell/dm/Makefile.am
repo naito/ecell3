@@ -38,8 +38,6 @@ DMS = \
 	ODE45Stepper.cpp \
 	ODEStepper.cpp \
 	PingPongBiBiFluxProcess.cpp \
-	PythonFluxProcess.cpp \
-	PythonProcess.cpp \
 	QuasiDynamicFluxProcess.cpp \
 	SSystemProcess.cpp \
 	TauLeapProcess.cpp \
@@ -47,7 +45,6 @@ DMS = \
 
 DMH = \
 	ESSYNSProcessInterface.hpp \
-	PythonProcessBase.hpp \
 	ExpressionProcessBase.hpp \
 	SingleExpressionProcessBase.hpp \
 	GillespieProcess.hpp \
@@ -105,15 +102,6 @@ ODS = \
 	ExpressionAssignmentProcess$(LTDL_SHLIB_MD_EXT) \
 	ExpressionEventProcess$(LTDL_SHLIB_MD_EXT)
 
-if HAVE_PYTHON_LIB
-SOS += \
-	PythonFluxProcess$(LTDL_SHLIB_EXT) \
-	PythonProcess$(LTDL_SHLIB_EXT)
-ODS += \
-	PythonFluxProcess$(LTDL_SHLIB_MD_EXT) \
-	PythonProcess$(LTDL_SHLIB_MD_EXT)
-endif
-
 EXTRA_DIST = ${DMS} ${DMH}
 dmdir = ${DM_SRC_DIR}
 dm_DATA = ${DMS} ${DMH}
@@ -123,14 +111,8 @@ dmso_DATA = ${DESCS}
 
 all-local: $(SOS)
 
-PythonFluxProcess$(LTDL_SHLIB_EXT) : PythonFluxProcess.cpp
-	${ECELL3_DMC} --verbose --dmcompile="../../dmtool" --no-stdinclude --no-stdlibdir --ldflags="-L$(abs_top_builddir)/tmp$(libdir) $(PYTHON_LIBS) -l$(BOOST_PYTHON_LIBNAME) $(LIBS) $(EXTRA_LDFLAGS)" --cxxflags='${CPPFLAGS} ${CXXFLAGS} $(EXTRA_CXXFLAGS) -I${top_srcdir}/libecs -I${top_srcdir}/.. -I${top_srcdir} -I${top_srcdir}/../libltdl  ${PYTHON_INCLUDES} ' -o $@ $< 
-
-PythonProcess$(LTDL_SHLIB_EXT) : PythonProcess.cpp
-	${ECELL3_DMC} --verbose --dmcompile="../../dmtool" --no-stdinclude --no-stdlibdir --ldflags="-L$(abs_top_builddir)/tmp$(libdir) $(PYTHON_LIBS) $(EXTRA_LDFLAGS) -l$(BOOST_PYTHON_LIBNAME) $(LIBS) $(EXTRA_LDFLAGS)" --cxxflags='${CPPFLAGS} ${CXXFLAGS} $(EXTRA_CXXFLAGS) -I${top_srcdir}/libecs -I${top_srcdir}/.. -I${top_srcdir} -I${top_srcdir}/../libltdl  ${PYTHON_INCLUDES} ' -o $@ $< 
-
 .cpp$(LTDL_SHLIB_EXT):
-	${ECELL3_DMC} --verbose --dmcompile="../../dmtool" --no-stdinclude --no-stdlibdir --ldflags="-L$(abs_top_builddir)/tmp$(libdir) $(LIBS) $(EXTRA_LDFLAGS)" --cxxflags='${CPPFLAGS} ${CXXFLAGS} $(EXTRA_CXXFLAGS) -I${top_srcdir}/libecs -I${top_srcdir}/.. -I${top_srcdir} -I${top_srcdir}/../libltdl  ${PYTHON_INCLUDES} ' -o $@ $< 
+	${ECELL3_DMC} --verbose --dmcompile="../../dmtool" --no-stdinclude --no-stdlibdir --ldflags="-L$(abs_top_builddir)/tmp$(libdir) $(LIBS) $(EXTRA_LDFLAGS)" --cxxflags='${CPPFLAGS} ${CXXFLAGS} $(EXTRA_CXXFLAGS) -I${top_srcdir}/libecs -I${top_srcdir}/.. -I${top_srcdir} -I${top_srcdir}/../libltdl  ${PYTHON_INCLUDES} ' -o $@ $<
 
 # This install customization is needed because DLL's cannot be loaded by
 # LoadLibrary() without executable flags set to them under Windows NT.
@@ -153,4 +135,3 @@ uninstall-local:
 clean-local:
 	${RM} -rf ${SOS}
 	${RM} -rf ${ODS}
-
