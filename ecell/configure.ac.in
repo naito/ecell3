@@ -194,7 +194,7 @@ if test "$DMTOOL_DIR" = "" ; then
     fi
   done
 
-  if test "$DMTOOL_DIR" = "" ; then        
+  if test "$DMTOOL_DIR" = "" ; then
     AC_MSG_ERROR("dmtool not found.")
   fi
 
@@ -258,7 +258,7 @@ if test "$USE_COMPILER_EXTENSIONS" != no ; then
   AC_SUBST(CXXFLAGS)
   AC_MSG_RESULT( $CXXFLAGS )
 fi
-   
+
 AC_LANG_PUSH([C])
 
 AC_SYS_LARGEFILE
@@ -305,7 +305,7 @@ AC_CONFIG_FILES([
     Makefile
     bin/Makefile
     dm/Makefile
-    libecs/Defs.hpp  
+    libecs/Defs.hpp
     libecs/Makefile
     libecs/scripting/Makefile
     libecs/tests/Makefile
@@ -323,6 +323,7 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([bin/ecell3-dmc], [chmod +x bin/ecell3-dmc])
 AC_CONFIG_FILES([pyecell/ecell3-python], [chmod +x pyecell/ecell3-python])
 AC_CONFIG_FILES([pyecell/ecell3-ipython], [chmod +x pyecell/ecell3-ipython])
+AC_CONFIG_FILES([pyecell/ecell3-jupyter], [chmod +x pyecell/ecell3-jupyter])
 AC_CONFIG_FILES([pyecell/ecell3-em2eml], [chmod +x pyecell/ecell3-em2eml])
 AC_CONFIG_FILES([pyecell/ecell3-em2python], [chmod +x pyecell/ecell3-em2python])
 AC_CONFIG_FILES([pyecell/ecell3-eml2em], [chmod +x pyecell/ecell3-eml2em])
