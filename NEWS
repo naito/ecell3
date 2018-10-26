@@ -1,3 +1,8 @@
+ * Remove PythonProcesses from make targets.
+ * Add ecell3-jupyter that is idential to ecell3-ipython.
+ * Improve setModel() (now second arg is omittable).
+ * Fix a bug in the Python module ecell.FullID.
+
 ecell-3.2.7: 03-Nov-2017
  * Fixed a bug in the Python module ecell.FullID.
 
