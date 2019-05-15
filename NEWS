@@ -136,7 +136,7 @@ ecell-3.2.0RC4: 3-Feb-2010
  * Removed System::dispose() that used to do the same clean-up process as
    System::detach() that is eventually called via EcsObject::dispose().
    This caused long-standing problem on Windows with MSVC.
- 
+
  * Fixed typo in the MSVC build file for pyecell.
 
 
@@ -156,7 +156,7 @@ ecell-3.2.0RC2: 16-Jan-2010
 
 
 ecell-3.2.0RC1: 13-Jan-2009
- 
+
  * A few cosmetic changes
 
    - Fixed indent / coding style.
@@ -216,7 +216,7 @@ ecell-3.2.0RC1: 13-Jan-2009
        returns a StringList by value, not by reference.
 
      - Added EcsObject::asString() that provides the description of
-       the instance. 
+       the instance.
 
      - Added EcsObject::dispose() that should be called when an EcsObject is
        no longer necessary but its destruction is not wanted.
@@ -271,7 +271,7 @@ ecell-3.2.0RC1: 13-Jan-2009
    - System:
 
      - System's registerProcess(), registerVariable() and registerSystem() were
-       renamed into a single overloaded function System::registerEntity(). 
+       renamed into a single overloaded function System::registerEntity().
 
      - Added unregisterEntity() to System.
 
@@ -560,7 +560,7 @@ ecell-3.1.99: 10-Oct-2003
 ecell-3.1.98: 5-Sep-2003
 
 
-ecell-3.1.97: 17-Aug-2003 
+ecell-3.1.97: 17-Aug-2003
 
 
 ecell-3.1.96: 15-Jul-2003
