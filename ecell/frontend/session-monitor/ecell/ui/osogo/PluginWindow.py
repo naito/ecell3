@@ -54,7 +54,7 @@ class PluginWindow( Window ):
         """
 
         # creates glade file name (str)
-        aGladeFile = os.path.join( aDirname , self.__class__.__name__ + ".glade" )
+        aGladeFile = os.path.join( aDirname , self.__class__.__name__ + ".ui" )
 
         # calls superclass's constructor
         Window.__init__( self, aGladeFile, aRoot )

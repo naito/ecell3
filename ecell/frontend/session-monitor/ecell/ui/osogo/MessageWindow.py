@@ -49,7 +49,7 @@ class MessageWindow( Window ):
 
 	def __init__( self ):
 		Window.__init__( self,
-			os.path.join( GLADEFILE_PATH, 'MessageWindow.glade' ),
+			os.path.join( GLADEFILE_PATH, 'MessageWindow.ui' ),
 			'top_frame' )
 		self.isShown = False
 		self.messageBuffer = gtk.TextBuffer(None)

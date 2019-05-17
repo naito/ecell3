@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--*- mode: xml -*-->
+<interface>
+  <object class="GtkUIManager" id="uimanager1">
+    <child>
+      <object class="GtkActionGroup" id="actiongroup1">
+        <child>
+          <object class="GtkAction" id="copy_fullpnlist">
+            <property name="name">copy_fullpnlist</property>
+            <property name="label" translatable="yes">Copy FullPropertyNameList</property>
+            <signal handler="copy_fullpnlist" name="activate"/>
+          </object>
+          <accelerator key="c" modifiers="GDK_CONTROL_MASK"/>
+        </child>
+        <child>
+          <object class="GtkAction" id="paste_fullpnlist">
+            <property name="name">paste_fullpnlist</property>
+            <property name="label" translatable="yes">Paste FullPropertyNameList</property>
+            <signal handler="paste_fullpnlist" name="activate"/>
+          </object>
+          <accelerator key="v" modifiers="GDK_CONTROL_MASK"/>
+        </child>
+        <child>
+          <object class="GtkAction" id="add_fullpnlist">
+            <property name="name">add_fullpnlist</property>
+            <property name="label" translatable="yes">Add FullPN to FullPNList</property>
+            <signal handler="add_fullpnlist" name="activate"/>
+          </object>
+          <accelerator key="v" modifiers="GDK_CONTROL_MASK | GDK_SHIFT_MASK"/>
+        </child>
+      </object>
+    </child>
+    <ui>
+      <popup name="menu">
+        <menuitem action="copy_fullpnlist"/>
+        <menuitem action="paste_fullpnlist"/>
+        <menuitem action="add_fullpnlist"/>
+      </popup>
+    </ui>
+  </object>
+  <object class="GtkMenu" constructor="uimanager1" id="menu">
+    <property name="visible">True</property>
+  </object>
+</interface>

@@ -48,7 +48,7 @@ class AboutSessionMonitor:
 		""" 
 		self.theMainWindow = aMainWindow	
 		
-		filename = os.path.join( config.GLADEFILE_PATH, "AboutSessionMonitor.glade" )
+		filename = os.path.join( config.GLADEFILE_PATH, "AboutSessionMonitor.ui" )
 		widgets = glade.XML(filename,"attachment_box")
 		att_box = widgets.get_widget("attachment_box")
 

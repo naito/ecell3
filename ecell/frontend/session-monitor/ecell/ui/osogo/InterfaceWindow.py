@@ -273,7 +273,7 @@ if __name__ == "__main__":
 		gtk.main()
 
 	def main():
-			aWindow = InterfaceWindow( 'InterfaceWindow.glade' )
+			aWindow = InterfaceWindow( 'InterfaceWindow.ui' )
 			mainLoop()
 
 	main()

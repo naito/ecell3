@@ -140,7 +140,7 @@ class OsogoPluginManager(PluginManager):
         """
 
         for aPath in PLUGIN_PATH:
-            aFileList = glob.glob( os.path.join( aPath, '*.glade' ) )
+            aFileList = glob.glob( os.path.join( aPath, '*.ui' ) )
             for aFile in aFileList:
                 aModulePath = os.path.splitext( aFile )[0]
                 if( os.path.isfile( aModulePath + '.py' ) ):

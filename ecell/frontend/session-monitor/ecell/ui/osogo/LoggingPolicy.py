@@ -65,7 +65,7 @@ class LoggingPolicy( Window ):
 
 		Window.__init__(
 			self,
-			os.path.join( GLADEFILE_PATH, "LoggingPolicy.glade" ),
+			os.path.join( GLADEFILE_PATH, "LoggingPolicy.ui" ),
 			"top_frame"
 			)
 		self.theSession = aSession

@@ -56,7 +56,7 @@ MAXHEIGHT=800
 class BoardWindow(OsogoWindow):
 
 
-    def __init__( self, aSession, aRootWidget = 'BoardWindow.glade' ): 
+    def __init__( self, aSession, aRootWidget = 'BoardWindow.ui' ): 
 
         OsogoWindow.__init__( self, aSession, aRootWidget )
 

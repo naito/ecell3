@@ -3,12 +3,12 @@ ECELL_LIB_DIR = ${libdir}/${ECELL_DIRNAME}
 sessionmonitorpluginsdir = ${ECELL_LIB_DIR}/session-monitor/plugins
 
 sessionmonitorplugins_DATA = \
-	BargraphWindow.glade \
-	DigitalWindow.glade \
-	InputWindow.glade \
-	PropertyWindow.glade \
-	TracerWindow.glade \
-	VariableWindow.glade \
+	BargraphWindow.ui \
+	DigitalWindow.ui \
+	InputWindow.ui \
+	PropertyWindow.ui \
+	TracerWindow.ui \
+	VariableWindow.ui \
 	BargraphWindow.py \
 	DigitalWindow.py \
 	PropertyWindow.py \

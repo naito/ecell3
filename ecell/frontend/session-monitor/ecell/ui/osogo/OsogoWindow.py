@@ -56,7 +56,7 @@ class OsogoWindow(Window):
 		aGladeFile   -- a glade file name (str)
 		"""
 		if gladeFile == None:
-			gladeFile = self.__class__.__name__ + '.glade'
+			gladeFile = self.__class__.__name__ + '.ui'
 
 		# calls superclass's constructor
 		Window.__init__(
@@ -197,7 +197,7 @@ class OsogoWindow(Window):
 
 		pass
 
-	def close ( self ):
+	def close( self ):
 		""" destroys Widgets and sets __theExist False"""
 		if self.exists():
 			self[self.theTopWidget].destroy()
