@@ -168,7 +168,7 @@ def p_expression_system_function(t):
                 t[0] = '(' + aCompartmentID + '*N_A)'
 
             else:
-                raise AttributeError, "getSuperSystem attribute must be Size or SizeN_A"
+                raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
         else:
 
@@ -195,7 +195,7 @@ def p_expression_system_function(t):
                             t[0] = '(' + aCompartmentID + '*N_A)'
 
                         else:
-                            raise AttributeError, "getSuperSystem attribute must be Size or SizeN_A"
+                            raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
                     else:
 
@@ -211,10 +211,10 @@ def p_expression_system_function(t):
                             t[0] = '(' + aCompartmentID + '*N_A)'
 
                         else:
-                            raise AttributeError,"getSuperSystem attribute must be Size or SizeN_A"
+                            raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
     else:
-        raise TypeError, str( t[1] ) + " doesn't have " + str( t[3] )
+        raise TypeError( str( t[1] ) + " doesn't have " + str( t[3] ) )
 
 
 def p_expression_function(t):
@@ -294,7 +294,7 @@ def p_expression_variablereference(t):
                                                            t[3] ) )
 
     if ( aVariableID == [] ):
-        raise NameError, "not find VariableReference ID"
+        raise NameError( "not find VariableReference ID" )
 
     t[0] = aVariableID[0]
 
@@ -378,7 +378,7 @@ def getVariableID( aVariableID, aPath, aType ):
         return aVariableID
 
     else:
-        raise AttributeError,"VariableReference attribute must be MolarConc, NumberConc and Value"
+        raise AttributeError( "VariableReference attribute must be MolarConc, NumberConc and Value" )
 
 
 
