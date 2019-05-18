@@ -89,7 +89,7 @@ def t_newline(t):
     t.lineno += t.value.count("\n")
 
 def t_error(t):
-    print "Illegal character '{}'".format( t.value[0] )
+    print( "Illegal character '{}'".format( t.value[0] ))
     t.skip(1)
 
 
@@ -308,7 +308,7 @@ def p_empty(t):
     t[0] = ''
 
 def p_error(t):
-    print "Syntax error at '{}'".format( t.value )
+    print( "Syntax error at '{}'".format( t.value ))
 
 
 
