@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# ecell3-dmc  - a program to compile and/or docify dynamic module in 
+# ecell3-dmc  - a program to compile and/or docify dynamic module in
 #               E-Cell Simulation Environment Version 3
 #
 # authors: Tomoya Kitayama <tomo@e-cell.org>
@@ -76,25 +76,25 @@ if len( _lib_dir ) == 0 or not os.path.isdir( _lib_dir ):
     _lib_dir = os.path.join( prefix, 'lib' )
 lib_dir = os.path.join( _lib_dir, per_app_dir_name  )
 
-    
+
 DMCOMPILE = 'dmcompile'
 CLASS_NAME_MACRO_NAME = '_ECELL3_DM_CLASSNAME'
 
 progname = os.path.basename( sys.argv[ 0 ] )
 
 def usage():
-    print '''
-%(progname)s -- Compile dynamic modules for E-Cell Simulation Environment Version 3.
+    print( '''
+{progname} -- Compile dynamic modules for E-Cell Simulation Environment Version 3.
 
 Usage:
-    %(progname)s [options] [sourcefile(s)]
-    %(progname)s [-h] or [--help]
-    ''' % dict( progname = progname )
+    {progname} [options] [sourcefile(s)]
+    {progname} [-h] or [--help]
+    '''.format(progname=progname))
 
 def help():
     usage()
-    print '''
-%(progname)s options:
+    print( '''
+{progname} options:
     --no-stdinclude          Don't set standard include file path.
     --no-stdlibdir           Don't set standard library directory path.
     --ldflags=[ldflags]      Specify options to the linker.
@@ -110,11 +110,11 @@ This program is part of E-Cell Simulation Environment Version 3.
 Written by:
     Tomoya Kitayama <tomo@e-cell.org>
     Satya Arjunan <satya@ttck.keio.ac.jp>
-    ''' % dict( progname = progname )
+    '''.format(progname=progname))
 
 def msg( outstr ):
     global progname
-    print "%s: %s" % ( progname, outstr )
+    print( "{}: {}".format( progname, outstr ))
 
 spawnvp = os.spawnv
 
@@ -127,7 +127,7 @@ elif os.name == 'nt':
                 _file = os.path.join(p, file) + ext
                 try:
                     stat = os.stat(_file)
-                    if stat.st_mode & 0500 == 0500:
+                    if stat.st_mode & 0o500 == 0o500:
                         return _file
                 except:
                     pass
@@ -167,8 +167,8 @@ def main():
                  "output="])
     except:
         help()
-        sys.exit( 1 ) 
-        
+        sys.exit( 1 )
+
     VERBOSE = False
     NO_STDINCLUDE = False
     NO_STDLIBDIR = False
@@ -190,16 +190,16 @@ def main():
         if anOption in ( "-h", '--help' ):
             help()
             return 255
-      
+
         # be verbose
         if anOption in ( "-v", '--verbose'):
             VERBOSE = True
-            
-        # without stdinclude            
+
+        # without stdinclude
         if anOption == "--no-stdinclude":
             NO_STDINCLUDE = True
 
-        # without stdlibdir            
+        # without stdlibdir
         if anOption == "--no-stdlibdir":
             NO_STDLIBDIR = True
 
@@ -250,6 +250,7 @@ def main():
         cmdList += [ '-o', OUTPUT ]
 
     # on MS-Windows, command line doesn't expand *.cpp automatically
+    from functools import reduce
     srcs = reduce( operator.add, map( glob, args ) )
 
     # check if source file is valid
@@ -262,7 +263,7 @@ def main():
 
     if not NO_STDLIBDIR:
         LDFLAGS.extend( STDLIBDIRS )
-  
+
     LIBS.append( '-lecs' )
     LIBS.append( '-lgsl' )
 
@@ -273,16 +274,18 @@ def main():
     for src in srcs:
         ext = os.path.basename( src )
         classname, ext = os.path.splitext( ext )
-        argList = cmdList + [ '-D%s=%s' % ( CLASS_NAME_MACRO_NAME, classname ), src ] + LIBS
+        argList = cmdList + [ '-D{}={}'.format(CLASS_NAME_MACRO_NAME, classname), src ] + LIBS
 
         if VERBOSE:
-            print ' '.join( argList[0:] )
-            
+            print( ' '.join( argList[0:] ))
+
         # Need to us os.spawnv because of problems in MS-Windows with os.sytem
         # when the dmcompile path contains whitespaces even if we force quotes
+        print( "\ncmdList: {}".format(cmdList))
+        print( "argList: {}\n".format(argList))
         ret = spawnvp( os.P_WAIT, cmdList[0], argList )
         if ret != 0:
-            msg( '%s returned error status: %d' % ( cmdList[0], ret ) )
+            msg( '{} returned error status: {}'.format( cmdList[0], ret ) )
             return 1
     return 0
 

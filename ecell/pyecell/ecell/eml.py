@@ -13,18 +13,21 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
+
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
 
 from xml.dom import minidom
 from types import *
@@ -59,7 +62,7 @@ class Eml:
                 self.__theEmlNode = aNode
             else:
                 pass
-        
+
 
 #        self.__clearCache()
         self.__reconstructCache()
@@ -73,9 +76,9 @@ class Eml:
 
     def save( self, anOutputFile ):
         """save domtree as an EML file"""
-        
+
         anEmlString = self.asString()
-        
+
         anOutputFileObject = open( anOutputFile, 'w' )
         anOutputFileObject.write( anEmlString )
 
@@ -90,11 +93,11 @@ class Eml:
         aStepperElement = self.__createElement( 'stepper' )
         aStepperElement.setAttribute( 'class', aClass )
         aStepperElement.setAttribute( 'id', anID )
-        
+
         self.__theDocument.documentElement.childNodes.append( aStepperElement )
 
 
-    
+
 
     def deleteStepper( self, anID ):
         """delete a stepper"""
@@ -104,7 +107,7 @@ class Eml:
                    anElement.getAttribute( 'id' ) == anID:
 
                 anElement.removeChild( aChildElement )
-    
+
 
 
     def getStepperList( self ):
@@ -154,7 +157,7 @@ class Eml:
 
                             aValue = str( aChildNode.firstChild.nodeValue )
                             aValueList.append( aValue )
-    
+
         return aValueList
 
 
@@ -187,18 +190,18 @@ class Eml:
         aStepperNode = self.__getStepperNode( aStepperID )
 
         aStepperNode.appendChild( aPropertyElement )
-        
+
 
     def __getStepperNode( self, aStepperID ):
         """private"""
-        
+
         aStepperNodeList = self.__getStepperNodeList()
 
         for aTargetStepperNode in aStepperNodeList:
             if aTargetStepperNode.getAttribute( 'id' ) == aStepperID:
-                
+
                 return aTargetStepperNode
-            
+
 
 
 
@@ -230,7 +233,7 @@ class Eml:
             aTargetSystemNode = self.__getSystemNode( aTargetPath )
             aTargetSystemNode.appendChild( anEntityElement )
 
-        else:            
+        else:
             raise "unexpected error. %s should be System, Variable, or Process."%anEntityType
 
         self.__addToCache( aFullID, anEntityElement )
@@ -273,12 +276,12 @@ class Eml:
 
 
     def getEntityClass( self, aFullID ):
-        
+
         anEntityNode = self.__getEntityNode( aFullID )
- 
+
         return str( anEntityNode.getAttribute( 'class' ) )
-        
-        
+
+
     def setEntityProperty( self, aFullID, aPropertyName, aValueList ):
 
         anEntityPropertyElement = self.__createPropertyNode( aPropertyName,\
@@ -317,11 +320,11 @@ class Eml:
             for aSystemNode in self.__theEmlNode.childNodes:
                 if aSystemNode.nodeName == 'system' and \
                        aSystemNode.getAttribute( 'id' ) == aSystemPath:
-                    
+
                     for aChildNode in aSystemNode.childNodes:
-                        
+
                         if aChildNode.nodeName == aType:
-                            
+
                             anEntityList.append( str( aChildNode.getAttribute( 'id' ) ) )
 
         return anEntityList
@@ -330,7 +333,7 @@ class Eml:
 
         anEntityNode = self.__getEntityNode( aFullID )
         anEntityPropertyList = []
-        
+
         for aChildNode in anEntityNode.childNodes:
             if aChildNode.nodeName == 'property':
 
@@ -360,7 +363,7 @@ class Eml:
         anEntityInfoNode = self.__getEntityInfoNode( aFullID )
 
         return self.__createValueList( anEntityInfoNode )
-    
+
     ##-------------------------------------------
     ## Cache manipulations
     ##-------------------------------------------
@@ -442,7 +445,7 @@ class Eml:
                 aSystemPath = str( aSystemNode.getAttribute( 'id' ) ).split( '/' )
                 if aSystemPath[-1] == '':
                     aSystemPath = aSystemPath[:-1]
-                    
+
                 if len( aSystemPath ) == aTargetPathLength + 1 and \
                        aSystemPath[:aTargetPathLength] == aTargetPath:
                     aSystemList.append( aSystemPath[-1] )
@@ -451,7 +454,7 @@ class Eml:
 
 
     def __getEntityNode( self, aFullID ):
-        
+
         # first look up the cache
         try:
             return self.__findInCache( aFullID )
@@ -463,11 +466,11 @@ class Eml:
         if aType == 'System':
             aSystemPath = joinSystemPath( aSystemPath, anID )
             return self.__getSystemNode( aSystemPath )
-            
+
         aSystemNode = self.__getSystemNode( aSystemPath )
 
         for aChildNode in aSystemNode.childNodes:
-                        
+
             if aChildNode.nodeName.capitalize() == aType and\
                    aChildNode.getAttribute( 'id' ) == anID:
 
@@ -476,7 +479,7 @@ class Eml:
 
         raise "Entity [%s] not found."%aFullID
 
-                        
+
     def __getSystemNode( self, aSystemPath ):
 
         aFullID = convertSystemID2SystemFullID( aSystemPath )
@@ -516,7 +519,7 @@ class Eml:
         for aChildNode in anEntityNode.childNodes:
 
             if aChildNode.nodeName == 'info':
-                
+
                 return aChildNode
 
 
@@ -567,7 +570,7 @@ class Eml:
         anInfoElement.appendChild( anInfoData )
 
         return anInfoElement
-    
+
 
 
 def convertSystemFullID2SystemID( aSystemFullID ):
@@ -604,4 +607,3 @@ def convertSystemID2SystemFullID( aSystemID ):
     else: # others: e.g. /CELL/CYTOPLASM
         return 'System:' + aSystemID[:aLastSlash] + ':' +\
                aSystemID[aLastSlash+1:]
-

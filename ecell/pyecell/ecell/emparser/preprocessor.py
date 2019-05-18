@@ -2,7 +2,7 @@
 # preprocessing methods
 #
 
-import StringIO
+from io import StringIO
 
 from ecell.emparser import em
 
@@ -15,8 +15,8 @@ class ecellHookClass(em.Hook):
         ( file, line ) = self.interpreter.context().identify()
         self.thePreprocessor.lineControl( self.theInterpreter, file, line )
 
-    def beforeIncludeHook( self, name, file, locals ):  
-        self.thePreprocessor.lineControl( self.theInterpreter, name, 1 )  
+    def beforeIncludeHook( self, name, file, locals ):
+        self.thePreprocessor.lineControl( self.theInterpreter, name, 1 )
 
     def afterExpand( self, result ):
         self.thePreprocessor.need_linecontrol = 1
@@ -28,14 +28,14 @@ class ecellHookClass(em.Hook):
     def afterSignificate(self):
         self.thePreprocessor.need_linecontrol = 1
         return
-                         
+
     def atParse(self, scanner, locals):
         if not self.thePreprocessor.need_linecontrol:
             return
 
         ( file, line ) = self.theInterpreter.context().identify()
         self.thePreprocessor.lineControl( self.theInterpreter, file, line )
-        self.thePreprocessor.need_linecontrol = 0        
+        self.thePreprocessor.need_linecontrol = 0
 
 class Preprocessor( object ):
 
@@ -80,8 +80,5 @@ class Preprocessor( object ):
         return Output
 
     def shutdown( self ):
-        
+
         self.interpreter.shutdown()
-
-
-

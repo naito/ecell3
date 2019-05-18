@@ -6,6 +6,7 @@ import sys
 import os
 import glob
 from optparse import OptionParser, IndentedHelpFormatter, BadOptionError, make_option
+import argparse
 from numpy.distutils.ccompiler import new_compiler
 from distutils.sysconfig import get_config_vars, customize_compiler
 from distutils.errors import CompileError, LinkError
@@ -103,8 +104,8 @@ class CustomizedOptionParser( OptionParser ):
         argname, sep, _ = arg.partition( '=' )
         if values.option_with_argument is not None and \
            argname in values.option_with_argument:
-            sys.stderr.write( 
-                "%s: does not handle option '%s' that takes an argument; passing it through to the compiler\n" % ( self.get_prog_name(), arg ) )
+            sys.stderr.write(
+                "{}: does not handle option '{}' that takes an argument; passing it through to the compiler\n".format( self.get_prog_name(), arg ) )
             if values.unknown is None:
                 values.unknown = []
             if not sep:
@@ -115,8 +116,8 @@ class CustomizedOptionParser( OptionParser ):
             try:
                 OptionParser._process_long_opt( self, rargs, values )
             except BadOptionError:
-                sys.stderr.write( 
-                    "%s: unknown option '%s'; passing it through to the compiler\n" % ( self.get_prog_name(), argname ) )
+                sys.stderr.write(
+                    "{}: unknown option '{}'; passing it through to the compiler\n".format( self.get_prog_name(), argname ) )
                 if values.unknown is None:
                     values.unknown = []
                 values.unknown.append( arg )
@@ -125,8 +126,8 @@ class CustomizedOptionParser( OptionParser ):
         arg = rargs[ 0 ]
         if values.option_with_argument is not None and \
            arg in values.option_with_argument:
-            sys.stderr.write( 
-                "%s: does not handle option '%s' that takes an argument; passing it through to the compiler\n" % ( self.get_prog_name(), arg ) )
+            sys.stderr.write(
+                "{}: does not handle option '{}' that takes an argument; passing it through to the compiler\n".format( self.get_prog_name(), arg ) )
             if values.unknown is None:
                 values.unknown = []
             values.unknown += [ rargs.pop( 0 ), rargs.pop( 0 ) ]
@@ -134,8 +135,8 @@ class CustomizedOptionParser( OptionParser ):
             try:
                 OptionParser._process_short_opts( self, rargs, values )
             except BadOptionError:
-                sys.stderr.write( 
-                    "%s: unknown option '%s'; passing it through to the compiler\n" % ( self.get_prog_name(), arg ) )
+                sys.stderr.write(
+                    "{}: unknown option '{}'; passing it through to the compiler\n".format( self.get_prog_name(), arg ) )
                 if values.unknown is None:
                     values.unknown = []
                 values.unknown.append( arg )
@@ -144,20 +145,22 @@ progname = os.path.basename( sys.argv[0] )
 
 def msg( outstr ):
     global progname
-    print "%s: %s" % ( progname, outstr )
+    print( "{}: {}".format( progname, outstr ))
 
 def main():
     global ORIG_CXXFLAGS, ORIG_CPPFLAGS, ORIG_LDFLAGS, SHLEXT, \
            CXXSUFFIX, CXXFLAGS, CPPFLAGS, LDFLAGS, PROLOGUE, USAGE, OPTIONS
     parser = CustomizedOptionParser(prolog=PROLOGUE, usage=USAGE, option_list=OPTIONS)
     opts, args = parser.parse_args( sys.argv[1:] )
-  
+
+    print( "\nargList: {}\n".format(sys.argv))
+
     out = opts.out
 
     # check if source file is given
     if len( args ) < 1:
         parser.error( "no source file was given." )
-        return 255 
+        return 255
 
     if out == None:
         if len( args ) == 1:
@@ -165,7 +168,7 @@ def main():
             out += SHLEXT
         else:
             msg( "specify the output filename." )
-            return 255 
+            return 255
     else:
         path_without_ext, ext = os.path.splitext( out )
         if ext == '':
@@ -194,10 +197,12 @@ def main():
         compiler.compiler_so[0] = compiler.compiler_cxx[0]
         compiler.linker_so[0] = compiler.compiler_cxx[0]
 
+    print( "\ninclude_dir: {}\n".format(opts.include_dir))
+
     if opts.verbose:
         old_spawn = compiler.spawn
         def new_spawn( self, cmd, *arg, **kwarg ):
-            print ' '.join( cmd )
+            print( ' '.join( cmd ))
             old_spawn( cmd, *arg, **kwarg )
         compiler.__class__.spawn = new_spawn
     if opts.include_dir is not None:
@@ -221,11 +226,15 @@ def main():
         else:
             sources.append(i)
 
+    print( "\nshlflags: {}".format(shlflags))
+    print( "\ncxxflags: {}".format(cxxflags))
+    print( "\ncppflags: {}\n".format(cppflags))
+
     try:
-        objects = compiler.compile( sources, extra_preargs = shlflags + cxxflags + cppflags )
-    except CompileError, e:
+        objects = compiler.compile( sources, extra_preargs = shlflags + cxxflags + cppflags, include_dirs = opts.include_dir )
+    except CompileError as e:
         msg( "failed to compile the specified source files: " + repr( e ) )
-        return 1 
+        return 1
 
     if sys.platform == 'darwin':
         compiler.linker_so = [ arg for arg in compiler.linker_so if arg != '-shared' ]
@@ -243,12 +252,11 @@ def main():
                     objects = objects + extra_objects,
                     extra_preargs = ldflags + dlflags,
                     target_lang = 'c++' )
-        except LinkError, e:
+        except LinkError as e:
             msg( "failed to link the object files: " + repr( e ) )
-            return 1 
+            return 1
     finally:
         map( os.unlink, objects )
 
 if __name__ == '__main__':
     sys.exit( main() )
-

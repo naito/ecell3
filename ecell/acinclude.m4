@@ -57,8 +57,8 @@ AC_DEFUN([AM_CHECK_PYTHON_HEADERS],
 [AC_REQUIRE([AM_PATH_PYTHON])
 AC_MSG_CHECKING(for headers required to compile python extensions)
 dnl deduce PYTHON_INCLUDES
-py_prefix=`$PYTHON -c "import sys; print sys.prefix"`
-py_exec_prefix=`$PYTHON -c "import sys; print sys.exec_prefix"`
+py_prefix=`$PYTHON -c "import sys; print( sys.prefix )"`
+py_exec_prefix=`$PYTHON -c "import sys; print( sys.exec_prefix )"`
 if test -x "$PYTHON_PREFIX/bin/python-config"; then
   PYTHON_INCLUDES=`$PYTHON_PREFIX/bin/python-config --includes`
 else
@@ -80,8 +80,8 @@ CPPFLAGS="$save_CPPFLAGS"
 AC_DEFUN([ECELL_CHECK_PYTHON_LIBS], [
   AC_REQUIRE([AM_PATH_PYTHON])
   AC_MSG_CHECKING([for python library location])
-  PYTHON_LIBNAME=`$PYTHON -c 'import sys; print "python%d.%d" % (sys.hexversion >> 24, (sys.hexversion >> 16) & 0xff)'`
-  PYTHON_PREFIX=`$PYTHON -c 'import sys; print sys.prefix'`
+  PYTHON_LIBNAME=`$PYTHON -c 'import sys; print( "python%d.%d" % (sys.hexversion >> 24, (sys.hexversion >> 16) & 0xff) )'`
+  PYTHON_PREFIX=`$PYTHON -c 'import sys; print( sys.prefix )'`
   if test -x "$PYTHON_PREFIX/bin/python-config"; then
     PYTHON_LIBS="-L$PYTHON_PREFIX/lib `$PYTHON_PREFIX/bin/python-config --ldflags`"
   else
@@ -262,7 +262,7 @@ AC_DEFUN([ECELL_CHECK_GSL], [
 gsl_vector_alloc(0);
       ], [
         AC_MSG_RESULT([yes])
-        CPPFLAGS="$CPPFLAGS -DGSL_DLL" 
+        CPPFLAGS="$CPPFLAGS -DGSL_DLL"
       ], [
         AC_MSG_RESULT([no])
       ])
@@ -292,7 +292,7 @@ AC_DEFUN([ECELL_CHECK_BOOST_PYTHON], [
     AC_TRY_LINK([
 #include <boost/python/module.hpp>
     ], [
-boost::python::detail::init_module("dummy", 0);
+boost::python::detail::init_module(PyModuleDef&, void(*)());
     ], [
       AC_MSG_RESULT([yes])
       AC_DEFINE(HAVE_BOOST_PYTHON, 1, [Define to 1 if Boost.Python is available])
@@ -346,4 +346,3 @@ AC_DEFUN([ECELL_CHECK_BOOST_SPIRIT], [
     [ BOOST_SPIRIT_CLASSIC=  ]
   )
 ])
-
