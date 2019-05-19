@@ -59,10 +59,7 @@
 #include <boost/optional/optional.hpp>
 
 #include <numpy/arrayobject.h>
-#include <bytesobject.h>
-#include <unicodeobject.h>
-#include <pycapsule.h>
-#include <weakrefobject.h>
+#include <Python.h>
 
 #include "dmtool/SharedModuleMakerInterface.hpp"
 
