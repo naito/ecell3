@@ -366,7 +366,7 @@ class Session:
             # -------------------------------------------------
             # adds data file to data file manager
             # -------------------------------------------------
-            aDataFileManager.getFileMap()[`aFileIndex`] = aECDDataFile
+            aDataFileManager.getFileMap()['aFileIndex'] = aECDDataFile
 
             aFileIndex = aFileIndex + 1
 
