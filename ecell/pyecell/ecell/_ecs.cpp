@@ -937,9 +937,9 @@ PySequenceMethods DataPointVectorWrapper< Tdp_ >::__seq__ = {
 	(binaryfunc)0,		/* sq_concat */
 	(ssizeargfunc)0,		/* sq_repeat */
 	(ssizeargfunc)&DataPointVectorWrapper::__getitem__,		/* sq_item */
-	(ssizessizeargfunc)NULL,		/* sq_slice */
+	NULL,		/* sq_slice */
 	(ssizeobjargproc)0,		/* sq_ass_item */
-	(ssizessizeobjargproc)NULL,	/* sq_ass_slice */
+	NULL,	/* sq_ass_slice */
 	(objobjproc)&DataPointVectorWrapper::__contains__,		/* sq_contains */
 	(binaryfunc)0,	/* sq_inplace_concat */
 	(ssizeargfunc)0	/* sq_inplace_repeat */
