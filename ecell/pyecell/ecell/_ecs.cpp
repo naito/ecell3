@@ -61,6 +61,7 @@
 #include <numpy/arrayobject.h>
 #include <bytesobject.h>
 #include <unicodeobject.h>
+#include <pycapsule.h>
 #include <weakrefobject.h>
 
 #include "dmtool/SharedModuleMakerInterface.hpp"
@@ -796,7 +797,7 @@ public:
         aif->descr = NULL;
 
         Py_INCREF( self );
-        return PyCObject_FromVoidPtrAndDesc( aif, self,
+        return PyCapsule_New( aif, self,
                 reinterpret_cast< void(*)(void*, void*) >(
                     __dealloc_array_struct ) );
     }
