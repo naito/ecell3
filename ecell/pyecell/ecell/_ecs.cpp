@@ -60,6 +60,7 @@
 
 #include <numpy/arrayobject.h>
 #include <bytesobject.h>
+#include <unicodeobject.h>
 #include <weakrefobject.h>
 
 #include "dmtool/SharedModuleMakerInterface.hpp"
@@ -102,7 +103,7 @@ inline boost::optional< py::object > generic_getattr( py::object anObj, const ch
     py::handle<> aRetval( py::allow_null( PyObject_GenericGetAttr(
         anObj.ptr(),
         py::handle<>(
-            PyBytes_InternFromString(
+            PyUString_InternFromString(
                 const_cast< char* >( aName ) ) ).get() ) ) );
     if ( !aRetval )
     {
@@ -121,7 +122,7 @@ inline py::object generic_getattr( py::object anObj, const char* aName )
     py::handle<> aRetval( py::allow_null( PyObject_GenericGetAttr(
         anObj.ptr(),
         py::handle<>(
-            PyBytes_InternFromString(
+            PyUnicode_InternFromString(
                 const_cast< char* >( aName ) ) ).get() ) ) );
     if ( !aRetval )
     {
@@ -1522,7 +1523,7 @@ public:
     Polymorph defaultGetProperty( String const& aPropertyName ) const
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        py::handle<> aValue( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyBytes_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get() ) ) );
+        py::handle<> aValue( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get() ) ) );
         if ( !aValue )
         {
             PyErr_Clear();
@@ -1543,7 +1544,7 @@ public:
     void defaultSetProperty( String const& aPropertyName, Polymorph const& aValue )
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        PyObject_GenericSetAttr( aSelf, py::handle<>( PyBytes_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get(), py::object( aValue ).ptr() );
+        PyObject_GenericSetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get(), py::object( aValue ).ptr() );
         if ( PyErr_Occurred() )
         {
             PyErr_Clear();
@@ -1694,7 +1695,7 @@ public:
     virtual bool isContinuous() const
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( aSelf->ob_type ), py::handle<>( PyBytes_InternFromString( "IsContinuous" ) ).get() ) ) );
+        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( aSelf->ob_type ), py::handle<>( PyUnicode_InternFromString( "IsContinuous" ) ).get() ) ) );
         if ( !anIsContinuousDescr )
         {
             PyErr_Clear();
@@ -1740,7 +1741,7 @@ public:
         boost::optional< py::object > meth( generic_getattr( py::object( py::borrowed( aSelf ) ), "initialize", true ) );
         if ( meth )
             meth.get()();
-        theOnValueChangingMethod = py::handle<>( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyBytes_InternFromString( const_cast< char* >( "onValueChanging" ) ) ).get() ) ) );
+        theOnValueChangingMethod = py::handle<>( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( "onValueChanging" ) ) ).get() ) ) );
         if ( !theOnValueChangingMethod )
         {
             PyErr_Clear();
