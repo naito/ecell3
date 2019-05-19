@@ -383,7 +383,7 @@ class Session:
             # -------------------------------------------------
 
             import traceback
-            print __name__,
+            print( __name__, )
             aErrorMessageList = traceback.format_exception(sys.exc_type,sys.exc_value,sys.exc_traceback)
             for aLine in aErrorMessageList:
                 self.message( aLine )
@@ -412,7 +412,7 @@ class Session:
     #
 
     def __plainMessageMethod( self, aMessage ):
-        print aMessage
+        print( aMessage )
 
     def __loadStepper( self, anEml ):
         """stepper loader"""
@@ -633,7 +633,7 @@ class Session:
                 if anAttributeList[3] != 0:
 
                     aValue = self.theSimulator.saveEntityProperty( aFullPN )
-                    #print aValue
+                    #print( aValue )
 
                     if aValue != '':
 
