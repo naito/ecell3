@@ -764,7 +764,7 @@ public:
         return toPyObject( &getItem( *self->theVector, idx ) );
     }
 
-    static void __dealloc_array_struct( void* ptr,
+    void __dealloc_array_struct( void* ptr,
                                         DataPointVectorWrapper* self )
     {
         Py_XDECREF( self );
@@ -798,7 +798,7 @@ public:
 
         Py_INCREF( self );
         PyObject* _cps( PyCapsule_New( (void *)aif, "___array__struct",
-                NULL ));
+                __dealloc_array_struct ));
         PyCapsule_SetContext( _cps, self );
         return _cps;
     }
