@@ -797,7 +797,7 @@ public:
         aif->descr = NULL;
 
         Py_INCREF( self );
-        PyObject* _cps( PyCapsule_New( aif, "___array__struct",
+        PyObject* _cps( PyCapsule_New( (void *)aif, "___array__struct",
                 __dealloc_array_struct ));
         PyCapsule_SetContext( _cps, self );
         return _cps;
