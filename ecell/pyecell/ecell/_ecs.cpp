@@ -11,17 +11,17 @@
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
-// 
+//
 // E-Cell System is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public
 // License along with E-Cell System -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-// 
+//
 //END_HEADER
 //
 // written by Koichi Takahashi <shafi@e-cell.org> for
@@ -59,7 +59,9 @@
 #include <boost/optional/optional.hpp>
 
 #include <numpy/arrayobject.h>
-#include <stringobject.h>
+#include <bytesobject.h>
+#include <unicodeobject.h>
+#include <pycapsule.h>
 #include <weakrefobject.h>
 
 #include "dmtool/SharedModuleMakerInterface.hpp"
@@ -94,6 +96,16 @@ typedef int Py_ssize_t;
     } while (0)
 #endif
 
+#if PY_VERSION_HEX >= 0x03000000
+void *
+#else
+void
+#endif
+import_array_without_return()
+{
+  import_array();
+}
+
 using namespace libecs;
 namespace py = boost::python;
 
@@ -102,7 +114,7 @@ inline boost::optional< py::object > generic_getattr( py::object anObj, const ch
     py::handle<> aRetval( py::allow_null( PyObject_GenericGetAttr(
         anObj.ptr(),
         py::handle<>(
-            PyString_InternFromString(
+            PyUnicode_InternFromString(
                 const_cast< char* >( aName ) ) ).get() ) ) );
     if ( !aRetval )
     {
@@ -121,7 +133,7 @@ inline py::object generic_getattr( py::object anObj, const char* aName )
     py::handle<> aRetval( py::allow_null( PyObject_GenericGetAttr(
         anObj.ptr(),
         py::handle<>(
-            PyString_InternFromString(
+            PyUnicode_InternFromString(
                 const_cast< char* >( aName ) ) ).get() ) ) );
     if ( !aRetval )
     {
@@ -145,11 +157,11 @@ struct PolymorphToPythonConverter
         case PolymorphValue::REAL :
             return PyFloat_FromDouble( aPolymorph.as<Real>() );
         case PolymorphValue::INTEGER :
-            return PyInt_FromLong( aPolymorph.as<Integer>() );
+            return PyLong_FromLong( aPolymorph.as<Integer>() );
         case PolymorphValue::TUPLE :
             return rangeToPyTuple( aPolymorph.as<PolymorphValue::Tuple const&>() );
         case PolymorphValue::STRING :
-            return PyString_FromStringAndSize(
+            return PyBytes_FromStringAndSize(
                 static_cast< const char * >(
                     aPolymorph.as< PolymorphValue::RawString const& >() ),
                 aPolymorph.as< PolymorphValue::RawString const& >().size() );
@@ -160,20 +172,20 @@ struct PolymorphToPythonConverter
     }
 
     template< typename Trange_ >
-    static PyObject* 
+    static PyObject*
     rangeToPyTuple( Trange_ const& aRange )
     {
         typename boost::range_size< Trange_ >::type
                 aSize( boost::size( aRange ) );
-        
+
         PyObject* aPyTuple( PyTuple_New( aSize ) );
-       
+
         typename boost::range_const_iterator< Trange_ >::type j( boost::begin( aRange ) );
         for( std::size_t i( 0 ) ; i < aSize ; ++i, ++j )
         {
             PyTuple_SetItem( aPyTuple, i, PolymorphToPythonConverter::convert( *j ) );
         }
-        
+
         return aPyTuple;
     }
 };
@@ -276,7 +288,7 @@ struct PolymorphRetriever
         }
 
         value_type operator*();
-        
+
     private:
         PyObject* theSeq;
         Py_ssize_t theIdx;
@@ -290,7 +302,7 @@ struct PolymorphRetriever
     }
 
     static void addToRegistry()
-    { 
+    {
         py::converter::registry::insert( &convertible, &construct,
                                           py::type_id< Polymorph >() );
     }
@@ -301,14 +313,14 @@ struct PolymorphRetriever
         {
             return Polymorph( PyFloat_AS_DOUBLE( aPyObjectPtr ) );
         }
-        else if( PyInt_Check( aPyObjectPtr ) )
+        else if( PyLong_Check( aPyObjectPtr ) )
         {
-            return Polymorph( PyInt_AS_LONG( aPyObjectPtr ) );
+            return Polymorph( PyLong_AS_LONG( aPyObjectPtr ) );
         }
-        else if( PyString_Check( aPyObjectPtr ) )
+        else if( PyBytes_Check( aPyObjectPtr ) )
         {
-            return Polymorph( PyString_AS_STRING( aPyObjectPtr ),
-                              PyString_GET_SIZE( aPyObjectPtr ) );
+            return Polymorph( PyBytes_AS_STRING( aPyObjectPtr ),
+                              PyBytes_GET_SIZE( aPyObjectPtr ) );
         }
         else if( PyUnicode_Check( aPyObjectPtr ) )
         {
@@ -317,7 +329,7 @@ struct PolymorphRetriever
             {
                 char *str;
                 Py_ssize_t str_len;
-                if ( !PyString_AsStringAndSize( aPyObjectPtr, &str, &str_len ) )
+                if ( !PyBytes_AsStringAndSize( aPyObjectPtr, &str, &str_len ) )
                 {
                     return Polymorph( str, str_len );
                 }
@@ -330,9 +342,9 @@ struct PolymorphRetriever
         else if ( PySequence_Check( aPyObjectPtr ) )
         {
             return Polymorph( PolymorphValue::create( pyseq_range( aPyObjectPtr ) ) );
-        }            
+        }
         // conversion is failed. ( convert with repr() ? )
-        PyErr_SetString( PyExc_TypeError, 
+        PyErr_SetString( PyExc_TypeError,
                          "Unacceptable type of an object in the tuple." );
         py::throw_error_already_set();
         // never get here: the following is for suppressing warnings
@@ -342,8 +354,8 @@ struct PolymorphRetriever
     static bool isConvertible( PyObject* aPyObjectPtr )
     {
         return PyFloat_Check( aPyObjectPtr )
-                || PyInt_Check( aPyObjectPtr )
-                || PyString_Check( aPyObjectPtr )
+                || PyLong_Check( aPyObjectPtr )
+                || PyBytes_Check( aPyObjectPtr )
                 || PyUnicode_Check( aPyObjectPtr )
                 || PySequence_Check( aPyObjectPtr );
     }
@@ -354,7 +366,7 @@ struct PolymorphRetriever
         return aPyObject;
     }
 
-    static void construct( PyObject* aPyObjectPtr, 
+    static void construct( PyObject* aPyObjectPtr,
                            py::converter::rvalue_from_python_stage1_data* data )
     {
         void* storage( reinterpret_cast<
@@ -388,10 +400,10 @@ struct PropertySlotMapToPythonConverter
         for ( argument_type::const_iterator i( map.begin() );
               i != map.end(); ++i )
         {
-            PyDict_SetItem( aPyDict, PyString_FromStringAndSize(
+            PyDict_SetItem( aPyDict, PyBytes_FromStringAndSize(
                 i->first.data(), i->first.size() ),
                 py::incref( py::object( PropertyAttributes( *i->second ) ).ptr() ) );
-                                            
+
         }
         return aPyDict;
     }
@@ -504,7 +516,7 @@ struct PythonToFullIDConverter
 {
     static void* convertible(PyObject* pyo)
     {
-        if ( !PyString_Check( pyo ) )
+        if ( !PyBytes_Check( pyo ) )
         {
             return 0;
         }
@@ -544,11 +556,11 @@ static void translateRangeError( const std::range_error& anException )
 static PyObject* getLibECSVersionInfo()
 {
     PyObject* aPyTuple( PyTuple_New( 3 ) );
-        
-    PyTuple_SetItem( aPyTuple, 0, PyInt_FromLong( getMajorVersion() ) );
-    PyTuple_SetItem( aPyTuple, 1, PyInt_FromLong( getMinorVersion() ) );
-    PyTuple_SetItem( aPyTuple, 2, PyInt_FromLong( getMicroVersion() ) );
-    
+
+    PyTuple_SetItem( aPyTuple, 0, PyLong_FromLong( getMajorVersion() ) );
+    PyTuple_SetItem( aPyTuple, 1, PyLong_FromLong( getMinorVersion() ) );
+    PyTuple_SetItem( aPyTuple, 2, PyLong_FromLong( getMicroVersion() ) );
+
     return aPyTuple;
 }
 
@@ -587,7 +599,7 @@ public:
         PyObject_VAR_HEAD
         DataPointVectorWrapper* theDPVW;
         std::size_t theIdx;
-        
+
     public:
         static PyTypeObject __class__;
 
@@ -686,7 +698,7 @@ public:
 
     static DataPointVectorWrapper* create( boost::shared_ptr< DataPointVector > const& aVector )
     {
-        return new DataPointVectorWrapper( aVector ); 
+        return new DataPointVectorWrapper( aVector );
     }
 
     static PyObject* __get__shape( DataPointVectorWrapper* self )
@@ -745,18 +757,17 @@ public:
         if ( idx < 0 || idx >= static_cast< Py_ssize_t >( self->theVector->getSize() ) )
         {
             PyErr_SetObject(PyExc_IndexError,
-                    PyString_FromString("index out of range"));
+                    PyBytes_FromString("index out of range"));
 		    return NULL;
         }
-            
+
         return toPyObject( &getItem( *self->theVector, idx ) );
     }
 
-    static void __dealloc_array_struct( void* ptr,
-                                        DataPointVectorWrapper* self )
+    static void __dealloc_array_struct( PyObject* __array_struct )
     {
-        Py_XDECREF( self );
-        PyMem_FREE( ptr );
+        Py_XDECREF( PyCapsule_GetContext( __array_struct ));
+        PyMem_FREE( __array_struct );
     }
 
     static PyObject* __get___array__struct( DataPointVectorWrapper* self,
@@ -785,9 +796,10 @@ public:
         aif->descr = NULL;
 
         Py_INCREF( self );
-        return PyCObject_FromVoidPtrAndDesc( aif, self,
-                reinterpret_cast< void(*)(void*, void*) >(
-                    __dealloc_array_struct ) );
+        PyObject* __array_struct( PyCapsule_New( (void *)aif, "__array_struct",
+                __dealloc_array_struct ));
+        PyCapsule_SetContext( __array_struct, self );
+        return __array_struct;
     }
 
     static int __contains__( DataPointVectorWrapper* self, PyObject *e )
@@ -846,7 +858,6 @@ struct DataPointVectorWrapper< LongDataPoint >::GetItemFunc
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.DataPointVectorWrapper.Iterator", /* tp_name */
 	sizeof( typename DataPointVectorWrapper::Iterator ), /* tp_basicsize */
 	0,					/* tp_itemsize */
@@ -866,7 +877,7 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -891,8 +902,7 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,
-	"ecell._ecs.DataPointVector",
+  "ecell._ecs.DataPointVector",
 	sizeof(DataPointVectorWrapper),
 	0,
 	(destructor)&DataPointVectorWrapper::__dealloc__, /* tp_dealloc */
@@ -910,7 +920,7 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_SEQUENCE_IN,		/* tp_flags */
+	0,		/* tp_flags */
  	0,				/* tp_doc */
  	(traverseproc)&DataPointVectorWrapper::__traverse__,		/* tp_traverse */
  	0,			/* tp_clear */
@@ -938,9 +948,9 @@ PySequenceMethods DataPointVectorWrapper< Tdp_ >::__seq__ = {
 	(binaryfunc)0,		/* sq_concat */
 	(ssizeargfunc)0,		/* sq_repeat */
 	(ssizeargfunc)&DataPointVectorWrapper::__getitem__,		/* sq_item */
-	(ssizessizeargfunc)0,		/* sq_slice */
+	NULL,		/* sq_slice */
 	(ssizeobjargproc)0,		/* sq_ass_item */
-	(ssizessizeobjargproc)0,	/* sq_ass_slice */
+	NULL,	/* sq_ass_slice */
 	(objobjproc)&DataPointVectorWrapper::__contains__,		/* sq_contains */
 	(binaryfunc)0,	/* sq_inplace_concat */
 	(ssizeargfunc)0	/* sq_inplace_repeat */
@@ -960,7 +970,7 @@ class STLIteratorWrapper
 protected:
     PyObject_VAR_HEAD
     Titer_ theIdx;
-    Titer_ theEnd; 
+    Titer_ theEnd;
 
 public:
     static PyTypeObject __class__;
@@ -1016,7 +1026,6 @@ public:
 template< typename Titer_ >
 PyTypeObject STLIteratorWrapper< Titer_ >::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.STLIteratorWrapper", /* tp_name */
 	sizeof( STLIteratorWrapper ), /* tp_basicsize */
 	0,					/* tp_itemsize */
@@ -1036,7 +1045,7 @@ PyTypeObject STLIteratorWrapper< Titer_ >::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -1112,7 +1121,6 @@ public:
 
 PyTypeObject PropertyAttributesIterator::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.PropertyAttributesIterator", /* tp_name */
 	sizeof( PropertyAttributesIterator ), /* tp_basicsize */
 	0,					/* tp_itemsize */
@@ -1132,7 +1140,7 @@ PyTypeObject PropertyAttributesIterator::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -1240,15 +1248,15 @@ public:
 
     VariableReference const& __getitem__( py::object name )
     {
-        if ( PyInt_Check( name.ptr() ) )
+        if ( PyLong_Check( name.ptr() ) )
         {
-            Integer id( PyInt_AS_LONG( name.ptr() ) );
+            Integer id( PyLong_AS_LONG( name.ptr() ) );
             return theProc->getVariableReference( id );
         }
-        else if ( PyString_Check( name.ptr() ) )
+        else if ( PyBytes_Check( name.ptr() ) )
         {
-            std::string nameStr( PyString_AS_STRING( name.ptr() ),
-                                 PyString_GET_SIZE( name.ptr() ) );
+            std::string nameStr( PyBytes_AS_STRING( name.ptr() ),
+                                 PyBytes_GET_SIZE( name.ptr() ) );
             return theProc->getVariableReference( nameStr );
         }
         PyErr_SetString( PyExc_TypeError,
@@ -1328,7 +1336,7 @@ public:
         retval += ']';
 
         return retval;
-    } 
+    }
 
 private:
     Process* theProc;
@@ -1343,7 +1351,7 @@ public:
                                  DataPointVectorSharedPtrConverter >();
     }
 
-    static PyObject* 
+    static PyObject*
     convert( boost::shared_ptr< DataPointVector > const& aVectorSharedPtr )
     {
         return aVectorSharedPtr->getElementSize() == sizeof( DataPoint ) ?
@@ -1365,7 +1373,7 @@ public:
         : thePyObject( aCallable )
     {
     }
-      
+
     virtual ~PythonWarningHandler() {}
 
     virtual void operator()( String const& msg ) const
@@ -1405,15 +1413,15 @@ protected:
             py::handle<> aKeyValuePair( py::borrowed( PyList_GET_ITEM( aKeyList.get(), i ) ) );
             BOOST_ASSERT( PyTuple_Check( aKeyValuePair.get() ) && PyTuple_GET_SIZE( aKeyValuePair.get() ) == 2 );
             py::handle<> aKey( py::borrowed( PyTuple_GET_ITEM( aKeyValuePair.get(), 0 ) ) );
-            BOOST_ASSERT( PyString_Check( aKey.get() ) );
-            if ( PyString_GET_SIZE( aKey.get() ) >= static_cast< Py_ssize_t >( aPrivPrefix.size() )
-                    && memcmp( PyString_AS_STRING( aKey.get() ), aPrivPrefix.data(), aPrivPrefix.size() ) == 0 )
+            BOOST_ASSERT( PyBytes_Check( aKey.get() ) );
+            if ( PyBytes_GET_SIZE( aKey.get() ) >= static_cast< Py_ssize_t >( aPrivPrefix.size() )
+                    && memcmp( PyBytes_AS_STRING( aKey.get() ), aPrivPrefix.data(), aPrivPrefix.size() ) == 0 )
             {
                 continue;
             }
 
-            if ( PyString_GET_SIZE( aKey.get() ) >= 2
-                    && memcmp( PyString_AS_STRING( aKey.get() ), "__", 2 ) == 0 )
+            if ( PyBytes_GET_SIZE( aKey.get() ) >= 2
+                    && memcmp( PyBytes_AS_STRING( aKey.get() ), "__", 2 ) == 0 )
             {
                 continue;
             }
@@ -1424,7 +1432,7 @@ protected:
                 continue;
             }
 
-            retval.insert( String( PyString_AS_STRING( aKey.get() ), PyString_GET_SIZE( aKey.get() ) ) );
+            retval.insert( String( PyBytes_AS_STRING( aKey.get() ), PyBytes_GET_SIZE( aKey.get() ) ) );
         }
     }
 
@@ -1495,8 +1503,8 @@ protected:
             for ( Py_ssize_t j( 0 ), je( PyList_GET_SIZE( aKeyList.get() ) ); j < je; ++j )
             {
                 py::handle<> aKey( py::borrowed( PyList_GET_ITEM( aKeyList.get(), i ) ) );
-                BOOST_ASSERT( PyString_Check( aKey.get() ) );
-                String aKeyStr( PyString_AS_STRING( aKey.get() ), PyString_GET_SIZE( aKey.get() ) );  
+                BOOST_ASSERT( PyBytes_Check( aKey.get() ) );
+                String aKeyStr( PyBytes_AS_STRING( aKey.get() ), PyBytes_GET_SIZE( aKey.get() ) );
                 retval.erase( aKeyStr );
             }
         }
@@ -1522,11 +1530,11 @@ public:
     Polymorph defaultGetProperty( String const& aPropertyName ) const
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        py::handle<> aValue( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyString_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get() ) ) );
+        py::handle<> aValue( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get() ) ) );
         if ( !aValue )
         {
             PyErr_Clear();
-            THROW_EXCEPTION_INSIDE( NoSlot, 
+            THROW_EXCEPTION_INSIDE( NoSlot,
                     "failed to retrieve property attributes "
                     "for [" + aPropertyName + "]" );
         }
@@ -1543,11 +1551,11 @@ public:
     void defaultSetProperty( String const& aPropertyName, Polymorph const& aValue )
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        PyObject_GenericSetAttr( aSelf, py::handle<>( PyString_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get(), py::object( aValue ).ptr() );
+        PyObject_GenericSetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( aPropertyName.c_str() ) ) ).get(), py::object( aValue ).ptr() );
         if ( PyErr_Occurred() )
         {
             PyErr_Clear();
-            THROW_EXCEPTION_INSIDE( NoSlot, 
+            THROW_EXCEPTION_INSIDE( NoSlot,
                             "failed to set property [" + aPropertyName + "]" );
         }
     }
@@ -1688,13 +1696,13 @@ public:
         if ( retval )
         {
             setActivity( py::extract< Real >( retval ) );
-        } 
+        }
     }
 
     virtual bool isContinuous() const
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( aSelf->ob_type ), py::handle<>( PyString_InternFromString( "IsContinuous" ) ).get() ) ) );
+        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( aSelf->ob_type ), py::handle<>( PyUnicode_InternFromString( "IsContinuous" ) ).get() ) ) );
         if ( !anIsContinuousDescr )
         {
             PyErr_Clear();
@@ -1702,7 +1710,7 @@ public:
         }
 
         descrgetfunc aDescrGetFunc( anIsContinuousDescr.get()->ob_type->tp_descr_get );
-        if ( ( anIsContinuousDescr.get()->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) && aDescrGetFunc )
+        if ( ( anIsContinuousDescr.get()->ob_type->tp_flags & 0 ) && aDescrGetFunc )
         {
             return py::extract< bool >( py::handle<>( aDescrGetFunc( anIsContinuousDescr.get(), aSelf, reinterpret_cast< PyObject* >( aSelf->ob_type ) ) ).get() );
         }
@@ -1740,7 +1748,7 @@ public:
         boost::optional< py::object > meth( generic_getattr( py::object( py::borrowed( aSelf ) ), "initialize", true ) );
         if ( meth )
             meth.get()();
-        theOnValueChangingMethod = py::handle<>( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyString_InternFromString( const_cast< char* >( "onValueChanging" ) ) ).get() ) ) );
+        theOnValueChangingMethod = py::handle<>( py::allow_null( PyObject_GenericGetAttr( aSelf, py::handle<>( PyUnicode_InternFromString( const_cast< char* >( "onValueChanging" ) ) ).get() ) ) );
         if ( !theOnValueChangingMethod )
         {
             PyErr_Clear();
@@ -1833,7 +1841,7 @@ class PythonDynamicModule: public DynamicModule< EcsObject >
 public:
     typedef DynamicModule< EcsObject > Base;
 
-    struct make_ptr_instance: public py::objects::make_instance_impl< T_, py::objects::pointer_holder< T_*, T_ >, make_ptr_instance > 
+    struct make_ptr_instance: public py::objects::make_instance_impl< T_, py::objects::pointer_holder< T_*, T_ >, make_ptr_instance >
     {
         typedef py::objects::pointer_holder< T_*, T_ > holder_t;
 
@@ -1872,7 +1880,7 @@ public:
         return aRetval;
     }
 
-    virtual const char *getModuleName() const 
+    virtual const char *getModuleName() const
     {
         return reinterpret_cast< PyTypeObject* >( thePythonClass.ptr() )->tp_name;
     }
@@ -1886,7 +1894,7 @@ public:
     {
         return reinterpret_cast< PyTypeObject* >( thePythonClass.ptr() );
     }
- 
+
     PythonDynamicModule( py::object aPythonClass )
         : Base( DM_TYPE_DYNAMIC ),
            thePythonClass( aPythonClass ),
@@ -1923,10 +1931,10 @@ EcsObject* PythonDynamicModule< T_ >::createInstance() const
             anErrorStr += aPyErrObj->ob_type->tp_name;
             anErrorStr += ": ";
             py::handle<> aPyErrStrRepr( PyObject_Str( aPyErrObj ) );
-            BOOST_ASSERT( PyString_Check( aPyErrStrRepr.get() ) );
+            BOOST_ASSERT( PyBytes_Check( aPyErrStrRepr.get() ) );
             anErrorStr.insert( anErrorStr.size(),
-                PyString_AS_STRING( aPyErrStrRepr.get() ),
-                PyString_GET_SIZE( aPyErrStrRepr.get() ) );
+                PyBytes_AS_STRING( aPyErrStrRepr.get() ),
+                PyBytes_GET_SIZE( aPyErrStrRepr.get() ) );
             anErrorStr += ")";
             PyErr_Clear();
         }
@@ -1967,7 +1975,7 @@ public:
     }
 
     PropertyAttributes
-    getStepperPropertyAttributes( String const& aStepperID, 
+    getStepperPropertyAttributes( String const& aStepperID,
                                   String const& aPropertyName ) const
     {
         return getStepper( aStepperID )->getPropertyAttributes( aPropertyName );
@@ -2021,7 +2029,7 @@ public:
         return retval;
     }
 
-    Polymorph 
+    Polymorph
     getEntityList( String const& anEntityTypeString,
                    String const& aSystemPathString ) const
     {
@@ -2089,7 +2097,7 @@ public:
     {
         FullPN aFullPN( aFullPNString );
         Entity const * const anEntityPtr( getEntity( aFullPN.getFullID() ) );
-                
+
         return anEntityPtr->getProperty( aFullPN.getPropertyName() );
     }
 
@@ -2155,10 +2163,10 @@ public:
 
         return createLogger( aFullPNString,
                 Logger::Policy(
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
                     PyFloat_AsDouble( static_cast< py::object >( aParamList[ 1 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
     }
 
     py::list getLoggerList() const
@@ -2177,14 +2185,14 @@ public:
         return retval;
     }
 
-    boost::shared_ptr< DataPointVector > 
+    boost::shared_ptr< DataPointVector >
     getLoggerData( String const& aFullPNString ) const
     {
         return getLogger( aFullPNString )->getData();
     }
 
     boost::shared_ptr< DataPointVector >
-    getLoggerData( String const& aFullPNString, 
+    getLoggerData( String const& aFullPNString,
                    Real const& startTime, Real const& endTime ) const
     {
         return getLogger( aFullPNString )->getData( startTime, endTime );
@@ -2192,26 +2200,26 @@ public:
 
     boost::shared_ptr< DataPointVector >
     getLoggerData( String const& aFullPNString,
-                   Real const& start, Real const& end, 
+                   Real const& start, Real const& end,
                    Real const& interval ) const
     {
         return getLogger( aFullPNString )->getData( start, end, interval );
     }
 
-    Real 
+    Real
     getLoggerStartTime( String const& aFullPNString ) const
     {
         return getLogger( aFullPNString )->getStartTime();
     }
 
-    Real 
+    Real
     getLoggerEndTime( String const& aFullPNString ) const
     {
         return getLogger( aFullPNString )->getEndTime();
     }
 
 
-    void setLoggerPolicy( String const& aFullPNString, 
+    void setLoggerPolicy( String const& aFullPNString,
                           Logger::Policy const& pol )
     {
         typedef PolymorphValue::Tuple Tuple;
@@ -2230,10 +2238,10 @@ public:
 
         return setLoggerPolicy( aFullPNString,
                 Logger::Policy(
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
                     PyFloat_AsDouble( static_cast< py::object >( aParamList[ 1 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
     }
 
     Logger::Policy
@@ -2242,7 +2250,7 @@ public:
         return getLogger( aFullPNString )->getLoggerPolicy();
     }
 
-    Logger::size_type 
+    Logger::size_type
     getLoggerSize( String const& aFullPNString ) const
     {
         return getLogger( aFullPNString )->getSize();
@@ -2429,7 +2437,7 @@ private:
         py::type_handle thePyTypeProcess;
         py::type_handle thePyTypeVariable;
         py::type_handle thePyTypeSystem;
-    };            
+    };
 
 public:
     Simulator( ModuleMaker< EcsObject >& anEcsObjectMaker )
@@ -2461,9 +2469,9 @@ public:
         do
         {
             Model::step();
-            
+
             --aCounter;
-            
+
             if( aCounter == 0 )
             {
                 stop();
@@ -2497,7 +2505,7 @@ public:
                 --aCounter;
             }
             while( aCounter != 0 );
-            
+
             handleEvent();
 
         }
@@ -2533,14 +2541,14 @@ public:
             while ( theRunningFlag )
             {
                 unsigned int aCounter( theEventCheckInterval );
-                do 
+                do
                 {
                     if( getTopEvent().getTime() > aStopTime )
                     {
                         stop();
                         break;
                     }
-                    
+
                     Model::step();
 
                     --aCounter;
@@ -2607,7 +2615,7 @@ public:
         default:
             THROW_EXCEPTION( NotImplemented, "not implemented" );
         }
-    
+
         theEcsObjectMaker.addClass( aModule );
     }
 
@@ -2810,7 +2818,7 @@ static void EcsObject___setattr__( py::back_reference< TecsObject_* > aSelf, py:
 try
 {
     py::handle<> aDescr( py::allow_null( PyObject_GetAttr( reinterpret_cast< PyObject* >( aSelf.source().ptr()->ob_type ), key.ptr() ) ) );
-    if ( !aDescr || !( aDescr->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) || !aDescr.get()->ob_type->tp_descr_set )
+    if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !aDescr.get()->ob_type->tp_descr_set )
     {
         PyErr_Clear();
         EcsObject* self = aSelf.get();
@@ -2867,7 +2875,7 @@ struct return_entity : public py::default_call_policies
                     else
                         return ( *this )( *ptr );
                 }
-                
+
                 PyObject* operator()( Entity const& x ) const
                 {
                     Entity* const ptr( const_cast< Entity* >( &x ) );
@@ -2914,7 +2922,7 @@ BOOST_PYTHON_MODULE( _ecs )
     STLIteratorWrapper< Process::VariableReferenceVector::const_iterator >::__class_init__();
 
     // without this it crashes when Logger::getData() is called. why?
-    import_array();
+    import_array_without_return();
 
     registerTupleConverters< std::pair< Real, String > >();
     PolymorphToPythonConverter::addToRegistry();
@@ -3044,7 +3052,7 @@ BOOST_PYTHON_MODULE( _ecs )
                        &Stepper::getPriority,
                        &Stepper::setPriority )
         .add_property( "StepInterval",
-                       &Stepper::getStepInterval, 
+                       &Stepper::getStepInterval,
                        &Stepper::setStepInterval )
         .add_property( "MaxStepInterval",
                        &Stepper::getMaxStepInterval,
@@ -3118,10 +3126,10 @@ BOOST_PYTHON_MODULE( _ecs )
             py::make_function(
                 &Logger::getLoggerPolicy,
                 return_copy_const_reference() ) )
-        .def( "getData", 
+        .def( "getData",
               ( boost::shared_ptr< DataPointVector >( Logger::* )( void ) const )
               &Logger::getData )
-        .def( "getData", 
+        .def( "getData",
               ( boost::shared_ptr< DataPointVector >( Logger::* )(
                 Real, Real ) const )
               &Logger::getData )
@@ -3161,7 +3169,7 @@ BOOST_PYTHON_MODULE( _ecs )
               &AbstractSimulator::getStepperList )
         .def( "getStepperPropertyList",
               &AbstractSimulator::getStepperPropertyList )
-        .def( "getStepperPropertyAttributes", 
+        .def( "getStepperPropertyAttributes",
               &AbstractSimulator::getStepperPropertyAttributes )
         .def( "setStepperProperty",
               &AbstractSimulator::setStepperProperty )
@@ -3209,46 +3217,46 @@ BOOST_PYTHON_MODULE( _ecs )
               &AbstractSimulator::loadEntityProperty )
         .def( "saveEntityProperty",
               &AbstractSimulator::saveEntityProperty )
-        .def( "getEntityPropertyAttributes", 
+        .def( "getEntityPropertyAttributes",
               &AbstractSimulator::getEntityPropertyAttributes )
         .def( "getEntityClassName",
               &AbstractSimulator::getEntityClassName )
 
         // Logger-related methods
         .def( "getLoggerList",
-                    &AbstractSimulator::getLoggerList )    
+                    &AbstractSimulator::getLoggerList )
         .def( "createLogger",
               ( Logger* ( AbstractSimulator::* )( String const& ) )
                     &AbstractSimulator::createLogger,
               py::return_internal_reference<> () )
-        .def( "createLogger",                                 
+        .def( "createLogger",
               ( Logger* ( AbstractSimulator::* )( String const&, Logger::Policy const& ) )
               &AbstractSimulator::createLogger,
               py::return_internal_reference<>() )
-        .def( "createLogger",                                 
+        .def( "createLogger",
               ( Logger* ( AbstractSimulator::* )( String const&, py::object ) )
                     &AbstractSimulator::createLogger,
               py::return_internal_reference<> () )
         .def( "getLogger", &AbstractSimulator::getLogger,
               py::return_internal_reference<>() )
         .def( "removeLogger", &AbstractSimulator::removeLogger )
-        .def( "getLoggerData", 
+        .def( "getLoggerData",
               ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )(
                     String const& ) const )
               &AbstractSimulator::getLoggerData )
-        .def( "getLoggerData", 
+        .def( "getLoggerData",
               ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )(
                     String const&, Real const&, Real const& ) const )
               &AbstractSimulator::getLoggerData )
         .def( "getLoggerData",
               ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )(
-                     String const&, Real const&, 
+                     String const&, Real const&,
                      Real const&, Real const& ) const )
               &AbstractSimulator::getLoggerData )
         .def( "getLoggerStartTime",
-              &AbstractSimulator::getLoggerStartTime )    
+              &AbstractSimulator::getLoggerStartTime )
         .def( "getLoggerEndTime",
-              &AbstractSimulator::getLoggerEndTime )        
+              &AbstractSimulator::getLoggerEndTime )
         .def( "getLoggerPolicy",
               &AbstractSimulator::getLoggerPolicy )
         .def( "setLoggerPolicy",
@@ -3293,7 +3301,7 @@ BOOST_PYTHON_MODULE( _ecs )
               ( void ( Simulator::* )() )
               &Simulator::run )
         .def( "run",
-              ( void ( Simulator::* )( Real ) ) 
+              ( void ( Simulator::* )( Real ) )
               &Simulator::run )
         .def( "setEventHandler",
               &Simulator::setEventHandler )
