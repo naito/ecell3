@@ -100,9 +100,9 @@ void *
 #else
 void
 #endif
-initialize()
+import_array_without_return()
 {
-  import_array_without_return();
+  import_array();
 }
 
 using namespace libecs;
