@@ -95,6 +95,16 @@ typedef int Py_ssize_t;
     } while (0)
 #endif
 
+#if PY_VERSION_HEX >= 0x03000000
+void *
+#else
+void
+#endif
+initialize()
+{
+  import_array_without_return();
+}
+
 using namespace libecs;
 namespace py = boost::python;
 
@@ -2910,6 +2920,9 @@ BOOST_PYTHON_MODULE( _ecs )
     DataPointVectorWrapper< LongDataPoint >::__class_init__();
     STLIteratorWrapper< Process::VariableReferenceVector::const_iterator >::__class_init__();
 
+    // without this it crashes when Logger::getData() is called. why?
+    import_array_without_return();
+
     registerTupleConverters< std::pair< Real, String > >();
     PolymorphToPythonConverter::addToRegistry();
     StringVectorToPythonConverter::addToRegistry();
@@ -3295,11 +3308,4 @@ BOOST_PYTHON_MODULE( _ecs )
         .def( "getDMSearchPath", &Simulator::getDMSearchPath )
         .def( "addPythonDM", &Simulator::addPythonDM )
         ;
-
-    /* Needed to use Numpy routines */
-    /* Note -- import_array() is a macro that behaves differently in Python2.x
-     * vs. Python 3. See the discussion at:
-     * https://groups.google.com/d/topic/astropy-dev/6_AesAsCauM/discussion
-     */
-    import_array();
 }
