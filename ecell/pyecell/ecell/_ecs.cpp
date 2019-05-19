@@ -847,8 +847,8 @@ struct DataPointVectorWrapper< LongDataPoint >::GetItemFunc
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.DataPointVectorWrapper.Iterator", /* tp_name */
+  0,					/* ob_size */
 	sizeof( typename DataPointVectorWrapper::Iterator ), /* tp_basicsize */
 	0,					/* tp_itemsize */
 	/* methods */
@@ -892,8 +892,8 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
+  "ecell._ecs.DataPointVector",
 	0,
-	"ecell._ecs.DataPointVector",
 	sizeof(DataPointVectorWrapper),
 	0,
 	(destructor)&DataPointVectorWrapper::__dealloc__, /* tp_dealloc */
@@ -1017,8 +1017,8 @@ public:
 template< typename Titer_ >
 PyTypeObject STLIteratorWrapper< Titer_ >::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.STLIteratorWrapper", /* tp_name */
+  0,					/* ob_size */
 	sizeof( STLIteratorWrapper ), /* tp_basicsize */
 	0,					/* tp_itemsize */
 	/* methods */
@@ -1113,8 +1113,8 @@ public:
 
 PyTypeObject PropertyAttributesIterator::__class__ = {
 	PyObject_HEAD_INIT( &PyType_Type )
-	0,					/* ob_size */
 	"ecell._ecs.PropertyAttributesIterator", /* tp_name */
+  0,					/* ob_size */
 	sizeof( PropertyAttributesIterator ), /* tp_basicsize */
 	0,					/* tp_itemsize */
 	/* methods */
