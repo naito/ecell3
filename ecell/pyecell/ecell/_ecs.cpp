@@ -798,7 +798,7 @@ public:
 
         Py_INCREF( self );
         PyObject* _cps( PyCapsule_New( (void *)aif, "___array__struct",
-                __dealloc_array_struct ));
+                NULL ));
         PyCapsule_SetContext( _cps, self );
         return _cps;
     }
