@@ -764,10 +764,10 @@ public:
         return toPyObject( &getItem( *self->theVector, idx ) );
     }
 
-    void __dealloc_array_struct( void* ptr )
+    static void __dealloc_array_struct( PyObject* __array_struct )
     {
-        Py_XDECREF( PyCapsule_GetContext( ptr ));
-        PyMem_FREE( ptr );
+        Py_XDECREF( PyCapsule_GetContext( __array_struct ));
+        PyMem_FREE( __array_struct );
     }
 
     static PyObject* __get___array__struct( DataPointVectorWrapper* self,
@@ -796,10 +796,10 @@ public:
         aif->descr = NULL;
 
         Py_INCREF( self );
-        PyObject* _cps( PyCapsule_New( (void *)aif, "___array__struct",
+        PyObject* __array_struct( PyCapsule_New( (void *)aif, "__array_struct",
                 __dealloc_array_struct ));
-        PyCapsule_SetContext( _cps, self );
-        return _cps;
+        PyCapsule_SetContext( __array_struct, self );
+        return __array_struct;
     }
 
     static int __contains__( DataPointVectorWrapper* self, PyObject *e )
