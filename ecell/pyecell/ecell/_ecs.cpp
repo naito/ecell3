@@ -103,7 +103,7 @@ inline boost::optional< py::object > generic_getattr( py::object anObj, const ch
     py::handle<> aRetval( py::allow_null( PyObject_GenericGetAttr(
         anObj.ptr(),
         py::handle<>(
-            PyUString_InternFromString(
+            PyUnicode_InternFromString(
                 const_cast< char* >( aName ) ) ).get() ) ) );
     if ( !aRetval )
     {
@@ -867,7 +867,7 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -911,7 +911,7 @@ PyTypeObject DataPointVectorWrapper< Tdp_ >::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_SEQUENCE_IN,		/* tp_flags */
+	0,		/* tp_flags */
  	0,				/* tp_doc */
  	(traverseproc)&DataPointVectorWrapper::__traverse__,		/* tp_traverse */
  	0,			/* tp_clear */
@@ -1037,7 +1037,7 @@ PyTypeObject STLIteratorWrapper< Titer_ >::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -1133,7 +1133,7 @@ PyTypeObject PropertyAttributesIterator::__class__ = {
 	PyObject_GenericGetAttr,		/* tp_getattro */
 	0,					/* tp_setattro */
 	0,					/* tp_as_buffer */
-	Py_TPFLAGS_HAVE_CLASS | Py_TPFLAGS_HAVE_WEAKREFS | Py_TPFLAGS_HAVE_ITER,/* tp_flags */
+	0,/* tp_flags */
 	0,					/* tp_doc */
 	0,	/* tp_traverse */
 	0,					/* tp_clear */
@@ -1703,7 +1703,7 @@ public:
         }
 
         descrgetfunc aDescrGetFunc( anIsContinuousDescr.get()->ob_type->tp_descr_get );
-        if ( ( anIsContinuousDescr.get()->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) && aDescrGetFunc )
+        if ( ( anIsContinuousDescr.get()->ob_type->tp_flags & 0 ) && aDescrGetFunc )
         {
             return py::extract< bool >( py::handle<>( aDescrGetFunc( anIsContinuousDescr.get(), aSelf, reinterpret_cast< PyObject* >( aSelf->ob_type ) ) ).get() );
         }
@@ -2811,7 +2811,7 @@ static void EcsObject___setattr__( py::back_reference< TecsObject_* > aSelf, py:
 try
 {
     py::handle<> aDescr( py::allow_null( PyObject_GetAttr( reinterpret_cast< PyObject* >( aSelf.source().ptr()->ob_type ), key.ptr() ) ) );
-    if ( !aDescr || !( aDescr->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) || !aDescr.get()->ob_type->tp_descr_set )
+    if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !aDescr.get()->ob_type->tp_descr_set )
     {
         PyErr_Clear();
         EcsObject* self = aSelf.get();
