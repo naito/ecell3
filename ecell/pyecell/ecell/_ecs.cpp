@@ -145,7 +145,7 @@ struct PolymorphToPythonConverter
         case PolymorphValue::REAL :
             return PyFloat_FromDouble( aPolymorph.as<Real>() );
         case PolymorphValue::INTEGER :
-            return PyInt_FromLong( aPolymorph.as<Integer>() );
+            return PyLong_FromLong( aPolymorph.as<Integer>() );
         case PolymorphValue::TUPLE :
             return rangeToPyTuple( aPolymorph.as<PolymorphValue::Tuple const&>() );
         case PolymorphValue::STRING :
@@ -301,9 +301,9 @@ struct PolymorphRetriever
         {
             return Polymorph( PyFloat_AS_DOUBLE( aPyObjectPtr ) );
         }
-        else if( PyInt_Check( aPyObjectPtr ) )
+        else if( PyLong_Check( aPyObjectPtr ) )
         {
-            return Polymorph( PyInt_AS_LONG( aPyObjectPtr ) );
+            return Polymorph( PyLong_AS_LONG( aPyObjectPtr ) );
         }
         else if( PyBytes_Check( aPyObjectPtr ) )
         {
@@ -342,7 +342,7 @@ struct PolymorphRetriever
     static bool isConvertible( PyObject* aPyObjectPtr )
     {
         return PyFloat_Check( aPyObjectPtr )
-                || PyInt_Check( aPyObjectPtr )
+                || PyLong_Check( aPyObjectPtr )
                 || PyBytes_Check( aPyObjectPtr )
                 || PyUnicode_Check( aPyObjectPtr )
                 || PySequence_Check( aPyObjectPtr );
@@ -545,9 +545,9 @@ static PyObject* getLibECSVersionInfo()
 {
     PyObject* aPyTuple( PyTuple_New( 3 ) );
 
-    PyTuple_SetItem( aPyTuple, 0, PyInt_FromLong( getMajorVersion() ) );
-    PyTuple_SetItem( aPyTuple, 1, PyInt_FromLong( getMinorVersion() ) );
-    PyTuple_SetItem( aPyTuple, 2, PyInt_FromLong( getMicroVersion() ) );
+    PyTuple_SetItem( aPyTuple, 0, PyLong_FromLong( getMajorVersion() ) );
+    PyTuple_SetItem( aPyTuple, 1, PyLong_FromLong( getMinorVersion() ) );
+    PyTuple_SetItem( aPyTuple, 2, PyLong_FromLong( getMicroVersion() ) );
 
     return aPyTuple;
 }
@@ -1240,9 +1240,9 @@ public:
 
     VariableReference const& __getitem__( py::object name )
     {
-        if ( PyInt_Check( name.ptr() ) )
+        if ( PyLong_Check( name.ptr() ) )
         {
-            Integer id( PyInt_AS_LONG( name.ptr() ) );
+            Integer id( PyLong_AS_LONG( name.ptr() ) );
             return theProc->getVariableReference( id );
         }
         else if ( PyBytes_Check( name.ptr() ) )
@@ -2155,10 +2155,10 @@ public:
 
         return createLogger( aFullPNString,
                 Logger::Policy(
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
                     PyFloat_AsDouble( static_cast< py::object >( aParamList[ 1 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
     }
 
     py::list getLoggerList() const
@@ -2230,10 +2230,10 @@ public:
 
         return setLoggerPolicy( aFullPNString,
                 Logger::Policy(
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 0 ] ).ptr() ),
                     PyFloat_AsDouble( static_cast< py::object >( aParamList[ 1 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
-                    PyInt_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 2 ] ).ptr() ),
+                    PyLong_AsLong( static_cast< py::object >( aParamList[ 3 ] ).ptr() ) ) );
     }
 
     Logger::Policy
