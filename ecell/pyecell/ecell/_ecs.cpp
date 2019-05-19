@@ -2920,13 +2920,6 @@ BOOST_PYTHON_MODULE( _ecs )
 
     PolymorphRetriever::addToRegistry();
 
-    /* Needed to use Numpy routines
-       import_array() macro is meant to be used at the end of the module init
-       function.
-       https://groups.google.com/forum/#!topic/astropy-dev/6_AesAsCauM/discussion
-    */
-    import_array();
-
     // functions
     py::register_exception_translator< Exception >( &translateException );
     py::register_exception_translator< std::exception >( &translateException );
@@ -3302,4 +3295,11 @@ BOOST_PYTHON_MODULE( _ecs )
         .def( "getDMSearchPath", &Simulator::getDMSearchPath )
         .def( "addPythonDM", &Simulator::addPythonDM )
         ;
+
+    /* Needed to use Numpy routines */
+    /* Note -- import_array() is a macro that behaves differently in Python2.x
+     * vs. Python 3. See the discussion at:
+     * https://groups.google.com/d/topic/astropy-dev/6_AesAsCauM/discussion
+     */
+    import_array();
 }
