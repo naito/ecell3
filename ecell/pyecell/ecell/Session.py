@@ -488,7 +488,7 @@ class Session:
                 aValue = anEml.getEntityProperty( aFullPN )
                 try:
                     self.theSimulator.loadEntityProperty( aFullPN, aValue )
-                except RuntimeError, e:
+                except RuntimeError( e ):
                     raise RuntimeError( 'Failed to set Entity property [{}],'\
                             .format( aFullPN ) + 'value =:\n{}\n'.format( \
                             str( aValue ) + str( e )))
@@ -504,7 +504,7 @@ class Session:
 
             try:
                 self.theSimulator.createEntity( aClassName, aFullID )
-            except RuntimeError, e:
+            except RuntimeError( e ):
                 raise RuntimeError( 'Failed to create Entity [%s]: '.format( \
                                                             aFullID + str( e )))
 
