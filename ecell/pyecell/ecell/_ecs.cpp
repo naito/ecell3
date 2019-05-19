@@ -766,7 +766,7 @@ public:
 
     void __dealloc_array_struct( void* ptr )
     {
-        Py_XDECREF( self );
+        Py_XDECREF( PyCapsule_GetContext( ptr ));
         PyMem_FREE( ptr );
     }
 
