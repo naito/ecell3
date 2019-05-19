@@ -2910,9 +2910,6 @@ BOOST_PYTHON_MODULE( _ecs )
     DataPointVectorWrapper< LongDataPoint >::__class_init__();
     STLIteratorWrapper< Process::VariableReferenceVector::const_iterator >::__class_init__();
 
-    // without this it crashes when Logger::getData() is called. why?
-    import_array();
-
     registerTupleConverters< std::pair< Real, String > >();
     PolymorphToPythonConverter::addToRegistry();
     StringVectorToPythonConverter::addToRegistry();
@@ -2922,6 +2919,13 @@ BOOST_PYTHON_MODULE( _ecs )
     PythonToFullIDConverter::addToRegistry();
 
     PolymorphRetriever::addToRegistry();
+
+    /* Needed to use Numpy routines
+       import_array() macro is meant to be used at the end of the module init
+       function.
+       https://groups.google.com/forum/#!topic/astropy-dev/6_AesAsCauM/discussion
+    */
+    import_array();
 
     // functions
     py::register_exception_translator< Exception >( &translateException );
