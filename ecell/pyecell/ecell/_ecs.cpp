@@ -797,9 +797,11 @@ public:
         aif->descr = NULL;
 
         Py_INCREF( self );
-        return PyCapsule_New( aif, self,
+        PyObject* _cps( PyCapsule_New( aif, "___array__struct",
                 reinterpret_cast< void(*)(void*, void*) >(
-                    __dealloc_array_struct ) );
+                    __dealloc_array_struct ) ));
+        PyCapsule_SetContext( _cps, self );
+        return _cps;
     }
 
     static int __contains__( DataPointVectorWrapper* self, PyObject *e )
