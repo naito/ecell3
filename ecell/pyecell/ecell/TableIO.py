@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """TableIO.py
-A module for reading ASCII tables into NumPy arrays (and lists). 
+A module for reading ASCII tables into NumPy arrays (and lists).
 
 Copyright (C) 2000 Michael A. Miller <mmiller@debian.org>
 Time-stamp: <2002-03-08 12:13:43 miller>
@@ -25,7 +25,7 @@ USA.
 
 __version__ = "$Revision$"
 # $Source$
-   
+
 import numpy
 import _tableio
 import types
@@ -56,12 +56,12 @@ def extractColumns(t, columns='all'):
         for c in range(t['columns']):
             data.append(numpy.ravel(numpy.take(a, [c], 1)))
     else:
-        if type(columns) == types.ListType \
-           or type(columns) == types.TupleType:
+        if type(columns) == list \
+           or type(columns) == tuple:
             data = []
             for c in columns:
                 data.append(numpy.ravel(numpy.take(a, [c], 1)))
-                
+
     return data
 
 def selectColumns(t, columns):
@@ -69,7 +69,7 @@ def selectColumns(t, columns):
     a.shape = (t['rows'],t['columns'])
     data = []
     for c in columns:
-        data.append(numpy.ravel(numpy.take(a, [c], 1)))        
+        data.append(numpy.ravel(numpy.take(a, [c], 1)))
     return data
 
 def writeArray(file, data, append=0 ):
@@ -83,7 +83,7 @@ def writeArray(file, data, append=0 ):
     return status
 
 def writeTable(t):
-    if 'append' in t.keys():
+    if 'append' in list(t.keys()):
         status = _tableio.writeTable(t['filename'], t['data'], t['rows'], t['columns'],t['append'])
     else:
         status = _tableio.writeTable(t['filename'], t['data'], t['rows'], t['columns'])
@@ -93,7 +93,7 @@ def TableFromColumns(list):
     t = {}
     for l in map(len,list):
         if l != len(list[0]):
-            print 'Columns must all have the same length', map(len,list)
+            print(( 'Columns must all have the same length', list(map(len,list))))
     else:
         t['filename'] = ''
         t['rows'] = len(list[0])
@@ -104,7 +104,7 @@ def TableFromColumns(list):
 def test():
     # Make a table and write it to a file:
     file = 'TableIO.test-data'
-    print 'Writing a table to', file
+    print(( 'Writing a table to', file ))
     t = {}
     t['columns'] = 3
     t['rows'] = 5
@@ -118,33 +118,30 @@ def test():
     writeTable(t)
 
     # Read it back in:
-    print 'Reading it back as columns'   
+    print( 'Reading it back as columns' )
     [x,y,z] = readColumns(file, '#!')
     [a, b] = readColumns(file, '#!', [0,2])
-    print 'x =', x
-    print 'y =', y
-    print 'z =', z
+    print(( 'x =', x ))
+    print(( 'y =', y ))
+    print(( 'z =', z ))
 
     # Creat a table from columns and write it out
-    print 'Creating a table from columns and writing it'
+    print( 'Creating a table from columns and writing it' )
     u = TableFromColumns([x,y,z,x*x,y,z-y])
     u['filename'] = file + '2'
     writeTable(u)
-    print 'Table is', u
-
-    print 'Read it back as a table:'
+    print(( 'Table is', u ))
+    print( 'Read it back as a table:' )
     t = readTable(file,'#!')
-    print t
-
-    print '... and as an array'
+    print( t )
+    print( '... and as an array' )
     a = readTableAsArray(file,'!#')
-    print type(a), a.shape
-    print a
-
-    print 'Writing array to file', file+'3'
+    print(( type(a), a.shape ))
+    print( a )
+    print(( 'Writing array to file', file+'3' ))
     writeArray(file+'3', a)
 
-    print 'Testing comments'
+    print( 'Testing comments' )
     f = open(file+'4','w')
     f.writelines(['# A comment line\n',
                   '1 2 3 4 5\n',
@@ -166,6 +163,6 @@ def test():
     f.close()
     t = readTable(file+'5','#X!?')
 
-    
+
 if __name__ == '__main__':
     test()

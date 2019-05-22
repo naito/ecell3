@@ -6,7 +6,7 @@ static char vcid[] = "$Id$";
 /* *************************************************************************** */
 /* _tableio.c   	--  Fri Feb 20 1998
    A module for reading ASCII tables from files to Python lists.
-   
+
    Important Note: the Python wrapper that calls readTable is
    responsible for making sure that things like '1', '5' and 'e' are
    not valid comment characters.  readTable is quite happy to treat
@@ -16,21 +16,21 @@ static char vcid[] = "$Id$";
    Copyright (C) 2000 Michael A. Miller <mmiller@debian.org>
 
    Time-stamp: <2000-08-09 17:09:14 miller>
-   
+
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
    published by the Free Software Foundation; either version 2 of the
    License, or (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-   USA. 
+   USA.
 
 */
 
@@ -81,14 +81,14 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
 
   /* Check that the file exists and is readable */
   infile = fopen(filename, "r");
-  if ( infile == NULL ) 
+  if ( infile == NULL )
     {
       onError("Error opening input file");
     }
 
   /* Determine how many rows and columns are here by skipping past all
      comment lines and parsing the first data line */
-  while (fgets(line, sizeof(line), infile) != NULL) 
+  while (fgets(line, sizeof(line), infile) != NULL)
     {
       /* if ( (strchr(line,'#') == NULL) && (strchr(line,'!') == NULL) ) */
       if ( strpbrk(line,commentchars) == NULL )
@@ -101,11 +101,11 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
   myList = PyList_New(0);
 
   /* Now go through the line with strtok and see if I can figure out
-     how many whitespace delimited fields there are.  
-     Notes: 
+     how many whitespace delimited fields there are.
+     Notes:
      - The \n is necessary to take care of trailing whitespace.
      - At each step I check that I can convert the field to a float
-       and stick it in a list.  If I can't, I quit.     
+       and stick it in a list.  If I can't, I quit.
   */
   N = -1;
   ct = " \t\n";
@@ -114,72 +114,72 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
   if ( string != NULL )
     { /* there is at least one field */
       N = 1;
-      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );	
+      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );
       if ( status )
 	{
 	  Py_XDECREF(myList);
 	  onError("Error appending to list");
 	}
-      while (1) 
+      while (1)
 	{
 	  string = strtok( NULL, ct );
-	  if ( string != NULL ) 
+	  if ( string != NULL )
 	    {
 	      N = N + 1;
-	      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );	
-	      if ( status ) 
+	      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );
+	      if ( status )
 		{
 		  Py_XDECREF(myList);
 		  onError("Error appending to list");
 		}
 	    }
-	  else 
+	  else
 	    {
 	      break;
 	    }
 	}
     }
-  
+
   /* Go through the rest of the file and fill the list */
   M = 1;
-  while (fgets(line, sizeof(line), infile) != NULL) 
+  while (fgets(line, sizeof(line), infile) != NULL)
     {
       /* If this is not a comment line, treat it as data */
       /* if ( (strchr(line,'#') == NULL) && (strchr(line,'!') == NULL) ) */
       if ( strpbrk(line,commentchars) == NULL )
 	{
 	  n = -1;
-	  
+
 	  string = strtok( line, ct );
 	  if ( string != NULL )
 	    { /* there is at least one field */
 	      n = 1;
-	      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );	
-	      if ( status ) 
+	      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );
+	      if ( status )
 		{
 		  Py_XDECREF(myList);
 		  onError("Error appending to list");
 		}
-	
-	      while ( 1 ) 
+
+	      while ( 1 )
 		{
 		  string = strtok( NULL, ct );
-		  if ( string != NULL ) 
+		  if ( string != NULL )
 		    {
 		      n = n + 1;
-		      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );	
-		      if ( status ) 
+		      status = PyList_Append( myList, PyFloat_FromDouble(atof(string)) );
+		      if ( status )
 			{
 			  Py_XDECREF(myList);
-			  onError("Error appending to list"); 
+			  onError("Error appending to list");
 			}
 		    }
-		  else 
+		  else
 		    {
 		      break;
 		    }
 		}
-	      if ( n != N ) 
+	      if ( n != N )
 		{
 		  Py_XDECREF(myList);
 		  onError("Error - table has variable number of columns");
@@ -190,14 +190,14 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
 	    }
 	}
     }
-  
+
   /* Close the input file */
   status = fclose(infile);
   if ( status ) {
     Py_XDECREF(myList);
     onError("Error closing input file");
   }
-  
+
   /* If no data was found, report an error and return NULL */
   if ( N == -1 )
     { /* An apparently empty file */
@@ -215,7 +215,7 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
       Py_XDECREF(myDict);
       onError("Error adding data to dictionary");
     }
-  
+
   key = "rows";
   status = PyDict_SetItemString(myDict, key, Py_BuildValue("i", M));
   if ( status )
@@ -236,19 +236,19 @@ tableio_readTable(PyObject *self, PyObject *args)       /* args: (string) */
 
   key = "filename";
   status = PyDict_SetItemString(myDict, key, Py_BuildValue("s", filename));
-  if ( status ) 
+  if ( status )
     {
       Py_XDECREF(myList);
       Py_XDECREF(myDict);
       onError("Error adding file name to dictionary");
     }
-  
+
   /* I'm done with my python objects, so DECREF them.  The list can be
      XDECREF'ed, since it isn't used by anyone else. */
   Py_XDECREF(myList);
 
   /* Finally, return the dictionary to Python */
-  return (PyObject *)myDict; 
+  return (PyObject *)myDict;
 
 }
 
@@ -287,7 +287,7 @@ tableio_writeTable(PyObject *self, PyObject *args)       /* args: (string) */
       outfile = fopen(filename, "w");
     }
 
-  if ( outfile == NULL ) 
+  if ( outfile == NULL )
     {
       onError("Error opening output file");
     }
@@ -296,9 +296,9 @@ tableio_writeTable(PyObject *self, PyObject *args)       /* args: (string) */
 
   /* Write out the data */
   item = -1;
-  for (i=0; i<M; i++) 
+  for (i=0; i<M; i++)
     {
-      for (j=0; j<N; j++) 
+      for (j=0; j<N; j++)
 	{
 	  item = item + 1;
 	  obj =  PyList_GetItem(myList,item);
@@ -332,23 +332,46 @@ static struct PyMethodDef tableio_methods[] = {
 
 /* *************************************************************************** */
 /* Initialization function (import-time) */
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef init_tableio_def = {
+  PyModuleDef_HEAD_INIT,
+  "_tableio",
+  NULL,
+  -1,
+  tableio_methods
+};
+#else
+#endif
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC
+PyInit__tableio(void)
+#else
 void
 init_tableio()
+#endif
 {
   PyObject *m, *d;
 
   /* create the module and add the functions */
+# if PY_MAJOR_VERSION >= 3
+  m = PyModule_Create(&init_tableio_def);
+# else
   m = Py_InitModule("_tableio", tableio_methods);        /* registration hook */
-  
+# endif
+
   /* add symbolic constants to the module */
   d = PyModule_GetDict(m);
   ErrorObject = Py_BuildValue("s", "tableio.error");   /* export exception */
   PyDict_SetItemString(d, "error", ErrorObject);       /* add more if need */
-  
+
   /* check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module tableio");
+
+# if PY_MAJOR_VERSION >= 3
+    return m;
+# endif
 }
 
 /* End of tableio.c */

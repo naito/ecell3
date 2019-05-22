@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 #
 # written by Masahiro Sugimoto <sugi@bioinformatics.org> at
@@ -107,7 +107,7 @@ class ECDDataFile( DataFile ):
             self.setFileName( aFileName )
 
         def readOneLineData( aInputFile, aKey ):
-            aBuff = aInputFile.readline() 
+            aBuff = aInputFile.readline()
             if aBuff.find( aKey ) != 0:
                 raise "Error: %s is not ECD format. '%s' line can't be found." %aKey
             return aBuff[len(aKey):].strip()
@@ -124,7 +124,7 @@ class ECDDataFile( DataFile ):
         #FIXME: do not depend on the order of header elements
 
         # --------------------------------------------------------
-        # [1] read DATA: 
+        # [1] read DATA:
         # --------------------------------------------------------
         self.setDataName( readOneLineData(aInputFile,'#DATA:') )
 
@@ -154,7 +154,7 @@ class ECDDataFile( DataFile ):
 
             # if EOF is found, breaks this loop.
             if aBuff == '':
-                break	
+                break
 
         # if separator is found, breaks this loop.
             if aBuff.find( '#----------------------' ) == 0:
@@ -166,7 +166,7 @@ class ECDDataFile( DataFile ):
         # [6] reads matrix data
         # ----------------------------------------------------------
 
-         #close the file 
+         #close the file
         aInputFile.close()
 
         self.setData( TableIO.readTableAsArray( self.theFileName, '#' ) )
@@ -194,26 +194,26 @@ class ECDDataFile( DataFile ):
     # end of setFileName
 
     # ------------------------------------------------------------------
-    # setDataName 
+    # setDataName
     #
     # aDataName(string) : a value of DATA
     #
     # return -> None
     # ------------------------------------------------------------------
     def setDataName( self, aDataName ):
-        
+
         self.theDataName = aDataName
 
     # end of setDataName
 
     # ------------------------------------------------------------------
-    # getDataName 
+    # getDataName
     #
     # return -> the value of DATA
     # ------------------------------------------------------------------
     def getDataName( self ):
-        
-        return self.theDataName 
+
+        return self.theDataName
 
     # end of getDataName
 
@@ -226,7 +226,7 @@ class ECDDataFile( DataFile ):
     # return -> None
     # ------------------------------------------------------------------
     def setLabel( self, aLabel ):
-        
+
         self.theLabel = aLabel.split()
 
     # end of setLabel
@@ -238,7 +238,7 @@ class ECDDataFile( DataFile ):
     # return -> the value of label
     # ------------------------------------------------------------------
     def getLabel( self ):
-        
+
         return self.theLabel
 
     # end of getLabel
@@ -264,9 +264,9 @@ class ECDDataFile( DataFile ):
     # return -> the value of NOTE
     # ------------------------------------------------------------------
     def getNote( self ):
-        
+
         return self.theNote
-            
+
     # end of getNote
 
     # ------------------------------------------------------------------
@@ -293,7 +293,7 @@ class ECDDataFile( DataFile ):
     # ------------------------------------------------------------------
     def getSizeOfColumn( self ):
 
-        return self.theSizeOfColumn 
+        return self.theSizeOfColumn
 
     # end of getSizeOfColumn
 
@@ -321,7 +321,7 @@ class ECDDataFile( DataFile ):
     # ------------------------------------------------------------------
     def getSizeOfLine( self ):
 
-        return self.theSizeOfLine 
+        return self.theSizeOfLine
 
     # end of getSizeOfLine
 
@@ -389,7 +389,7 @@ class ECDDataFile( DataFile ):
     # ------------------------------------------------------------------
     def getHeaderList( self ):
 
-        aHeaderList = []        
+        aHeaderList = []
         aHeaderList.append( '#DATA: %s' %self.theDataName )
         aHeaderList.append( '#SIZE: %d %d' %(self.theSizeOfColumn,self.theSizeOfLine) )
         aHeaderList.append( '#LABEL: %s' % '\t'.join( self.theLabel ) )
@@ -434,15 +434,13 @@ if __name__ == "__main__":
         aMat = ((3,4),(10,20),(2000,111))
 
         a.setData( aMat )
-        
+
         a.save('hoge')
         del a
-        
+
         b = ECDDataFile()
         b.load('hoge')
-        print b.getHeaderString()
+        print(( b.getHeaderString()))
         b.save('hoge1')
 
     main()
-
-

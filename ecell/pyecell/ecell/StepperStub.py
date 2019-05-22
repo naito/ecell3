@@ -33,7 +33,7 @@
 #
 
 #from ecell.ObjectStub import *
-from ObjectStub import *
+from .ObjectStub import *
 
 # ---------------------------------------------------------------
 # StepperStub -> ObjectStub

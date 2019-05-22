@@ -90,7 +90,7 @@ class PluginModule:
 
         aConstructor = self.theModule.__dict__[self.theName]
         anArgumentTuple = ( self.theDirectoryName,  data, pluginManager, rootWidget )
-        instance = apply( aConstructor, anArgumentTuple )
+        instance = aConstructor(*anArgumentTuple)
         instance.theParent = parent
         return instance
     
