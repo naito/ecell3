@@ -120,7 +120,7 @@ class Session:
         # checks the type of aModel
 
         if isinstance( aModelStr, str ):
-            aModel_StringIO = StringIO.StringIO( aModelStr )
+            aModel_StringIO = StringIO( aModelStr )
             if aModelStr.strip()[ 0:5 ] == "<?xml":
                 anEml = eml.Eml( aModel_StringIO )
             else:
