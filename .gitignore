@@ -116,3 +116,11 @@ ecell/pyecell/ecell/util.py.bak
 make.190522a.log
 make.190524a.log
 make.190524b.log
+ecell/pyecell/ecell3-cellml2eml.in.bak
+ecell/pyecell/ecell3-em2eml.in.bak
+ecell/pyecell/ecell3-em2python.in.bak
+ecell/pyecell/ecell3-eml2em.in.bak
+ecell/pyecell/ecell3-eml2sbml.in.bak
+ecell/pyecell/ecell3-sbml2eml.in.bak
+ecell/pyecell/ecell3-session-manager.in.bak
+ecell/pyecell/ecell3-session.in.bak
