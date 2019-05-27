@@ -62,8 +62,8 @@ class Console:
 
         # flatten class methods and object properties so that
         # 'self.' isn't needed for each method calls in __the script
-        aKeyList = list( self.session.__dict__.keys() +\
-                         self.session.__class__.__dict__.keys() )
+        aKeyList = list( list(self.session.__dict__.keys()) +\
+                         list(self.session.__class__.__dict__.keys()) )
         aDict = {}
         for aKey in aKeyList:
             if not aKey.startswith('__'):
@@ -88,7 +88,7 @@ class Console:
         aContext = self.__createScriptContext( parameters )
 
         # execute esm file
-        execfile( esmfile, aContext )
+        exec(compile(open( esmfile, "rb" ).read(), esmfile, 'exec'), aContext)
 
     def interact( self, parameters = {} ):
         ''' methods for intaractive mode '''
@@ -106,7 +106,7 @@ class Console:
 
 def usage():
     global programName
-    print '''
+    print('''
 %(appname)s -- invoke ecell3-session-manager python intract mode or
                run esm file
 
@@ -141,7 +141,7 @@ Configurations:
     Example: 
       ECELL3_DM_PATH=/home/user/dm%(pathsep)s/home/user/dm_other %(appname)s
 
-'''% { 'appname': programName, 'pathsep': os.pathsep }
+'''% { 'appname': programName, 'pathsep': os.pathsep })
 
 def main( argv ):
     global programName
@@ -199,7 +199,7 @@ def main( argv ):
             except:
                 import traceback 
                 anErrorMessageList = traceback.format_exception(
-                    sys.exc_type, sys.exc_value, sys.exc_traceback )
+                    sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2] )
                 for aLine in anErrorMessageList: 
                     sys.stderr.write( aLine )
                 sys.stderr.write(
@@ -215,7 +215,7 @@ def main( argv ):
                 return w55 
 
             # add parameters to aParameters 
-            for aKeyString in anEvaluatedArg.keys():
+            for aKeyString in list(anEvaluatedArg.keys()):
                 aParameters[ aKeyString ] = anEvaluatedArg[ aKeyString ]
         elif anOption in ( '-c', '--concurrency' ):
             # check the existence of value

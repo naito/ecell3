@@ -23,8 +23,7 @@ import ecell.emparser
 
 def usage():
     aProgramName = os.path.basename( sys.argv[0] )
-    print \
-    '''%(appname)s -- convert a EM file to a EML file
+    print('''%(appname)s -- convert a EM file to a EML file
 
 Usage:
     %(appname)s [-h] [-o EMLFILE] [-p PATCHFILE] infile.em
@@ -36,7 +35,7 @@ Options:
     -p or --patch=PATCHFILE : Read PATCHFILE, override parameters by the input
                               and then produce EMLFILE.
     -E or --preprocess      : Preprocessing only. Implies -o -.
-''' % { 'appname': aProgramName }
+''' % { 'appname': aProgramName })
 
 def main():
     try:
@@ -125,7 +124,7 @@ def main():
     aString = anEmlObject.asString()
     
     if anEmlFileName == '-':
-        print aString
+        print(aString)
     else:
         # Default automatic overwrite mode
         if os.path.isfile(anEmlFileName) and aForceFlag:

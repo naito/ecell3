@@ -39,20 +39,20 @@ def expandValueList( aValue, aLevel=0 ):
     #              (3) list (or tuple).
 
     # (1) string.  Quote it if necessary.
-    if aType == types.StringType:
+    if aType == bytes:
         if QuoteRe.match( aValue ) is None:
             return '"' + aValue + '"'
         else:
             return aValue
         
     # (2) other non-list types (such as numbers).  Simply stringify.
-    if aType != types.TupleType and aType != types.ListType:
+    if aType != tuple and aType != list:
         return str( aValue )
 
     # (3) list or tuple.
     #     Recursively apply this method for nested lists.
     
-    aValue = map( expandValueList, aValue, (aLevel+1,) * len( aValue ) )
+    aValue = list(map( expandValueList, aValue, (aLevel+1,) * len( aValue ) ))
 
     aValueString = ''
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     def usage():
         aProgramName = os.path.basename( sys.argv[0] )
 
-        print '''
+        print('''
 %(appname)s -- convert a EML file to a EM file
         
 Usage:
@@ -233,7 +233,7 @@ Options:
                              even if it already exists.
     -o or --outfile=EMFILE : Specify output file name. '-' means stdout.
 
-''' % { 'appname': aProgramName }
+''' % { 'appname': aProgramName })
 
     # commandline processing
     try:

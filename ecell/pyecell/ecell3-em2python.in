@@ -27,8 +27,7 @@ from ecell.ecs_constants import ENTITYTYPE_STRING_LIST, VARIABLE, PROCESS, SYSTE
 
 def usage():
     aProgramName = os.path.basename( sys.argv[0] )
-    print \
-    '''%(appname)s -- convert a EM / EML file to a Python script file
+    print('''%(appname)s -- convert a EM / EML file to a Python script file
 
 Usage:
     %(appname)s [-h] [-o SCRIPT] infile.(em|eml)
@@ -37,7 +36,7 @@ Usage:
 Options:
     -h or --help            : Print this message.
     -o or --outfile=SCRIPT  : Specify the output file name. '-' means stdout.
-''' % { 'appname': aProgramName }
+''' % { 'appname': aProgramName })
 
 def identityCoercer( value ):
     return value
@@ -99,7 +98,7 @@ class Eml2Script( object ):
         self.p = self.p[ : -4 ]
 
     def valueAsString( self, value ):
-        if isinstance( value, basestring ):
+        if isinstance( value, str ):
             return '"' + value.replace( '\\', '\\\\' ).replace( '"', '\\"' ) + '"'
         elif isinstance( value, int ) or isinstance( value, float ):
             return str( value )

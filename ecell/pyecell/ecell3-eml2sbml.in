@@ -24,7 +24,7 @@ if __name__ == '__main__':
     def usage():
         aProgramName = os.path.basename( sys.argv[0] )
 
-        print '''
+        print('''
 %(appname)s -- convert a eml file to a SBML file
         
 Usage:
@@ -36,7 +36,7 @@ Options:
                                even if it already exists.
     -o or --outfile=SBMLFILE : Specify the output file name. '-' means stdout.
         
-''' % { 'appname': aProgramName }
+''' % { 'appname': aProgramName })
 
     # commandline processing
     try:
@@ -90,16 +90,16 @@ Options:
             sys.exit( 1 )
         aSbmlFile = open( aSbmlFileName, 'w' )
 
-    aSBMLLevel = raw_input( "SBML Model Level? ( 1 or 2 ) : " )
+    aSBMLLevel = input( "SBML Model Level? ( 1 or 2 ) : " )
 
     if aSBMLLevel == '1' :
-        aSBMLVersion = raw_input( "SBML Model Version? ( 1 or 2 ) : " )
+        aSBMLVersion = input( "SBML Model Version? ( 1 or 2 ) : " )
         if( aSBMLVersion != '1' and aSBMLVersion != '2'):            
-            raise IOError," Such SBML Version is not defined"
+            raise IOError(" Such SBML Version is not defined")
     elif aSBMLLevel == '2':
         aSBMLVersion = 1
     else:
-        raise IOError," Such SBML Level is not defined"
+        raise IOError(" Such SBML Level is not defined")
 
 
     # ------------------------------
@@ -112,6 +112,6 @@ Options:
     if aSbmlString != '':
         aSbmlFile.write( aSbmlString )
     else:
-        raise IOError," failed to write the SBML file(.xml)"
+        raise IOError(" failed to write the SBML file(.xml)")
     
     aSbmlFile.close()

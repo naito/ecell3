@@ -39,7 +39,7 @@ class InteractiveConsoleWithHistory( code.InteractiveConsole ):
         readline.parse_and_bind( "tab: complete" )
         if hasattr( readline, "read_history_file" ):
             try:
-                print( "session_history_file : {}".format( session_history_file ))
+                print(( "session_history_file : {}".format( session_history_file )))
                 readline.read_history_file( session_history_file )
             except IOError:
                 pass
@@ -72,7 +72,7 @@ class Console:
 
 def usage():
     aProgramName = os.path.basename( sys.argv[0] )
-    print( '''
+    print(( '''
 {appname} -- invoke ecell3 python interactive mode or run ess file
 
 Usage:
@@ -111,7 +111,7 @@ Configurations:
     Example:
       ECELL3_DM_PATH=/home/user/dm{pathsep}/home/user/dm_other {appname}
 
-'''.format( appname=aProgramName, pathsep=os.pathsep ))
+'''.format( appname=aProgramName, pathsep=os.pathsep )))
 
 def main():
     # -------------------------------------
@@ -201,7 +201,7 @@ def main():
             except:
                 import traceback
                 aErrorMessageList = traceback.format_exception(
-                    sys.exc_type,sys.exc_value,sys.exc_traceback )
+                    sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2] )
                 for aLine in aErrorMessageList:
                     sys.stderr.write( aLine )
                 sys.stderr.write( "Error: %s is not a valid python expression.\n" % anArg );
@@ -213,7 +213,7 @@ def main():
                 sys.exit( -1 )
 
             # add parameters to aParameters
-            for aKeyString in anEvaluatedArg.keys():
+            for aKeyString in list(anEvaluatedArg.keys()):
                 aParameters[ aKeyString ] = anEvaluatedArg[ aKeyString ]
 
 
