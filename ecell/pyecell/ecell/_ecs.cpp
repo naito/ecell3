@@ -516,7 +516,7 @@ struct PythonToFullIDConverter
 {
     static void* convertible(PyObject* pyo)
     {
-        if ( !PyBytes_Check( pyo ) )
+        if ( !PyUnicode_Check( pyo ) )
         {
             return 0;
         }
@@ -534,7 +534,7 @@ struct PythonToFullIDConverter
 
     static void addToRegistry()
     {
-        py::converter::registry::insert( &convertible, &construct,
+        py::converter::registry::push_back( &convertible, &construct,
                                          py::type_id< FullID >() );
     }
 };
