@@ -57,7 +57,9 @@ class Console:
     # Session methods
     def loadScript( self, ecs, parameters={} ):
         aContext = createScriptContext( self.session, parameters )
-        execfile( ecs, aContext )
+        with open( ecs ) as ecs_f:
+            exec( ecs_f.read(), aContext )
+            ecs_f.close()
 
     def interact( self, parameters = {} ):
         aContext = createScriptContext( self.session, parameters )
