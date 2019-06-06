@@ -430,17 +430,19 @@ if __name__ == "__main__":
         a.setDataName('name')
         a.setLabel('testlabel')
         a.setNote('testnote')
+        print( 'Header string A:\n{}'.format( a.getHeaderString()))
 
-        aMat = ((3,4),(10,20),(2000,111))
+        aMat = numpy.array(((3,4),(10,20),(2000,111)))
 
         a.setData( aMat )
+        print( 'Data A:\n{}'.format( a.getData()))
 
         a.save('hoge')
         del a
 
         b = ECDDataFile()
         b.load('hoge')
-        print(( b.getHeaderString()))
+        print( 'Header string B:\n{}\n{}'.format( b.getHeaderString(), b.getData()))
         b.save('hoge1')
 
     main()
