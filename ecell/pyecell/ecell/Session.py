@@ -27,11 +27,11 @@
 #
 #END_HEADER
 
-import eml
+from . import eml
 import sys
 import os
 import time
-import StringIO
+from io import StringIO
 
 from numpy import *
 import ecell.ecs
@@ -74,7 +74,7 @@ class Session:
             # if the type is EML instance
             anEml = aModel
             aModelName = '<eml.Eml>'  # what should this be?
-        elif isinstance( aModel, str ) or isinstance( aModel, unicode ):
+        elif isinstance( aModel, str ) or isinstance( aModel, str ):
             # if the type is string
             _, ext = os.path.splitext( aModel )
             ext = ext.lower()
@@ -120,7 +120,7 @@ class Session:
         # checks the type of aModel
 
         if isinstance( aModelStr, str ):
-            aModel_StringIO = StringIO.StringIO( aModelStr )
+            aModel_StringIO = StringIO( aModelStr )
             if aModelStr.strip()[ 0:5 ] == "<?xml":
                 anEml = eml.Eml( aModel_StringIO )
             else:
@@ -130,7 +130,7 @@ class Session:
                 anEml = convertEm2Eml( anEmFile, False )
                 aPreprocessor.shutdown()
             aModel_StringIO.close()
-        elif isinstance( aModelStr, unicode ):
+        elif isinstance( aModelStr, str ):
             # When aModelStr is unicode
             raise TypeError( "setModel() can't process unicode string at present." )
         else:
@@ -383,8 +383,8 @@ class Session:
             # -------------------------------------------------
 
             import traceback
-            print( __name__, )
-            aErrorMessageList = traceback.format_exception(sys.exc_type,sys.exc_value,sys.exc_traceback)
+            print(( __name__, ))
+            aErrorMessageList = traceback.format_exception(sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2])
             for aLine in aErrorMessageList:
                 self.message( aLine )
 
@@ -425,7 +425,7 @@ class Session:
             try:
                 self.theSimulator.createStepper( str( aClassName ),\
                                                  str( aStepper ) )
-            except RuntimeError( e ):
+            except RuntimeError as e:
                 raise RuntimeError( 'Failed to create Stepper [{}]: '.format( \
                                                         aStepper + str( e ) ))
 
@@ -438,7 +438,7 @@ class Session:
                     self.theSimulator.loadStepperProperty( aStepper,\
                                                            aProperty,\
                                                            aValue )
-                except RuntimeError( e ):
+                except RuntimeError as e:
                     raise RuntimeError( 'When creating Stepper [{}], '.format( \
                           aStepper ) + 'failed to set property [{}]: '.format( \
                           aProperty ) + str( e ) )
@@ -488,7 +488,7 @@ class Session:
                 aValue = anEml.getEntityProperty( aFullPN )
                 try:
                     self.theSimulator.loadEntityProperty( aFullPN, aValue )
-                except RuntimeError( e ):
+                except RuntimeError as e:
                     raise RuntimeError( 'Failed to set Entity property [{}],'\
                             .format( aFullPN ) + 'value =:\n{}\n'.format( \
                             str( aValue ) + str( e )))
@@ -504,8 +504,8 @@ class Session:
 
             try:
                 self.theSimulator.createEntity( aClassName, aFullID )
-            except RuntimeError( e ):
-                raise RuntimeError( 'Failed to create Entity [%s]: '.format( \
+            except RuntimeError as e:
+                raise RuntimeError( 'Failed to create Entity [{}]: '.format( \
                                                             aFullID + str( e )))
 
 
@@ -517,8 +517,8 @@ class Session:
 
         # flatten class methods and object properties so that
         # 'self.' isn't needed for each method calls in the script
-        aKeyList = list ( self.__dict__.keys() +\
-                          self.__class__.__dict__.keys() )
+        aKeyList = list ( list(self.__dict__.keys()) +\
+                          list(self.__class__.__dict__.keys()) )
         aDict = {}
         for aKey in aKeyList:
             aDict[ aKey ] = getattr( self, aKey )
@@ -667,7 +667,7 @@ class Session:
                 if type( aValueListNode[0] ) == tuple:
                     aConvertedList = self.__convertPropertyValueList( aValueListNode )
                 else:
-                    aConvertedList = map( str, aValueListNode )
+                    aConvertedList = list(map( str, aValueListNode ))
 
                 aList.append( aConvertedList )
 
@@ -690,8 +690,8 @@ def createScriptContext( session, parameters ):
 
     # flatten class methods and object properties so that
     # 'self.' isn't needed for each method calls in the script
-    aKeyList = list( session.__dict__.keys() +\
-                     session.__class__.__dict__.keys() )
+    aKeyList = list( session.__dict__ ) +\
+                list( session.__class__.__dict__ )
     aDict = {}
     for aKey in aKeyList:
         if not aKey.startswith('__'):

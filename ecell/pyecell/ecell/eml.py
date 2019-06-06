@@ -31,7 +31,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
 
 from xml.dom import minidom
 from types import *
-from ecssupport import *
+from .ecssupport import *
 
 """
 This is emllib for EML
@@ -234,7 +234,7 @@ class Eml:
             aTargetSystemNode.appendChild( anEntityElement )
 
         else:
-            raise "unexpected error. %s should be System, Variable, or Process."%anEntityType
+            raise "unexpected error. {} should be System, Variable, or Process.".format( anEntityType )
 
         self.__addToCache( aFullID, anEntityElement )
 
@@ -415,7 +415,7 @@ class Eml:
             aValue = str( aNode.nodeValue ).replace( '#x0A', '\n' )
             return aValue
         elif aNodeType == aValueNode.ELEMENT_NODE:
-            return map( self.__createValueList, aValueNode.childNodes )
+            return list(map( self.__createValueList, aValueNode.childNodes ))
         else:
             raise "unexpected error."
 
@@ -477,7 +477,7 @@ class Eml:
                 self.__addToCache( aFullID, aChildNode )
                 return aChildNode
 
-        raise "Entity [%s] not found."%aFullID
+        raise "Entity [{}] not found.".format( aFullID )
 
 
     def __getSystemNode( self, aSystemPath ):
@@ -496,7 +496,7 @@ class Eml:
                 self.__addToCache( aFullID, aSystemNode )
                 return aSystemNode
 
-        raise "System [%s] not found."%aFullID
+        raise "System [{}] not found.".format( aFullID )
 
     def __getEntityPropertyNode( self, aFullID, aPropertyName ):
 
@@ -538,8 +538,8 @@ class Eml:
         aPropertyElement = self.__createElement( 'property' )
         aPropertyElement.setAttribute( 'name', aPropertyName )
 
-        map( aPropertyElement.appendChild,\
-             map( self.__createValueNode, aValueList ) )
+        list(map( aPropertyElement.appendChild,\
+             list(map( self.__createValueNode, aValueList )) ))
 
         return aPropertyElement
 
@@ -548,10 +548,10 @@ class Eml:
 
         aValueNode = self.__createElement( 'value' )
 
-        if type( aValue ) in ( TupleType, ListType ):    # vector value
+        if type( aValue ) in ( tuple, list ):    # vector value
 
-            map( aValueNode.appendChild,\
-                 map( self.__createValueNode, aValue ) )
+            list(map( aValueNode.appendChild,\
+                 list(map( self.__createValueNode, aValue )) ))
 
         else:        # scaler value
 

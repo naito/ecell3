@@ -249,7 +249,7 @@ def createEntity( anEml, aSBMLModel, aFullID, anOptional='' ):
                     ( int( float( anEml.getEntityProperty( aFullPN )[0] ) ) )
 
                 else:
-                    raise AttributeError, "Unrepresentable property `%s' in Parameter" % aPropertyName
+                    raise AttributeError("Unrepresentable property `%s' in Parameter" % aPropertyName)
 
         else:
             if( aFullID[2] != "SIZE" and aFullID[2] != "Dimensions" ):
@@ -330,7 +330,7 @@ def createEntity( anEml, aSBMLModel, aFullID, anOptional='' ):
                                 float( anEml.getEntityProperty( aFullPN )[0] )\
                                 )
                     else:
-                        raise AttributeError, "Unrepresentable property `%s' in Species" % aPropertyName
+                        raise AttributeError("Unrepresentable property `%s' in Species" % aPropertyName)
 
 
     # -------------------------------------
@@ -423,7 +423,7 @@ def createEntity( anEml, aSBMLModel, aFullID, anOptional='' ):
 
 
             else:
-                raise TypeError, " The type of Process must be Algebraic, Assignment, Flux Processes"
+                raise TypeError(" The type of Process must be Algebraic, Assignment, Flux Processes")
             
 
 

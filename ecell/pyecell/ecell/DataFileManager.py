@@ -98,7 +98,7 @@ class DataFileManager:
     # ------------------------------------------------------------------
     def saveAll(self):
 
-        for aKey in self.theFileMap.keys():
+        for aKey in list(self.theFileMap.keys()):
             aFileName = self.theFileMap[aKey].getFileName()
             aFileName = aFileName.split('/')[-1]
             aFileName = self.theRootDirectory + '/' + aFileName
@@ -114,7 +114,7 @@ class DataFileManager:
     # ------------------------------------------------------------------
     def loadAll(self):
 
-        for aKey in self.theFileMap.keys():
+        for aKey in list(self.theFileMap.keys()):
             self.theFileMap[aKey].load()
 
     # end of loadAll()
@@ -124,7 +124,7 @@ class DataFileManager:
 
 if __name__ == "__main__":
 
-    from ECDDataFile import *
+    from .ECDDataFile import *
 
     def main():
 

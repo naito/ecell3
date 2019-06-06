@@ -31,7 +31,7 @@ if __name__ == '__main__':
     def usage():
         aProgramName = os.path.basename( sys.argv[0] )
 
-        print '''
+        print('''
 %(appname)s -- convert a SBML file to eml file
 
 Usage:
@@ -44,7 +44,7 @@ Options:
     -o or --outfile=EMLFILE  : Specify the output file name. '-' means stdout.
     -S or --Stepper=STEPPER  : Specify the Stepper name to solve ODE. The default is ODEStepper.
        
-''' % { 'appname': aProgramName }
+''' % { 'appname': aProgramName })
 
     # commandline processing
     try:

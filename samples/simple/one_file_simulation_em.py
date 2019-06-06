@@ -22,17 +22,17 @@ System System( / )
 	{
 		Value	1000000;
 	}
-	
+
 	Variable Variable( P )
 	{
 		Value	0;
 	}
-	
+
 	Variable Variable( E )
 	{
 		Value	1000;
 	}
-	
+
 	Process MichaelisUniUniFluxProcess( E )
 	{
 		VariableReferenceList	[ S0 :.:S -1 ]
@@ -42,7 +42,7 @@ System System( / )
 		KcF	10;
 	}
 
-	
+
 }
 '''
 
@@ -60,7 +60,7 @@ message( 't= \t%s' % getCurrentTime() )
 message( 'S:Value= \t%s' % S.getProperty( 'Value' ) )
 message( 'S:MolarConc= \t%s' % S.getProperty( 'MolarConc' ) )
 # run
-duration = 1000
+duration = 2000
 message( '\n' )
 message( 'run %s sec.\n' % duration )
 run( duration )
@@ -76,9 +76,12 @@ message( '\n' )
 from ecell.ECDDataFile import *
 
 message('saving S.ecd..')
+message( 'Logger data:\n%s' % S_Logger.getData(0,2000,.5))
 aDataFile = ECDDataFile( S_Logger.getData(0,2000,.5) )
 aDataFile.setDataName( S_Logger.getName() )
 aDataFile.setNote( '' )
+message( 'ECD contents:\n%s' % aDataFile.getHeaderString())
+message( '%s\n' % aDataFile.getData())
 aDataFile.save( 'S.ecd' )
 
 #message('loading')

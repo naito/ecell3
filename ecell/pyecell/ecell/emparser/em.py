@@ -295,7 +295,7 @@ class MetaError(Exception):
         self.exc = exc
 
     def __str__(self):
-        backtrace = map(lambda x: str(x), self.contexts)
+        backtrace = [str(x) for x in self.contexts]
         return "{}: {} ({})".format( self.exc.__class__, self.exc, ', '.join(backtrace) )
 
 
@@ -314,7 +314,7 @@ class Subsystem:
                    inputErrors=None, outputErrors=None):
         self.useUnicode = True
         try:
-            unicode
+            str
             import codecs
         except (NameError, ImportError):
             raise SubsystemError( "Unicode subsystem unavailable" )
@@ -392,7 +392,7 @@ class Stack:
 
     def filter(self, function):
         """Filter the elements of the stack through the function."""
-        self.data = filter(function, self.data)
+        self.data = list( filter(function, self.data) )
 
     def purge(self):
         """Purge the stack."""
@@ -402,7 +402,7 @@ class Stack:
         """Create a duplicate of this stack."""
         return self.__class__(self.data[:])
 
-    def __nonzero__(self): return len(self.data) != 0
+    def __bool__(self): return len(self.data) != 0
     def __len__(self): return len(self.data)
     def __getitem__(self, index): return self.data[-(index + 1)]
 
@@ -544,9 +544,9 @@ class Stream:
              type(shortcut) is types.BuiltinMethodType or \
              type(shortcut) is types.LambdaType:
             return FunctionFilter(shortcut)
-        elif type(shortcut) is types.StringType:
+        elif type(shortcut) is bytes:
             return StringFilter(filter)
-        elif type(shortcut) is types.DictType:
+        elif type(shortcut) is dict:
             raise NotImplementedError( "mapping filters not yet supported" )
         else:
             # Presume it's a plain old filter.
@@ -560,7 +560,7 @@ class Stream:
         thisFilter, lastFilter = self.filter, None
         while thisFilter is not None and thisFilter is not self.file:
             lastFilter = thisFilter
-            thisFilter = thisFilter.next()
+            thisFilter = next(thisFilter)
         return lastFilter
 
     def install(self, shortcut=None):
@@ -572,7 +572,7 @@ class Stream:
             # Shortcuts for "no filter."
             self.filter = self.file
         else:
-            if type(shortcut) in (types.ListType, types.TupleType):
+            if type(shortcut) in (list, tuple):
                 shortcuts = list(shortcut)
             else:
                 shortcuts = [shortcut]
@@ -622,14 +622,14 @@ class Stream:
         divert to it yet."""
         if name is None:
             raise DiversionError( "diversion name must be non-None" )
-        if not self.diversions.has_key(name):
+        if name not in self.diversions:
             self.diversions[name] = Diversion()
 
     def retrieve(self, name):
         """Retrieve the given diversion."""
         if name is None:
             raise DiversionError( "diversion name must be non-None" )
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             return self.diversions[name]
         else:
             raise DiversionError( "nonexistent diversion: {}".format( name ))
@@ -645,7 +645,7 @@ class Stream:
         """Undivert a particular diversion."""
         if name is None:
             raise DiversionError( "diversion name must be non-None" )
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             diversion = self.diversions[name]
             self.filter.write(diversion.asString())
             if purgeAfterwards:
@@ -657,7 +657,7 @@ class Stream:
         """Purge the specified diversion."""
         if name is None:
             raise DiversionError( "diversion name must be non-None" )
-        if self.diversions.has_key(name):
+        if name in self.diversions:
             del self.diversions[name]
             if self.currentDiversion == name:
                 self.currentDiversion = None
@@ -666,7 +666,7 @@ class Stream:
         """Undivert all pending diversions."""
         if self.diversions:
             self.revert() # revert before undiverting!
-            names = self.diversions.keys()
+            names = list( self.diversions )
             names.sort()
             for name in names:
                 self.undivert(name)
@@ -770,7 +770,7 @@ class Filter:
             raise NotImplementedError
         self.sink = None
 
-    def next(self):
+    def __next__(self):
         """Return the next filter/file-like object in the sequence, or None."""
         return self.sink
 
@@ -816,7 +816,7 @@ class Filter:
         this, last = self, self
         while this is not None:
             last = this
-            this = this.next()
+            this = next(this)
         return last
 
 class NullFilter(Filter):
@@ -843,7 +843,7 @@ class StringFilter(Filter):
     filters any incoming data through it."""
 
     def __init__(self, table):
-        if not (type(table) == types.StringType and len(table) == 256):
+        if not (type(table) == bytes and len(table) == 256):
             raise FilterError( "table must be 256-character string" )
         Filter.__init__(self)
         self.table = table
@@ -1212,11 +1212,11 @@ class EscapeToken(ExpansionToken):
             elif code in 'u': # Unicode 16-bit hex literal
                 theSubsystem.assertUnicode()
                 hexCode = scanner.chop(4)
-                result = unichr(int(hexCode, 16))
+                result = chr(int(hexCode, 16))
             elif code in 'U': # Unicode 32-bit hex literal
                 theSubsystem.assertUnicode()
                 hexCode = scanner.chop(8)
-                result = unichr(int(hexCode, 16))
+                result = chr(int(hexCode, 16))
             elif code == 'v': # VT
                 result = '\x0b'
             elif code == 'x': # hexadecimal code
@@ -1648,14 +1648,28 @@ class Scanner:
         self.buffer = data
         self.lock = 0
 
-    def __nonzero__(self): return self.pointer < len(self.buffer)
+    def __bool__(self): return self.pointer < len(self.buffer)
     def __len__(self): return len(self.buffer) - self.pointer
-    def __getitem__(self, index): return self.buffer[self.pointer + index]
+#    def __getitem__(self, index): return self.buffer[self.pointer + index]
 
-    def __getslice__(self, start, stop):
-        if stop > len(self):
-            stop = len(self)
-        return self.buffer[self.pointer + start:self.pointer + stop]
+#    def __getslice__(self, start, stop):
+    def __getitem__(self, _obj):
+        # print( "{}: {}".format(type(_obj),_obj ))
+        if type(_obj) is int:
+            return self.buffer[self.pointer + _obj]
+
+        elif type(_obj) is slice:
+            if _obj.start is None:
+                start = 0
+            else:
+                start = _obj.start
+            if ( _obj.stop is None ) or ( _obj.stop > len(self) ):
+                stop = len(self)
+            else:
+                stop = _obj.stop
+            return self.buffer[self.pointer + start:self.pointer + stop]
+        else:
+            return None
 
     def advance(self, count=1):
         """Advance the pointer count characters."""
@@ -2070,7 +2084,7 @@ class Interpreter:
             self.globals = {}
         # Make sure that there is no collision between two interpreters'
         # globals.
-        if self.globals.has_key(self.pseudo):
+        if self.pseudo in self.globals:
             if self.globals[self.pseudo] is not self:
                 raise Error( "interpreter globals collision" )
         self.globals[self.pseudo] = self
@@ -2079,7 +2093,7 @@ class Interpreter:
         """Remove the pseudomodule (if present) from the globals."""
         UNWANTED_KEYS = [self.pseudo, '__builtins__']
         for unwantedKey in UNWANTED_KEYS:
-            if self.globals.has_key(unwantedKey):
+            if unwantedKey in self.globals:
                 del self.globals[unwantedKey]
 
     def update(self, other):
@@ -2172,7 +2186,7 @@ class Interpreter:
 
     def include(self, fileOrFilename, locals=None):
         """Do an include pass on a file or filename."""
-        if type(fileOrFilename) is types.StringType:
+        if type(fileOrFilename) is bytes:
             # Either it's a string representing a filename ...
             filename = fileOrFilename
             name = filename
@@ -2227,7 +2241,7 @@ class Interpreter:
         for char in data:
             if char < ' ' or char > '~':
                 charOrd = ord(char)
-                if Interpreter.ESCAPE_CODES.has_key(charOrd):
+                if charOrd in Interpreter.ESCAPE_CODES:
                     result.append(self.prefix + '\\' + \
                                   Interpreter.ESCAPE_CODES[charOrd])
                 else:
@@ -2246,7 +2260,7 @@ class Interpreter:
         """Wrap around an application of a callable and handle errors.
         Return whether no error occurred."""
         try:
-            apply(callable, args)
+            callable(*args)
             self.reset()
             return True
         except KeyboardInterrupt as e:
@@ -2260,7 +2274,7 @@ class Interpreter:
             # If we get here, then either it's an exception not derived from
             # Exception or it's a string exception, so get the error type
             # from the sys module.
-            e = sys.exc_type
+            e = sys.exc_info()[0]
             self.fail(e)
         # An error occurred if we leak through to here, so do cleanup.
         self.reset()
@@ -2449,7 +2463,7 @@ class Interpreter:
             raise ValueError( "unpack tuple of wrong size" )
         for i in range(len(names)):
             name = names[i]
-            if type(name) is types.StringType:
+            if type(name) is bytes:
                 self.atomic(name, values[i], locals)
             else:
                 self.multi(name, values[i], locals)
@@ -2460,7 +2474,7 @@ class Interpreter:
         left = self.tokenize(name)
         # The return value of tokenize can either be a string or a list of
         # (lists of) strings.
-        if type(left) is types.StringType:
+        if type(left) is bytes:
             self.atomic(left, value, locals)
         else:
             self.multi(left, value, locals)
@@ -2505,11 +2519,11 @@ class Interpreter:
         defined either in the locals or the globals."""
         self.invoke('beforeDefined', name=name, local=local)
         if locals is not None:
-            if locals.has_key(name):
+            if name in locals:
                 result = True
             else:
                 result = False
-        elif self.globals.has_key(name):
+        elif name in self.globals:
             result = True
         else:
             result = False
@@ -2606,7 +2620,7 @@ class Interpreter:
                 hook.push()
                 try:
                     method = getattr(hook, _name)
-                    apply(method, (), keywords)
+                    method( *(), **keywords )
                 finally:
                     hook.pop()
 
@@ -2766,7 +2780,7 @@ class Interpreter:
 
     def invokeHook(self, _name, **keywords):
         """Manually invoke a hook."""
-        apply(self.invoke, (_name,), keywords)
+        self.invoke( *(_name,), **keywords )
 
     # Callbacks.
 
@@ -2796,7 +2810,7 @@ class Interpreter:
         """Flatten the contents of the pseudo-module into the globals
         namespace."""
         if keys is None:
-            keys = self.__dict__.keys() + self.__class__.__dict__.keys()
+            keys = list( self.__dict__ ) + list( self.__class__.__dict__ )
         dict = {}
         for key in keys:
             # The pseudomodule is really a class instance, so we need to
@@ -2865,7 +2879,7 @@ class Interpreter:
 
     def getAllDiversions(self):
         """Get the names of all existing diversions."""
-        names = self.stream().diversions.keys()
+        names = list( self.stream().diversions )
         names.sort()
         return names
 
@@ -2926,7 +2940,7 @@ class Processor:
         self.documents = {}
 
     def scan(self, basename, extensions=DEFAULT_EMPY_EXTENSIONS):
-        if type(extensions) is types.StringType:
+        if type(extensions) is bytes:
             extensions = (extensions,)
         def _noCriteria(x):
             return True
@@ -3013,7 +3027,7 @@ def environment(name, default=None):
     """Get data from the current environment.  If the default is True
     or False, then presume that we're only interested in the existence
     or non-existence of the environment variable."""
-    if os.environ.has_key(name):
+    if name in os.environ:
         # Do the True/False test by value for future compatibility.
         if default == False or default == True:
             return True
@@ -3185,7 +3199,7 @@ def invoke(args):
                                 _unicodeInputErrors, _unicodeOutputErrors)
     # Now initialize the output file if something has already been selected.
     if _output is not None:
-        _output = apply(AbstractFile, _output)
+        _output = AbstractFile(*_output)
     # Set up the main filename and the argument.
     if not remainder:
         remainder.append('-')
@@ -3195,7 +3209,7 @@ def invoke(args):
         raise ValueError( "-b only makes sense with -o or -a arguments" )
     if _prefix == 'None':
         _prefix = None
-    if _prefix and type(_prefix) is types.StringType and len(_prefix) != 1:
+    if _prefix and type(_prefix) is bytes and len(_prefix) != 1:
         raise Error( "prefix must be single-character string" )
     interpreter = Interpreter(output=_output, \
                               argv=remainder, \
@@ -3263,7 +3277,7 @@ def invoke(args):
     # Finally, if we should pause at the end, do it.
     if _pauseAtEnd:
         try:
-            raw_input()
+            input()
         except EOFError:
             pass
 

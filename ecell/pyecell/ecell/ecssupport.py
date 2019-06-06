@@ -29,11 +29,11 @@
 
 # this module is deprecated
 
-from EntityStub import *
-from LoggerStub import *
-from StepperStub import *
+from .EntityStub import *
+from .LoggerStub import *
+from .StepperStub import *
 
-from ecs_constants import *
+from .ecs_constants import *
 
 def createFullID( fullidstring ):
 

@@ -57,7 +57,9 @@ class Console:
     # Session methods
     def loadScript( self, ecs, parameters={} ):
         aContext = createScriptContext( self.session, parameters )
-        execfile( ecs, aContext )
+        with open( ecs ) as ecs_f:
+            exec( ecs_f.read(), aContext )
+            ecs_f.close()
 
     def interact( self, parameters = {} ):
         aContext = createScriptContext( self.session, parameters )
@@ -199,7 +201,7 @@ def main():
             except:
                 import traceback
                 aErrorMessageList = traceback.format_exception(
-                    sys.exc_type,sys.exc_value,sys.exc_traceback )
+                    sys.exc_info()[0],sys.exc_info()[1],sys.exc_info()[2] )
                 for aLine in aErrorMessageList:
                     sys.stderr.write( aLine )
                 sys.stderr.write( "Error: %s is not a valid python expression.\n" % anArg );
@@ -211,7 +213,7 @@ def main():
                 sys.exit( -1 )
 
             # add parameters to aParameters
-            for aKeyString in anEvaluatedArg.keys():
+            for aKeyString in list(anEvaluatedArg.keys()):
                 aParameters[ aKeyString ] = anEvaluatedArg[ aKeyString ]
 
 

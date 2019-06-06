@@ -29,6 +29,7 @@
 //
 
 
+#include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <utility>
@@ -161,7 +162,7 @@ struct PolymorphToPythonConverter
         case PolymorphValue::TUPLE :
             return rangeToPyTuple( aPolymorph.as<PolymorphValue::Tuple const&>() );
         case PolymorphValue::STRING :
-            return PyBytes_FromStringAndSize(
+            return PyUnicode_FromStringAndSize(
                 static_cast< const char * >(
                     aPolymorph.as< PolymorphValue::RawString const& >() ),
                 aPolymorph.as< PolymorphValue::RawString const& >().size() );
@@ -311,19 +312,23 @@ struct PolymorphRetriever
     {
         if( PyFloat_Check( aPyObjectPtr ) )
         {
+            //std::cout << "PyFloat" << '\n';
             return Polymorph( PyFloat_AS_DOUBLE( aPyObjectPtr ) );
         }
         else if( PyLong_Check( aPyObjectPtr ) )
         {
+            //std::cout << "PyLong" << '\n';
             return Polymorph( PyLong_AS_LONG( aPyObjectPtr ) );
         }
         else if( PyBytes_Check( aPyObjectPtr ) )
         {
+            //std::cout << "PyBytes" << '\n';
             return Polymorph( PyBytes_AS_STRING( aPyObjectPtr ),
                               PyBytes_GET_SIZE( aPyObjectPtr ) );
         }
         else if( PyUnicode_Check( aPyObjectPtr ) )
         {
+            //std::cout << "PyUnicode" << '\n';
             aPyObjectPtr = PyUnicode_AsEncodedString( aPyObjectPtr, NULL, NULL );
             if ( aPyObjectPtr )
             {
@@ -341,8 +346,10 @@ struct PolymorphRetriever
         }
         else if ( PySequence_Check( aPyObjectPtr ) )
         {
+            //std::cout << "PySequence" << '\n';
             return Polymorph( PolymorphValue::create( pyseq_range( aPyObjectPtr ) ) );
         }
+        //std::cout << "Py___Others" << '\n';
         // conversion is failed. ( convert with repr() ? )
         PyErr_SetString( PyExc_TypeError,
                          "Unacceptable type of an object in the tuple." );
@@ -516,7 +523,7 @@ struct PythonToFullIDConverter
 {
     static void* convertible(PyObject* pyo)
     {
-        if ( !PyBytes_Check( pyo ) )
+        if ( !PyUnicode_Check( pyo ) )
         {
             return 0;
         }
@@ -534,7 +541,7 @@ struct PythonToFullIDConverter
 
     static void addToRegistry()
     {
-        py::converter::registry::insert( &convertible, &construct,
+        py::converter::registry::push_back( &convertible, &construct,
                                          py::type_id< FullID >() );
     }
 };
@@ -667,11 +674,14 @@ private:
 
     void operator delete( void* ptr )
     {
-        reinterpret_cast< PyObject* >( ptr )->ob_type->tp_free( reinterpret_cast< PyObject* >( ptr ) );
+        Py_TYPE( reinterpret_cast< PyObject* >( ptr ) )->tp_free( reinterpret_cast< PyObject* >( ptr ) );
     }
 
     DataPointVectorWrapper( boost::shared_ptr< DataPointVector > const& aVector )
-        : theVector( aVector ) {}
+        : theVector( aVector )
+    {
+        std::cout << "DataPointVectorWrapper::DataPointVectorWrapper" << '\n';
+    }
 
     ~DataPointVectorWrapper()
     {
@@ -679,10 +689,17 @@ private:
 
     PyObject* asPyArray()
     {
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1): ";
+        std::cout << PyArray_DescrCheck(reinterpret_cast< PyObject* >( this )) << '\n';
+        std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_name << '\n';
+        std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
+
         PyArray_Descr* descr( PyArray_DescrFromObject(
-            reinterpret_cast< PyObject* >( this ), 0 ) );
+            reinterpret_cast< PyObject* >( this ), NULL ) );
+            std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
         BOOST_ASSERT( descr != NULL );
 
+        std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
         return PyArray_CheckFromAny(
                 reinterpret_cast< PyObject* >( this ),
                 descr, 0, 0, 0, NULL );
@@ -698,6 +715,9 @@ public:
 
     static DataPointVectorWrapper* create( boost::shared_ptr< DataPointVector > const& aVector )
     {
+        std::cout << " DataPointVectorWrapper::create()  (1)" << '\n';
+        new DataPointVectorWrapper( aVector );
+        std::cout << " DataPointVectorWrapper::create()  (2)" << '\n';
         return new DataPointVectorWrapper( aVector );
     }
 
@@ -721,6 +741,7 @@ public:
 
     static PyObject* __str__( DataPointVectorWrapper* self )
     {
+      std::cout << "DataPointVectorWrapper::__str__()" << '\n';
         return PyObject_Str( self->asPyArray() );
     }
 
@@ -758,7 +779,7 @@ public:
         {
             PyErr_SetObject(PyExc_IndexError,
                     PyBytes_FromString("index out of range"));
-		    return NULL;
+        return NULL;
         }
 
         return toPyObject( &getItem( *self->theVector, idx ) );
@@ -857,103 +878,50 @@ struct DataPointVectorWrapper< LongDataPoint >::GetItemFunc
 
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::Iterator::__class__ = {
-	PyObject_HEAD_INIT( &PyType_Type )
-	"ecell._ecs.DataPointVectorWrapper.Iterator", /* tp_name */
-	sizeof( typename DataPointVectorWrapper::Iterator ), /* tp_basicsize */
-	0,					/* tp_itemsize */
-	/* methods */
-	(destructor)&DataPointVectorWrapper::Iterator::__dealloc__, /* tp_dealloc */
-	0,					/* tp_print */
-	0,					/* tp_getattr */
-	0,					/* tp_setattr */
-	0,					/* tp_compare */
-	0,					/* tp_repr */
-	0,					/* tp_as_number */
-	0,					/* tp_as_sequence */
-	0,					/* tp_as_mapping */
-	0,					/* tp_hash */
-	0,					/* tp_call */
-	0,					/* tp_str */
-	PyObject_GenericGetAttr,		/* tp_getattro */
-	0,					/* tp_setattro */
-	0,					/* tp_as_buffer */
-	0,/* tp_flags */
-	0,					/* tp_doc */
-	0,	/* tp_traverse */
-	0,					/* tp_clear */
-	0,					/* tp_richcompare */
-	0,					/* tp_weaklistoffset */
-	PyObject_SelfIter,  /* tp_iter */
-	(iternextfunc)&DataPointVectorWrapper::Iterator::__next__,		/* tp_iternext */
-	0,		        	/* tp_methods */
-	0,					/* tp_members */
-	0,                  /* tp_getset */
-	0,					/* tp_base */
-	0,					/* tp_dict */
-	0,					/* tp_descr_get */
-	0,					/* tp_descr_set */
-	0,					/* tp_dictoffset */
-	0,			        /* tp_init */
-	PyType_GenericAlloc,			/* tp_alloc */
-	PyType_GenericNew,			/* tp_new */
-	PyObject_Del,			/* tp_free */
+  PyVarObject_HEAD_INIT( &PyType_Type, 0 )
+  .tp_name = "ecell._ecs.DataPointVectorWrapper.Iterator",
+  .tp_basicsize = sizeof( typename DataPointVectorWrapper::Iterator ),
+  /* methods */
+  .tp_dealloc = (destructor)&DataPointVectorWrapper::Iterator::__dealloc__,
+  .tp_getattro = PyObject_GenericGetAttr,
+  .tp_flags = Py_TPFLAGS_DEFAULT,
+  .tp_iter = PyObject_SelfIter,
+  .tp_iternext = (iternextfunc)&DataPointVectorWrapper::Iterator::__next__,
+  .tp_alloc = PyType_GenericAlloc,
+  .tp_new = PyType_GenericNew,
+  .tp_free = PyObject_Del,
 };
 
 template< typename Tdp_ >
 PyTypeObject DataPointVectorWrapper< Tdp_ >::__class__ = {
-	PyObject_HEAD_INIT( &PyType_Type )
-  "ecell._ecs.DataPointVector",
-	sizeof(DataPointVectorWrapper),
-	0,
-	(destructor)&DataPointVectorWrapper::__dealloc__, /* tp_dealloc */
-	0,      			/* tp_print */
-	0,					/* tp_getattr */
-	0,					/* tp_setattr */
-	0,					/* tp_compare */
-	(reprfunc)&DataPointVectorWrapper::__repr__,			/* tp_repr */
-	0,					/* tp_as_number */
-	&DataPointVectorWrapper::__seq__,			/* tp_as_sequence */
-	0,			/* tp_as_mapping */
-	(hashfunc)&DataPointVectorWrapper::__hash__,				/* tp_hash */
-	0,					/* tp_call */
-	(reprfunc)&DataPointVectorWrapper::__str__,				/* tp_str */
-	PyObject_GenericGetAttr,		/* tp_getattro */
-	0,					/* tp_setattro */
-	0,					/* tp_as_buffer */
-	0,		/* tp_flags */
- 	0,				/* tp_doc */
- 	(traverseproc)&DataPointVectorWrapper::__traverse__,		/* tp_traverse */
- 	0,			/* tp_clear */
-	0,			/* tp_richcompare */
-	0,					/* tp_weaklistoffset */
-	(getiterfunc)&DataPointVectorWrapper::__iter__,				/* tp_iter */
-	0,					/* tp_iternext */
-	0,				/* tp_methods */
-	0,					/* tp_members */
-	DataPointVectorWrapper::__getset__,					/* tp_getset */
-	0,					/* tp_base */
-	0,					/* tp_dict */
-	0,					/* tp_descr_get */
-	0,					/* tp_descr_set */
-	0,					/* tp_dictoffset */
-	0,			/* tp_init */
-	PyType_GenericAlloc,			/* tp_alloc */
-	PyType_GenericNew,			/* tp_new */
-	PyObject_Del,			/* tp_free */
+  PyVarObject_HEAD_INIT( &PyType_Type, 0 )
+  .tp_name = "ecell._ecs.DataPointVector",
+  .tp_basicsize = sizeof(DataPointVectorWrapper),
+  .tp_dealloc = (destructor)&DataPointVectorWrapper::__dealloc__,
+  .tp_repr = (reprfunc)&DataPointVectorWrapper::__repr__,
+  .tp_as_sequence = &DataPointVectorWrapper::__seq__,
+  .tp_hash = (hashfunc)&DataPointVectorWrapper::__hash__,
+  .tp_str = (reprfunc)&DataPointVectorWrapper::__str__,
+  .tp_getattro = PyObject_GenericGetAttr,
+  .tp_flags = Py_TPFLAGS_DEFAULT,
+  .tp_traverse = (traverseproc)&DataPointVectorWrapper::__traverse__,
+  .tp_iter = (getiterfunc)&DataPointVectorWrapper::__iter__,
+  .tp_getset = DataPointVectorWrapper::__getset__,
+  .tp_alloc = PyType_GenericAlloc,
+  .tp_new = PyType_GenericNew,
+  .tp_free = PyObject_Del,
 };
 
 template< typename Tdp_ >
 PySequenceMethods DataPointVectorWrapper< Tdp_ >::__seq__ = {
-	(lenfunc)&DataPointVectorWrapper::__len__,			/* sq_length */
-	(binaryfunc)0,		/* sq_concat */
-	(ssizeargfunc)0,		/* sq_repeat */
-	(ssizeargfunc)&DataPointVectorWrapper::__getitem__,		/* sq_item */
-	NULL,		/* sq_slice */
-	(ssizeobjargproc)0,		/* sq_ass_item */
-	NULL,	/* sq_ass_slice */
-	(objobjproc)&DataPointVectorWrapper::__contains__,		/* sq_contains */
-	(binaryfunc)0,	/* sq_inplace_concat */
-	(ssizeargfunc)0	/* sq_inplace_repeat */
+  .sq_length = (lenfunc)&DataPointVectorWrapper::__len__,
+  .sq_concat = (binaryfunc)0,
+  .sq_repeat = (ssizeargfunc)0,
+  .sq_item = (ssizeargfunc)&DataPointVectorWrapper::__getitem__,
+  .sq_ass_item = (ssizeobjargproc)0,
+  .sq_contains = (objobjproc)&DataPointVectorWrapper::__contains__,
+  .sq_inplace_concat = (binaryfunc)0,
+  .sq_inplace_repeat = (ssizeargfunc)0,
 };
 
 template< typename Tdp_ >
@@ -983,7 +951,7 @@ public:
 
     void operator delete( void* ptr )
     {
-        reinterpret_cast< PyObject* >( ptr )->ob_type->tp_free( reinterpret_cast< PyObject* >( ptr ) );
+        Py_TYPE( reinterpret_cast< PyObject* >( ptr ) )->tp_free( reinterpret_cast< PyObject* >( ptr ) );
     }
 
     template< typename Trange_ >
@@ -1025,46 +993,18 @@ public:
 
 template< typename Titer_ >
 PyTypeObject STLIteratorWrapper< Titer_ >::__class__ = {
-	PyObject_HEAD_INIT( &PyType_Type )
-	"ecell._ecs.STLIteratorWrapper", /* tp_name */
-	sizeof( STLIteratorWrapper ), /* tp_basicsize */
-	0,					/* tp_itemsize */
-	/* methods */
-	(destructor)&STLIteratorWrapper::__dealloc__, /* tp_dealloc */
-	0,					/* tp_print */
-	0,					/* tp_getattr */
-	0,					/* tp_setattr */
-	0,					/* tp_compare */
-	0,					/* tp_repr */
-	0,					/* tp_as_number */
-	0,					/* tp_as_sequence */
-	0,					/* tp_as_mapping */
-	0,					/* tp_hash */
-	0,					/* tp_call */
-	0,					/* tp_str */
-	PyObject_GenericGetAttr,		/* tp_getattro */
-	0,					/* tp_setattro */
-	0,					/* tp_as_buffer */
-	0,/* tp_flags */
-	0,					/* tp_doc */
-	0,	/* tp_traverse */
-	0,					/* tp_clear */
-	0,					/* tp_richcompare */
-	0,					/* tp_weaklistoffset */
-	PyObject_SelfIter,  /* tp_iter */
-	(iternextfunc)&STLIteratorWrapper::__next__,		/* tp_iternext */
-	0,		        	/* tp_methods */
-	0,					/* tp_members */
-	0,                  /* tp_getset */
-	0,					/* tp_base */
-	0,					/* tp_dict */
-	0,					/* tp_descr_get */
-	0,					/* tp_descr_set */
-	0,					/* tp_dictoffset */
-	0,			        /* tp_init */
-	PyType_GenericAlloc,			/* tp_alloc */
-	PyType_GenericNew,			/* tp_new */
-	PyObject_Del,			/* tp_free */
+  PyVarObject_HEAD_INIT( &PyType_Type, 0 )
+  .tp_name = "ecell._ecs.STLIteratorWrapper",
+  .tp_basicsize = sizeof( STLIteratorWrapper ),
+  /* methods */
+  .tp_dealloc = (destructor)&STLIteratorWrapper::__dealloc__,
+  .tp_getattro = PyObject_GenericGetAttr,
+  .tp_flags = Py_TPFLAGS_DEFAULT,
+  .tp_iter = PyObject_SelfIter,
+  .tp_iternext = (iternextfunc)&STLIteratorWrapper::__next__,
+  .tp_alloc = PyType_GenericAlloc,
+  .tp_new = PyType_GenericNew,
+  .tp_free = PyObject_Del,
 };
 
 
@@ -1086,7 +1026,7 @@ public:
 
     void operator delete( void* ptr )
     {
-        reinterpret_cast< PyObject* >( ptr )->ob_type->tp_free( reinterpret_cast< PyObject* >( ptr ) );
+        Py_TYPE( reinterpret_cast< PyObject* >( ptr ) )->tp_free( reinterpret_cast< PyObject* >( ptr ) );
     }
 
     PropertyAttributesIterator( PropertyAttributes const& impl )
@@ -1120,46 +1060,18 @@ public:
 
 
 PyTypeObject PropertyAttributesIterator::__class__ = {
-	PyObject_HEAD_INIT( &PyType_Type )
-	"ecell._ecs.PropertyAttributesIterator", /* tp_name */
-	sizeof( PropertyAttributesIterator ), /* tp_basicsize */
-	0,					/* tp_itemsize */
-	/* methods */
-	(destructor)&PropertyAttributesIterator::__dealloc__, /* tp_dealloc */
-	0,					/* tp_print */
-	0,					/* tp_getattr */
-	0,					/* tp_setattr */
-	0,					/* tp_compare */
-	0,					/* tp_repr */
-	0,					/* tp_as_number */
-	0,					/* tp_as_sequence */
-	0,					/* tp_as_mapping */
-	0,					/* tp_hash */
-	0,					/* tp_call */
-	0,					/* tp_str */
-	PyObject_GenericGetAttr,		/* tp_getattro */
-	0,					/* tp_setattro */
-	0,					/* tp_as_buffer */
-	0,/* tp_flags */
-	0,					/* tp_doc */
-	0,	/* tp_traverse */
-	0,					/* tp_clear */
-	0,					/* tp_richcompare */
-	0,					/* tp_weaklistoffset */
-	PyObject_SelfIter,  /* tp_iter */
-	(iternextfunc)&PropertyAttributesIterator::__next__,		/* tp_iternext */
-	0,		        	/* tp_methods */
-    0,                  /* tp_members */
-	0,                  /* tp_getset */
-	0,					/* tp_base */
-	0,					/* tp_dict */
-	0,					/* tp_descr_get */
-	0,					/* tp_descr_set */
-	0,					/* tp_dictoffset */
-	0,			        /* tp_init */
-	PyType_GenericAlloc,			/* tp_alloc */
-	PyType_GenericNew,			/* tp_new */
-	PyObject_Del,			/* tp_free */
+  PyVarObject_HEAD_INIT( &PyType_Type, 0 )
+  .tp_name = "ecell._ecs.PropertyAttributesIterator",
+  .tp_basicsize = sizeof( PropertyAttributesIterator ),
+  /* methods */
+  .tp_dealloc = (destructor)&PropertyAttributesIterator::__dealloc__,
+  .tp_getattro = PyObject_GenericGetAttr,
+  .tp_flags = 1,
+  .tp_iter = PyObject_SelfIter,
+  .tp_iternext = (iternextfunc)&PropertyAttributesIterator::__next__,
+  .tp_alloc = PyType_GenericAlloc,
+  .tp_new = PyType_GenericNew,
+  .tp_free = PyObject_Del,
 };
 
 static std::string VariableReference___str__( VariableReference const* self )
@@ -1354,6 +1266,21 @@ public:
     static PyObject*
     convert( boost::shared_ptr< DataPointVector > const& aVectorSharedPtr )
     {
+        std::cout << "DataPointVectorSharedPtrConverter (1)" << '\n';
+        if (aVectorSharedPtr->getElementSize() == sizeof( DataPoint ))
+        {
+            std::cout << "DataPointVectorSharedPtrConverter (3)" << '\n';
+            DataPointVectorWrapper<libecs::DataPoint>* a = DataPointVectorWrapper< DataPoint >::create(aVectorSharedPtr );
+            std::cout << "DataPointVectorSharedPtrConverter (4)" << '\n';
+            PyObject* aa = reinterpret_cast< PyObject* >( a );
+            std::cout << "DataPointVectorSharedPtrConverter (5)" << '\n';
+        } else {
+            std::cout << "DataPointVectorSharedPtrConverter (6)" << '\n';
+            DataPointVectorWrapper<libecs::LongDataPoint>* a = DataPointVectorWrapper< LongDataPoint >::create(aVectorSharedPtr );
+            std::cout << "DataPointVectorSharedPtrConverter (7)" << '\n';
+            PyObject* aa = reinterpret_cast< PyObject* >( a );
+            std::cout << "DataPointVectorSharedPtrConverter (8)" << '\n';
+        }
         return aVectorSharedPtr->getElementSize() == sizeof( DataPoint ) ?
                 reinterpret_cast< PyObject* >(
                     DataPointVectorWrapper< DataPoint >::create(
@@ -1569,7 +1496,7 @@ public:
         {
             PyObject* anOwner( py::detail::wrapper_base_::owner( this ) );
             BOOST_ASSERT( anOwner != NULL );
-            thePrivPrefix = String( "_" ) + anOwner->ob_type->tp_name;
+            thePrivPrefix = String( "_" ) + Py_TYPE( anOwner )->tp_name;
         }
 
         appendDictToSet( aPropertySet, thePrivPrefix, aSelf );
@@ -1579,7 +1506,7 @@ public:
                     py::objects::registered_class_object(
                         typeid( Tbase_ ) ).get() ) );
         addAttributesFromBases( aPropertySet, thePrivPrefix, anUpperBound,
-                reinterpret_cast< PyObject* >( aSelf->ob_type ) );
+                reinterpret_cast< PyObject* >( Py_TYPE( aSelf ) ) );
         removeAttributesFromBases( aPropertySet, anUpperBound );
 
         std::vector< String > retval;
@@ -1702,17 +1629,17 @@ public:
     virtual bool isContinuous() const
     {
         PyObject* aSelf( py::detail::wrapper_base_::owner( this ) );
-        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( aSelf->ob_type ), py::handle<>( PyUnicode_InternFromString( "IsContinuous" ) ).get() ) ) );
+        py::handle<> anIsContinuousDescr( py::allow_null( PyObject_GenericGetAttr( reinterpret_cast< PyObject* >( Py_TYPE( aSelf ) ), py::handle<>( PyUnicode_InternFromString( "IsContinuous" ) ).get() ) ) );
         if ( !anIsContinuousDescr )
         {
             PyErr_Clear();
             return Process::isContinuous();
         }
 
-        descrgetfunc aDescrGetFunc( anIsContinuousDescr.get()->ob_type->tp_descr_get );
-        if ( ( anIsContinuousDescr.get()->ob_type->tp_flags & 0 ) && aDescrGetFunc )
+        descrgetfunc aDescrGetFunc( Py_TYPE( anIsContinuousDescr.get() )->tp_descr_get );
+        if ( ( Py_TYPE( anIsContinuousDescr.get() )->tp_flags & 0 ) && aDescrGetFunc )
         {
-            return py::extract< bool >( py::handle<>( aDescrGetFunc( anIsContinuousDescr.get(), aSelf, reinterpret_cast< PyObject* >( aSelf->ob_type ) ) ).get() );
+            return py::extract< bool >( py::handle<>( aDescrGetFunc( anIsContinuousDescr.get(), aSelf, reinterpret_cast< PyObject* >( Py_TYPE( aSelf ) ) ) ).get() );
         }
 
         return py::extract< bool >( anIsContinuousDescr.get() );
@@ -1928,7 +1855,7 @@ EcsObject* PythonDynamicModule< T_ >::createInstance() const
         if ( aPyErrObj )
         {
             anErrorStr += "(";
-            anErrorStr += aPyErrObj->ob_type->tp_name;
+            anErrorStr += Py_TYPE( aPyErrObj )->tp_name;
             anErrorStr += ": ";
             py::handle<> aPyErrStrRepr( PyObject_Str( aPyErrObj ) );
             BOOST_ASSERT( PyBytes_Check( aPyErrStrRepr.get() ) );
@@ -2817,8 +2744,9 @@ template< typename TecsObject_ >
 static void EcsObject___setattr__( py::back_reference< TecsObject_* > aSelf, py::object key, py::object value )
 try
 {
-    py::handle<> aDescr( py::allow_null( PyObject_GetAttr( reinterpret_cast< PyObject* >( aSelf.source().ptr()->ob_type ), key.ptr() ) ) );
-    if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !aDescr.get()->ob_type->tp_descr_set )
+    py::handle<> aDescr( py::allow_null( PyObject_GetAttr( reinterpret_cast< PyObject* >( Py_TYPE( aSelf.source().ptr() ) ), key.ptr() ) ) );
+    if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !Py_TYPE( aDescr.get() )->tp_descr_set )
+    /* A simple "->ob_type" remains here. */
     {
         PyErr_Clear();
         EcsObject* self = aSelf.get();
@@ -2827,7 +2755,7 @@ try
     }
     else
     {
-        aDescr.get()->ob_type->tp_descr_set( aDescr.get(), aSelf.source().ptr(), value.ptr() );
+        Py_TYPE( aDescr.get() )->tp_descr_set( aDescr.get(), aSelf.source().ptr(), value.ptr() );
         if (PyErr_Occurred())
         {
             py::throw_error_already_set();
@@ -2864,9 +2792,9 @@ struct return_entity : public py::default_call_policies
             struct type
             {
                 PyTypeObject const *get_pytype() const
-				{
-					return 0;
-				}
+        {
+          return 0;
+        }
 
                 PyObject* operator()( Entity* ptr ) const
                 {
@@ -2917,12 +2845,12 @@ AbstractSimulator* Entity_getModel(Entity const& entity)
 
 BOOST_PYTHON_MODULE( _ecs )
 {
+    // without this it crashes when Logger::getData() is called. why?
+    import_array_without_return();
+
     DataPointVectorWrapper< DataPoint >::__class_init__();
     DataPointVectorWrapper< LongDataPoint >::__class_init__();
     STLIteratorWrapper< Process::VariableReferenceVector::const_iterator >::__class_init__();
-
-    // without this it crashes when Logger::getData() is called. why?
-    import_array_without_return();
 
     registerTupleConverters< std::pair< Real, String > >();
     PolymorphToPythonConverter::addToRegistry();

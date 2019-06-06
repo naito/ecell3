@@ -33,7 +33,7 @@
 #
 
 
-from ecs_constants import *
+from .ecs_constants import *
 from weakref import ref
 
 # ---------------------------------------------------------------
