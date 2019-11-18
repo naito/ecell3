@@ -1,0 +1,21 @@
+/* confdefs.h */
+#define PACKAGE_NAME "ecell"
+#define PACKAGE_TARNAME "ecell"
+#define PACKAGE_VERSION "3.3.alpha.1"
+#define PACKAGE_STRING "ecell 3.3-alpha.1"
+#define PACKAGE_BUGREPORT ""
+#define PACKAGE_URL ""
+#define PACKAGE "ecell"
+#define VERSION "3.3.alpha.1"
+#define STDC_HEADERS 1
+#define HAVE_SYS_TYPES_H 1
+#define HAVE_SYS_STAT_H 1
+#define HAVE_STDLIB_H 1
+#define HAVE_STRING_H 1
+#define HAVE_MEMORY_H 1
+#define HAVE_STRINGS_H 1
+#define HAVE_INTTYPES_H 1
+#define HAVE_STDINT_H 1
+#define HAVE_UNISTD_H 1
+#define HAVE_DLFCN_H 1
+#define LT_OBJDIR ".libs/"
