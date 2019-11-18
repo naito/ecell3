@@ -741,7 +741,7 @@ public:
 
     static PyObject* __str__( DataPointVectorWrapper* self )
     {
-      std::cout << "DataPointVectorWrapper::__str__()" << '\n';
+        std::cout << "DataPointVectorWrapper::__str__()" << '\n';
         return PyObject_Str( self->asPyArray() );
     }
 
