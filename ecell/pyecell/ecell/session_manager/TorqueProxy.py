@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 2019-2019 Keio University
-#       Copyright (C) 2019-2019 RIKEN
+#       Copyright (C) 2017-2020 Keio University
+#       Copyright (C) 2017-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -13,17 +13,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 #
 # Designed by Koichi Takahashi <shafi@e-cell.org>
@@ -64,9 +64,9 @@ class SessionProxy( AbstractSessionProxy ):
         self.__cancel()
 
     def getToqueJobID(self):    # getSGEJobID(self)
-        '''return job id 
+        '''return job id
         '''
-        return self.__theTorqueJobID 
+        return self.__theTorqueJobID
 
     def run( self ):
         '''run process
@@ -143,7 +143,7 @@ class SessionProxy( AbstractSessionProxy ):
             while True:
                 if os.path.exists( p ):
                     return open( p, 'rb' ).read()
-        
+
         return None
 
     def stop(self):
@@ -156,7 +156,7 @@ class SessionProxy( AbstractSessionProxy ):
             self.__cancel()
 
         # set error status
-        self.setStatus( ERROR ) 
+        self.setStatus( ERROR )
 
     def getStdout( self ):
         '''Return stdout(str)
@@ -235,7 +235,7 @@ class SystemProxy( AbstractSystemProxy ):
 
         Job ID                    Name             User            Time Use S Queue
         ------------------------- ---------------- --------------- -------- - -----
-        3762.king2                STDIN            ynaito          0        R all.q          
+        3762.king2                STDIN            ynaito          0        R all.q
 
         When the state is 'Q(queued)', 'W(waiting)', 'T(transfer)', 'E(exiting)' or 'R(running)', it is set as RUN.
         For SGE, when the state is 'Eqw(error)', the job is killed and its status is set as ERROR.
@@ -297,8 +297,8 @@ class SystemProxy( AbstractSystemProxy ):
     def __populateQueueList( self ):
         ''' Get queue list.
         $ qstat -a
-        
-        king2: 
+
+        king2:
                                                                                           Req'd       Req'd       Elap
         Job ID                  Username    Queue    Jobname          SessID  NDS   TSK   Memory      Time    S   Time
         ----------------------- ----------- -------- ---------------- ------ ----- ------ --------- --------- - ---------
@@ -317,7 +317,7 @@ class SystemProxy( AbstractSystemProxy ):
         for line in lines:
             m = re.match( r'^(\S+?)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$', line )
             queueList[ m.groups( 0 ) ] = [
-                m.groups( 1 ), m.groups( 2 ), m.groups( 3 ), m.groups( 4 ), m.groups( 5 ), 
+                m.groups( 1 ), m.groups( 2 ), m.groups( 3 ), m.groups( 4 ), m.groups( 5 ),
                 m.groups( 6 ), m.groups( 7 ), m.groups( 8 ), m.groups( 9 ), m.groups( 10 ) ]
         lines.close()
         self.__theQueueList = queueList
