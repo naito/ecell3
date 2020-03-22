@@ -1,12 +1,12 @@
 /* confdefs.h */
 #define PACKAGE_NAME "ecell"
 #define PACKAGE_TARNAME "ecell"
-#define PACKAGE_VERSION "3.3.alpha.1"
-#define PACKAGE_STRING "ecell 3.3-alpha.1"
+#define PACKAGE_VERSION "3.3.alpha1"
+#define PACKAGE_STRING "ecell 3.3.alpha1"
 #define PACKAGE_BUGREPORT ""
 #define PACKAGE_URL ""
 #define PACKAGE "ecell"
-#define VERSION "3.3.alpha.1"
+#define VERSION "3.3.alpha1"
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
