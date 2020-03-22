@@ -1,8 +1,8 @@
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //       This file is part of the E-Cell System
 //
-//       Copyright (C) 1996-2019 Keio University
-//       Copyright (C) 2008-2019 RIKEN
+//       Copyright (C) 1996-2020 Keio University
+//       Copyright (C) 2008-2020 RIKEN
 //       Copyright (C) 2005-2009 The Molecular Sciences Institute
 //
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

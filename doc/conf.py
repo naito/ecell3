@@ -9,7 +9,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = 'ecell3'
-copyright = '2019, E-Cell project'
+copyright = '2020, E-Cell project'
 
 version = '3.3.alpha'
 release = '1'
