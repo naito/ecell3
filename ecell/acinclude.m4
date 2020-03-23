@@ -292,7 +292,7 @@ AC_DEFUN([ECELL_CHECK_BOOST_PYTHON], [
     AC_TRY_LINK([
 #include <boost/python/module.hpp>
     ], [
-boost::python::detail::init_module(PyModuleDef&, void(*)());
+boost::python::detail::init_module("dummy", 0);
     ], [
       AC_MSG_RESULT([yes])
       AC_DEFINE(HAVE_BOOST_PYTHON, 1, [Define to 1 if Boost.Python is available])
