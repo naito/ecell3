@@ -124,3 +124,8 @@ ecell/pyecell/ecell3-eml2sbml.in.bak
 ecell/pyecell/ecell3-sbml2eml.in.bak
 ecell/pyecell/ecell3-session-manager.in.bak
 ecell/pyecell/ecell3-session.in.bak
+ecell/pyecell/ecell3-jupyter
+confdefs.h
+basic.cpp
+confdefs.h
+ecell/pyecell/ecell3-jupyter
