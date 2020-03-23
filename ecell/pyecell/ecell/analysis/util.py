@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'util'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -57,7 +57,7 @@ def convertToDataString( aValue ):
     aValue: (str) ex. FullPN
     return (str)
     '''
-    
+
     p = re.compile( '(/|:)' )
     if not type( aValue ) == str:
         raise TypeError( 'can not create DataString from %s type object' % type( aValue ) )

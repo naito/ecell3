@@ -14,25 +14,25 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
 """
 
 __program__ = 'SBMLExporter'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -78,7 +78,7 @@ class ExpressionParser:
 
             if self.namespaceDict.has_key( bunshiName ) \
                    and self.namespaceDict.has_key( bunboName ):
-                
+
                 ( sbmlId, coeff ) = self.namespaceDict[ bunshiName ]
                 if type( sbmlId ) == tuple and sbmlId[ 1 ] == bunboName:
                     expressionList[ c ] = sbmlId[ 0 ]
@@ -88,7 +88,7 @@ class ExpressionParser:
                         self.modifierList.append( sbmlId[ 0 ] )
 
         formulaString = ''.join( expressionList )
-            
+
         regexpr = re.compile( '([a-zA-Z_][a-zA-Z0-9_]*.Value)' )
         expressionList = regexpr.split( formulaString )
         for c in range( 1, len( expressionList ), 2 ):
@@ -98,11 +98,11 @@ class ExpressionParser:
                 if type( sbmlId ) == str:
                     expressionList[ c ] = sbmlId
                 elif type( sbmlId ) == tuple:
-                    expressionList[ c ] = '%s * %s' % sbmlId
+                    expressionList[ c ] = '{} * {}' % sbmlId
                     if coeff == 0 \
                            and self.modifierList.count( sbmlId[ 0 ] ) == 0:
                         self.modifierList.append( sbmlId[ 0 ] )
-                        
+
         formulaString = ''.join( expressionList )
 
         regexpr = re.compile( '([a-zA-Z_][a-zA-Z0-9_]*.MolarConc)' )
@@ -112,29 +112,26 @@ class ExpressionParser:
             if self.namespaceDict.has_key( referenceName ):
                 ( sbmlId, coeff ) = self.namespaceDict[ referenceName ]
                 if type( sbmlId ) == str:
-                    raise SBMLConvertError, \
-                          'MolarConc of [%s] is not supported' \
-                          % ( referenceName )
+                    raise SBMLConvertError('MolarConc of [{}] is not supported'.format( referenceName ))
                 elif type( sbmlId ) == tuple:
-                    expressionList[ c ] = '%s / %e' % ( sbmlId[ 0 ], AVOGADRO_CONSTANT )
+                    expressionList[ c ] = '{} / {:e}'.format( sbmlId[ 0 ], AVOGADRO_CONSTANT )
                     if coeff == 0 \
                            and self.modifierList.count( sbmlId[ 0 ] ) == 0:
-                        self.modifierList.append( sbmlId[ 0 ] )         
+                        self.modifierList.append( sbmlId[ 0 ] )
 
         formulaString = ''.join( expressionList )
-        formulaString = formulaString.replace( 'self.getSuperSystem().SizeN_A', '( %s * %e )' % ( self.compartment, AVOGADRO_CONSTANT ) )
+        formulaString = formulaString.replace( 'self.getSuperSystem().SizeN_A', '( {} * {:e} )'.format( self.compartment, AVOGADRO_CONSTANT ) )
 
         regexpr = re.compile( '([a-zA-Z_][a-zA-Z0-9_]*.Value\s*\/\s*[a-zA-Z_][a-zA-Z0-9_]*.Value)' )
 
         if regexpr.match( formulaString ) != None:
-            raise SBMLConvertError, \
-                  'Expression [%s] cannot be coverted successfully' \
-                  % ( expressionString )
-        
+            raise SBMLConvertError(
+                  'Expression [{}] cannot be coverted successfully'.format( expressionString ))
+
         return formulaString
 
     # end of parse
-    
+
 
     def convertExpressionToASTNode( self, expressionString ):
 
@@ -142,14 +139,13 @@ class ExpressionParser:
 
         anASTNode = libsbml.parseFormula( anExpression )
         if not anASTNode:
-            raise SBMLConvertError, \
-                  'Expression [%s] cannot be coverted successfully' \
-                  % ( anExpression )
+            raise SBMLConvertError(
+                  'Expression [{}] cannot be coverted successfully'.format( anExpression ))
 
         return anASTNode
 
     # end of convertExpressionToASTNode
-    
+
 
 # end of ExpressionParser
 
@@ -171,8 +167,8 @@ class SBMLExporter:
         self.theSBMLDocument = None
 
     # end of initialize
-    
-    
+
+
     def loadSBML( self, aSBMLDocument ):
 
         if type( aSBMLDocument ) == str:
@@ -181,10 +177,10 @@ class SBMLExporter:
             self.theSBMLDocument = libsbml.readSBMLFromString( aSBMLDocument.read() )
         else:
             self.theSBMLDocument = aSBMLDocument
-            
+
         if self.theSBMLDocument.getLevel() != 2:
             self.theSBMLDocument.setLevel( 2 )
-            
+
         aXMLNamespaceList = self.theSBMLDocument.getNamespaces()
         anURI = aXMLNamespaceList.getURI( ECELL_XML_NAMESPACE_PREFIX )
         if anURI != ECELL_XML_NAMESPACE_URI:
@@ -192,25 +188,24 @@ class SBMLExporter:
                 aXMLNamespaceList.add( ECELL_XML_NAMESPACE_PREFIX, \
                                        ECELL_XML_NAMESPACE_URI )
             else:
-                raise SBMLConvertError, 'Wrong URI [%s] is already assinged to xmlns:%s. Remove or correct it by yourself' % ( anURI, ECELL_XML_NAMESPACE_PREFIX )
+                raise SBMLConvertError( 'Wrong URI [{}] is already assinged to xmlns:{}. Remove or correct it by yourself'.format( anURI, ECELL_XML_NAMESPACE_PREFIX ))
 
         if self.theSBMLDocument.getNumFatals() > 0:
             fatalerrorList = []
             for i in range( self.theSBMLDocument.getNumFatals() ):
                 fatalerrorList.append( self.theSBMLDocument.getFatal( i ).getMessage() )
-                
+
             self.theSBMLDocument = None
-            raise SBMLConvertError, \
-                  'This SBML document is invalid:\n %s' \
-                  % ( ', '.join( fatalerrorList ) )
+            raise SBMLConvertError(
+                  'This SBML document is invalid:\n {}'.format( ', '.join( fatalerrorList )))
 
         if not self.theSBMLDocument.getModel():
             self.theSBMLDocument.createModel()
 
         self.__createIdDict()
-        
+
     # end of loadSBML
-    
+
 
     def convertEMLToSBML( self ):
 
@@ -245,7 +240,7 @@ class SBMLExporter:
                 aRuleExporter.writeSBML( self.theSBMLDocument )
 
         return self.theSBMLDocument
-        
+
     # end of convertEMLToSBML
 
 
@@ -288,7 +283,7 @@ class SBMLExporter:
             if fullID[ 0 ] == ecell.ecssupport.VARIABLE \
                    and fullID[ 2 ] == 'SIZE':
                 pass
-                
+
             elif not self.idDict.has_key( fullIDString ):
                 id = createIdFromFullID( fullIDString )
                 if namingDict.has_key( id ):
@@ -306,14 +301,14 @@ class SBMLExporter:
         for fullIDString in self.theEml.getProcessList():
             if not self.idDict.has_key( fullIDString ):
 
-                className = self.theEml.getEntityClass( fullIDString ) 
+                className = self.theEml.getEntityClass( fullIDString )
                 if className == 'ExpressionFluxProcess':
                     id = createIdFromFullID( fullIDString )
                     if namingDict.has_key( id ):
                         ( targetFullIDString, sbmlType ) = namingDict.pop( id )
                         name = ecell.analysis.util.convertToDataString( targetFullIDString )
                         namingDict[ name ] = ( targetFullIDString, sbmlType )
-                        
+
                         name = ecell.analysis.util.convertToDataString( fullIDString )
                         namingDict[ name ] = ( fullIDString, \
                                                libsbml.SBML_REACTION )
@@ -326,7 +321,7 @@ class SBMLExporter:
                                  = ( None, libsbml.SBML_ASSIGNMENT_RULE )
 
 ##                 else:
-##                      raise SBMLConvertError, 'Class [%s] is not supported. Substitute  ExpressionFluxProcess or ExpressionAssignmentProcess' % ( className )
+##                      raise SBMLConvertError('Class [{}] is not supported. Substitute  ExpressionFluxProcess or ExpressionAssignmentProcess'.format( className ))
 
         for id in namingDict.keys():
             ( fullIDString, sbmlType ) = namingDict[ id ]
@@ -335,21 +330,21 @@ class SBMLExporter:
             fullID = ecell.ecssupport.createFullID( fullIDString )
             if fullID[ 0 ] == ecell.ecssupport.SYSTEM:
                 systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-                self.idDict[ 'Variable:%s:SIZE' % ( systemPath ) ] \
+                self.idDict[ 'Variable:{}:SIZE'.format( systemPath ) ] \
                              = ( id, sbmlType )
 
     # end of __createIdDict
-    
-    
+
+
     def searchIdFromFullID( self, fullIDString ):
 
         if self.idDict.has_key( fullIDString ):
             return self.idDict[ fullIDString ]
         else:
             return ( None, None )
-        
+
     # end of searchIdFromFullID
-    
+
 
 # end of SBMLExporter
 
@@ -376,18 +371,17 @@ class SBaseExporter:
             self.setId( id )
 
     # end of initialize
-    
+
 
     def setFullID( self, fullIDString ):
 
         if not self.theSBMLExporter.theEml.isEntityExist( fullIDString ):
-            raise SBMLConvertError, \
-                  'Entity [%s] is not found' % ( fullIDString )
+            raise SBMLConvertError( 'Entity [{}] is not found'.format( fullIDString ))
 
         self.fullID = fullIDString
 
     # end of setFullID
-    
+
 
     def setId( self, id=None ):
 
@@ -400,15 +394,15 @@ class SBaseExporter:
 
         return ( ( createIdFromFullID( self.fullID ) != self.id )
                  or ( self.id == ROOT_SYSTEM_ID ) )
-    
+
     # end of isSetId
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
         import inspect
         caller = inspect.getouterframes( inspect.currentframe() )[ 0 ][ 3 ]
-        raise NotImplementedError( '%s must be implemented in sub class' % ( caller ) )
+        raise NotImplementedError( '{} must be implemented in sub class'.format( caller ))
 
     # end of writeSBML
 
@@ -430,13 +424,12 @@ class CompartmentExporter( SBaseExporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecssupport.SYSTEM:
-            raise SBMLConvertError, \
-                  'Entity [%s] is not System' % ( fullIDString )
+            raise SBMLConvertError('Entity [{}] is not System'.format( fullIDString ))
 
         SBaseExporter.setFullID( self, fullIDString )
 
     # end of setFullID
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
@@ -463,20 +456,17 @@ class CompartmentExporter( SBaseExporter ):
             aCompartment.setOutside( outside )
 
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-        sizeFullIDString = 'Variable:%s:SIZE' % ( systemPath )
+        sizeFullIDString = 'Variable:{}:SIZE'.format( systemPath )
 
         systemSize = 1.0
 
         if self.theSBMLExporter.theEml.isEntityExist( sizeFullIDString ):
             if self.theSBMLExporter.theEml.getEntityPropertyList( sizeFullIDString ).count( 'Value' ) == 1:
-                systemSize = self.theSBMLExporter.theEml.getEntityProperty( '%s:Value' % ( sizeFullIDString ) )
+                systemSize = self.theSBMLExporter.theEml.getEntityProperty( '{}:Value'.format( sizeFullIDString ) )
                 if len( systemSize ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Value] is invalid' \
-                          % ( sizeFullIDString )
+                    raise SBMLConvertError('The format of property [{}:Value] is invalid'.format( sizeFullIDString ))
 ##             else:
-##                 raise SBMLConvertError, \
-##                       'Variable [%s] has no value' % ( sizeFullIDString )
+##                 raise SBMLConvertError('Variable [{}] has no value'.format( sizeFullIDString ))
 
                 systemSize = float( systemSize[ 0 ] )
 
@@ -485,18 +475,14 @@ class CompartmentExporter( SBaseExporter ):
             while systemFullID[ 1 ] != '':
                 outsideFullID = ecell.ecssupport.createFullIDFromSystemPath( systemFullID[ 1 ] )
                 outsidePath = ecell.ecssupport.createSystemPathFromFullID( outsideFullID )
-                outsideSizeFullIDString = 'Variable:%s:SIZE' % ( outsidePath )
+                outsideSizeFullIDString = 'Variable:{}:SIZE'.format( outsidePath )
 
                 if self.theSBMLExporter.theEml.isEntityExist( outsideSizeFullIDString ) and self.theSBMLExporter.theEml.getEntityPropertyList( outsideSizeFullIDString ).count( 'Value' ) == 1:
-                    outsideSize = self.theSBMLExporter.theEml.getEntityProperty( '%s:Value' % ( outsideSizeFullIDString ) )
+                    outsideSize = self.theSBMLExporter.theEml.getEntityProperty( '{}:Value'.format( outsideSizeFullIDString ))
                     if len( outsideSize ) != 1:
-                        raise SBMLConvertError, \
-                              'The format of property [%s:Value] is invalid' \
-                              % ( outsideSizeFullIDString )
+                        raise SBMLConvertError('The format of property [{}:Value] is invalid'.format( outsideSizeFullIDString ))
 ##                     else:
-##                         raise SBMLConvertError, \
-##                               'Variable [%s] has no value' \
-##                               % ( outsideSizeFullIDString )
+##                         raise SBMLConvertError('Variable [{}] has no value'.format( outsideSizeFullIDString ))
 
                     outsideSize = float( outsideSize[ 0 ] )
                     systemSize = outsideSize
@@ -508,24 +494,20 @@ class CompartmentExporter( SBaseExporter ):
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( self.fullID )
         for pn in propertyList:
-            
+
             if pn == 'Name':
-                name = self.theSBMLExporter.theEml.getEntityProperty( '%s:Name' % ( self.fullID ) )
+                name = self.theSBMLExporter.theEml.getEntityProperty( '{}:Name'.format( self.fullID ))
                 if len( name ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Name] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Name] is invalid'.format( self.fullID ))
 
                 name = name[ 0 ]
                 aCompartment.setName( name )
 
             elif pn == 'StepperID':
                 pass
-            
+
             else:
-                raise SBMLConvertError, \
-                      'Property [%s:%s] cannot be converted' \
-                      % ( self.fullID, pn )
+                raise SBMLConvertError('Property [{}:{}] cannot be converted'.format( self.fullID, pn ))
 
     # end of writeSBML
 
@@ -547,13 +529,12 @@ class SpeciesExporter( SBaseExporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecssupport.VARIABLE:
-            raise SBMLConvertError, \
-                  'Entity [%s] is not Variable' % ( fullIDString )
+            raise SBMLConvertError('Entity [{}] is not Variable'.format( fullIDString ))
 
         SBaseExporter.setFullID( self, fullIDString )
 
     # end of setFullID
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
@@ -576,41 +557,33 @@ class SpeciesExporter( SBaseExporter ):
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( self.fullID )
         for pn in propertyList:
-            
+
             if pn == 'Name':
-                name = self.theSBMLExporter.theEml.getEntityProperty( '%s:Name' % ( self.fullID ) )
+                name = self.theSBMLExporter.theEml.getEntityProperty( '{}:Name'.format( self.fullID ))
                 if len( name ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Name] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Name] is invalid'.format( self.fullID ))
 
                 name = name[ 0 ]
                 aSpecies.setName( name )
 
             elif pn == 'Value':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Value' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Value'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Value] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Value] is invalid'.format( self.fullID ))
 
                 value = float( value[ 0 ] )
                 aSpecies.setInitialAmount( value )
 
             elif pn == 'Fixed':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Fixed' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Fixed'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Fixed] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Fixed] is invalid'.format( self.fullID ))
 
                 if value[ 0 ] == '1':
                     aSpecies.setBoundaryCondition( True )
 
             else:
-                raise SBMLConvertError, \
-                      'Property [%s:%s] cannot be converted' \
-                      % ( self.fullID, pn )
+                raise SBMLConvertError('Property [{}:{}] cannot be converted'.format( self.fullID, pn ))
 
     # end of writeSBML
 
@@ -632,13 +605,12 @@ class ParameterExporter( SBaseExporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecssupport.VARIABLE:
-            raise SBMLConvertError, \
-                  'Entity [%s] is not Variable' % ( fullIDString )
+            raise SBMLConvertError('Entity [{}] is not Variable'.format( fullIDString ))
 
         SBaseExporter.setFullID( self, fullIDString )
 
     # end of setFullID
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
@@ -661,46 +633,38 @@ class ParameterExporter( SBaseExporter ):
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( self.fullID )
         for pn in propertyList:
-            
+
             if pn == 'Name':
-                name = self.theSBMLExporter.theEml.getEntityProperty( '%s:Name' % ( self.fullID ) )
+                name = self.theSBMLExporter.theEml.getEntityProperty( '{}:Name'.format( self.fullID ))
                 if len( name ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Name] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Name] is invalid'.format( self.fullID ))
 
                 name = name[ 0 ]
                 aParameter.setName( name )
 
             elif pn == 'Value':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Value' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Value'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Value] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Value] is invalid'.format( self.fullID ))
 
                 value = float( value[ 0 ] )
                 aParameter.setValue( value )
 
 
             elif pn == 'Fixed':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Fixed' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Fixed'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Fixed] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Fixed] is invalid'.format( self.fullID ))
 
                 value = int( value[ 0 ] )
                 if value == 1:
-                    raise SBMLConvertError, 'Property [%s:Fixed] is set as True. It cannot be converted' % ( self.fullID )
-                
+                    raise SBMLConvertError('Property [{}:Fixed] is set as True. It cannot be converted'.format( self.fullID ))
+
             else:
-                raise SBMLConvertError, \
-                      'Property [%s:%s] cannot be converted' \
-                      % ( self.fullID, pn )
+                raise SBMLConvertError('Property [{}:{}] cannot be converted'.format( self.fullID, pn ))
 
     # end of writeSBML
-    
+
 
 # end of ParameterExporter
 
@@ -719,24 +683,20 @@ class ReactionExporter( SBaseExporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecssupport.PROCESS:
-            raise SBMLConvertError, \
-                  'Entity [%s] is not Process' % ( fullIDString )
-        
+            raise SBMLConvertError('Entity [{}] is not Process'.format( fullIDString ))
+
         className = self.theSBMLExporter.theEml.getEntityClass( fullIDString )
         if className != 'ExpressionFluxProcess':
-            raise SBMLConvertError, \
-                  'Class of [%s] is not ExpressionFluxProcess' \
-                  % ( fullIDString )
+            raise SBMLConvertError('Class of [{}] is not ExpressionFluxProcess'.format( fullIDString ))
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( fullIDString )
         if not 'Expression' in propertyList:
-            raise SBMLConvertError, \
-                  'Process [%s] has no Expression' % ( fullIDString )
+            raise SBMLConvertError('Process [{}] has no Expression'.format( fullIDString ))
 
         SBaseExporter.setFullID( self, fullIDString )
 
     # end of setFullID
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
@@ -762,7 +722,7 @@ class ReactionExporter( SBaseExporter ):
           = self.theSBMLExporter.searchIdFromFullID( compartment )
         setSBaseAnnotation( aReaction, 'compartment', compartment, aSBMLDocument.getNamespaces() )
 
-        anExpression = self.theSBMLExporter.theEml.getEntityProperty( '%s:Expression' % ( self.fullID ) )[ 0 ]
+        anExpression = self.theSBMLExporter.theEml.getEntityProperty( '{}:Expression'.format( self.fullID ))[ 0 ]
         namespaceDict = self.createNamespaceFromVariableReferenceList()
         anExpressionParser = ExpressionParser( namespaceDict, compartment )
         anASTNode = anExpressionParser.convertExpressionToASTNode( anExpression )
@@ -805,7 +765,7 @@ class ReactionExporter( SBaseExporter ):
                     i = productList.index( id[ 0 ] )
                     aProduct = aReaction.getProduct( i )
                     aProduct.setStoichiometry( coeff )
-                    
+
             elif coeff < 0 and type( id ) == tuple:
                 if reactantList.count( id[ 0 ] ) == 0:
                     aReaction.addReactant( libsbml.SpeciesReference( id[ 0 ], -coeff ) )
@@ -820,13 +780,11 @@ class ReactionExporter( SBaseExporter ):
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( self.fullID )
         for pn in propertyList:
-            
+
             if pn == 'Name':
-                name = self.theSBMLExporter.theEml.getEntityProperty( '%s:Name' % ( self.fullID ) )
+                name = self.theSBMLExporter.theEml.getEntityProperty( '{}:Name'.format( self.fullID ))
                 if len( name ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Name] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Name] is invalid'.format( self.fullID ))
 
                 name = name[ 0 ]
                 aReaction.setName( name )
@@ -837,21 +795,18 @@ class ReactionExporter( SBaseExporter ):
                 pass
 
             elif pn == 'Priority':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Priority' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Priority'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The type of Parameter [%s:Priority] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The type of Parameter [{}:Priority] is invalid'.format( self.fullID ))
 
                 value = int( value[ 0 ] )
                 if value != 0:
-                    raise SBMLConvertError, 'The Parameter [%s:Priority] is not equal to 0. It cannnot be converted' % ( self.fullID )
+                    raise SBMLConvertError('The Parameter [{}:Priority] is not equal to 0. It cannnot be converted'.format( self.fullID ))
 
             else:
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:%s' % ( self.fullID, pn ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:{}'.format( self.fullID, pn ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The type of Parameter [%s] is invalid' % ( pn )
+                    raise SBMLConvertError('The type of Parameter [{}] is invalid'.format( pn ))
 
                 value = float( value[ 0 ] )
 
@@ -876,12 +831,12 @@ class ReactionExporter( SBaseExporter ):
         if not 'VariableReferenceList' in propertyList:
             return namespaceDict
 
-        aVariableReferenceList = self.theSBMLExporter.theEml.getEntityProperty( '%s:VariableReferenceList' % ( self.fullID ) )
+        aVariableReferenceList = self.theSBMLExporter.theEml.getEntityProperty( '{}:VariableReferenceList'.format( self.fullID ))
 
         for aVariableReference in aVariableReferenceList:
 
             fullID = ecell.analysis.util.createVariableReferenceFullID( aVariableReference[ 1 ], self.fullID )
-            fullIDString = 'Variable:%s:%s' % ( fullID[ 1 ], fullID[ 2 ] )
+            fullIDString = 'Variable:{}:{}'.format( fullID[ 1 ], fullID[ 2 ] )
 
             coeff = 0
             if len( aVariableReference ) > 2:
@@ -891,7 +846,7 @@ class ReactionExporter( SBaseExporter ):
               = self.theSBMLExporter.searchIdFromFullID( fullIDString )
 
             if sbmlType == libsbml.SBML_SPECIES:
-                compartmentId = self.theSBMLExporter.searchIdFromFullID( 'Variable:%s:SIZE' % ( fullID[ 1 ] ) )[ 0 ]
+                compartmentId = self.theSBMLExporter.searchIdFromFullID( 'Variable:{}:SIZE'.format( fullID[ 1 ] ))[ 0 ]
                 namespaceDict[ aVariableReference[ 0 ] ] \
                                = ( ( id, compartmentId ), coeff )
 
@@ -902,7 +857,7 @@ class ReactionExporter( SBaseExporter ):
 
     # end of createNamespaceFromVariableReferenceList
 
-    
+
 # end of ReactionExporter
 
 
@@ -924,29 +879,26 @@ class RuleExporter( SBaseExporter ):
         self.setId( id )
 
     # end of initialize
-    
+
 
     def setFullID( self, fullIDString ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecssupport.PROCESS:
-            raise SBMLConvertError, 'Entity [%s] is not Process' % ( fullID )
+            raise SBMLConvertError('Entity [{}] is not Process'.format( fullID ))
 
         className = self.theSBMLExporter.theEml.getEntityClass( fullIDString )
         if className != 'ExpressionAssignmentProcess':
-            raise SBMLConvertError, \
-                  'Class of [%s] is not ExpressionAssignmentProcess' \
-                  % ( fullIDString )
+            raise SBMLConvertError('Class of [{}] is not ExpressionAssignmentProcess'.format( fullIDString ))
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( fullIDString )
         if not 'Expression' in propertyList:
-            raise SBMLConvertError, \
-                  'Process [%s] has no Expression' % ( fullIDString )
+            raise SBMLConvertError('Process [{}] has no Expression'.format( fullIDString ))
 
         SBaseExporter.setFullID( self, fullIDString )
 
     # end of setFullID
-    
+
 
     def writeSBML( self, aSBMLDocument ):
 
@@ -956,7 +908,7 @@ class RuleExporter( SBaseExporter ):
         else:
             aRule = aModel.getRule( self.id )
             if not aRule:
-                raise SBMLConvertError, 'Rule [%s] is not found' % ( self.id )
+                raise SBMLConvertError('Rule [{}] is not found'.format( self.id ))
 
         namespaceDict = self.createNamespaceFromVariableReferenceList()
 
@@ -968,11 +920,11 @@ class RuleExporter( SBaseExporter ):
                 assignmentList.append( referenceName )
 
         if len( assignmentList ) != 1:
-            raise SBMLConvertError, 'Variable for AssignmentRule(ExpressionAssignmentProcess) [%s] is not unique.' % ( self.fullID )
-    
+            raise SBMLConvertError('Variable for AssignmentRule(ExpressionAssignmentProcess) [{}] is not unique.'.format( self.fullID ))
+
         ( id, coeff ) = namespaceDict[ assignmentList[ 0 ] ]
         if coeff != 1:
-            raise SBMLConvertError, 'Coefficient for AssignmentRule(ExpressionAssignmentProcess) [%s] must be equal to 1.' % ( self.fullID )
+            raise SBMLConvertError('Coefficient for AssignmentRule(ExpressionAssignmentProcess) [{}] must be equal to 1.'.format( self.fullID ))
 
         if type( id ) == tuple:
             variableName = id[ 0 ]
@@ -992,7 +944,7 @@ class RuleExporter( SBaseExporter ):
         setSBaseAnnotation( aRule, 'ID', fullID[ 2 ], aXMLNamespaceList )
         setSBaseAnnotation( aRule, 'compartment', compartment, aXMLNamespaceList )
 
-        anExpression = self.theSBMLExporter.theEml.getEntityProperty( '%s:Expression' % ( self.fullID ) )[ 0 ]
+        anExpression = self.theSBMLExporter.theEml.getEntityProperty( '{}:Expression'.format( self.fullID ))[ 0 ]
         anExpressionParser = ExpressionParser( namespaceDict )
         anASTNode = anExpressionParser.convertExpressionToASTNode( anExpression )
 
@@ -1000,27 +952,23 @@ class RuleExporter( SBaseExporter ):
 
         propertyList = self.theSBMLExporter.theEml.getEntityPropertyList( self.fullID )
         for pn in propertyList:
-            
+
             if pn == 'Name':
-                name = self.theSBMLExporter.theEml.getEntityProperty( '%s:Name' % ( self.fullID ) )
+                name = self.theSBMLExporter.theEml.getEntityProperty( '{}:Name'.format( self.fullID ))
                 if len( name ) != 1:
-                    raise SBMLConvertError, \
-                          'The format of property [%s:Name] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The format of property [{}:Name] is invalid'.format( self.fullID ))
 
                 name = name[ 0 ]
                 setSBaseAnnotation( aRule, 'Name', name, aXMLNamespaceList )
 
             elif pn == 'Priority':
-                value = self.theSBMLExporter.theEml.getEntityProperty( '%s:Priority' % ( self.fullID ) )
+                value = self.theSBMLExporter.theEml.getEntityProperty( '{}:Priority'.format( self.fullID ))
                 if len( value ) != 1:
-                    raise SBMLConvertError, \
-                          'The type of Parameter [%s:Priority] is invalid' \
-                          % ( self.fullID )
+                    raise SBMLConvertError('The type of Parameter [{}:Priority] is invalid'.format( self.fullID ))
 
                 value = int( value[ 0 ] )
                 if value != 0:
-                    raise SBMLConvertError, 'The Parameter [%s:Priority] is not equal to 0. It cannnot be converted' % ( self.fullID )
+                    raise SBMLConvertError('The Parameter [{}:Priority] is not equal to 0. It cannnot be converted'.format( self.fullID ))
 
             elif pn == 'VariableReferenceList' \
                      or pn == 'Expression' \
@@ -1028,11 +976,11 @@ class RuleExporter( SBaseExporter ):
                 pass
 
             else:
-                raise SBMLConvertError, 'Property [%s] is not supported for ExpressionAssignmentProcess. Define it as a global parameter' % ( pn )
+                raise SBMLConvertError('Property [{}] is not supported for ExpressionAssignmentProcess. Define it as a global parameter'.format( pn ))
 
     # end of writeSBML
 
-    
+
     def createNamespaceFromVariableReferenceList( self ):
 
         namespaceDict = {}
@@ -1041,12 +989,12 @@ class RuleExporter( SBaseExporter ):
         if not 'VariableReferenceList' in propertyList:
             return namespaceDict
 
-        aVariableReferenceList = self.theSBMLExporter.theEml.getEntityProperty( '%s:VariableReferenceList' % ( self.fullID ) )
+        aVariableReferenceList = self.theSBMLExporter.theEml.getEntityProperty( '{}:VariableReferenceList'.format( self.fullID ))
 
         for aVariableReference in aVariableReferenceList:
 
             fullID = ecell.analysis.util.createVariableReferenceFullID( aVariableReference[ 1 ], self.fullID )
-            fullIDString = 'Variable:%s:%s' % ( fullID[ 1 ], fullID[ 2 ] )
+            fullIDString = 'Variable:{}:{}'.format( fullID[ 1 ], fullID[ 2 ] )
 
             coeff = 0
             if len( aVariableReference ) > 2:
@@ -1056,7 +1004,7 @@ class RuleExporter( SBaseExporter ):
               = self.theSBMLExporter.searchIdFromFullID( fullIDString )
 
             if sbmlType == libsbml.SBML_SPECIES:
-                compartmentId = self.theSBMLExporter.searchIdFromFullID( 'Variable:%s:SIZE' % ( fullID[ 1 ] ) )[ 0 ]
+                compartmentId = self.theSBMLExporter.searchIdFromFullID( 'Variable:{}:SIZE'.format( fullID[ 1 ] ))[ 0 ]
                 namespaceDict[ aVariableReference[ 0 ] ] \
                                = ( ( id, compartmentId ), coeff )
 
@@ -1067,7 +1015,7 @@ class RuleExporter( SBaseExporter ):
 
     # end of createNamespaceFromVariableReferenceList
 
-    
+
 # end of RuleExporter
 
 
@@ -1075,12 +1023,12 @@ if __name__ == '__main__':
 
     import sys
     import os.path
-    
+
     import SBMLExporter
 
 
     def main( emlfilename, sbmlfilename=None ):
-        
+
         ( basenameString, extString ) \
           = os.path.splitext( os.path.basename( emlfilename ) )
 
@@ -1089,15 +1037,15 @@ if __name__ == '__main__':
             aSBMLExporter.loadSBML( sbmlfilename )
 
         i = 1
-        while os.path.isfile( '%s%d.xml' % ( basenameString, i ) ):
+        while os.path.isfile( '{}{:d}.xml'.format( basenameString, i )):
             i += 1
-        aSBMLExporter.saveAsSBML( '%s%d.xml' % ( basenameString, i ) )
+        aSBMLExporter.saveAsSBML( '{}{:d}.xml'.format( basenameString, i ))
 
 ##         aSBMLDocument = aSBMLExporter.convertEMLToSBML()
-##         print aSBMLDocument
+##         print( aSBMLDocument )
 
     # end of main
-    
+
 
     if len( sys.argv ) == 2:
         main( sys.argv[ 1 ] )

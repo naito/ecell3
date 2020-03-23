@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'Structure'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -63,7 +63,7 @@ def generateFullRankMatrix( inputMatrix ):
 
         if len( dependentList ) == 0:
             break
-        
+
         maxIndex = dependentList[ 0 ]
         maxElement = reducedMatrix[ maxIndex ][ j ]
         for i in dependentList:
@@ -88,7 +88,7 @@ def generateFullRankMatrix( inputMatrix ):
 
             dependentList.remove( maxIndex )
             independentList.append( maxIndex )
-            
+
         else:
             skippedBuffer.append( j )
 
@@ -124,7 +124,7 @@ def generateFullRankMatrix( inputMatrix ):
 def printmat( stoichiometryList, modeList, reversibilityList ):
     '''
     '''
-    
+
     for i in range( len( reversibilityList ) ):
         sys.stdout.write( '%d : ' % reversibilityList[ i ] )
         for j in range( len( stoichiometryList[ i ] ) ):
@@ -141,7 +141,7 @@ def printmat( stoichiometryList, modeList, reversibilityList ):
 def __checkModeDependency1( modeList, modeArray1, modeArray2=None ):
     '''
     check the mode dependency between modeArray1 and modeList
-    S(m^{j}_i) \cap S(m^{j}_m) \not\subseteq S(m^{j+1}_l) 
+    S(m^{j}_i) \cap S(m^{j}_m) \not\subseteq S(m^{j+1}_l)
     modeList: (list) m^{j+1}
     modeArray1: (array) m^{j}_i
     modeArray2: (array) m^{j}_m
@@ -170,7 +170,7 @@ def __checkModeDependency1( modeList, modeArray1, modeArray2=None ):
 
         if dependency == 1 and equality == 0:
             return 1
-            
+
     return 0
 
 # end of checkModeDependency1
@@ -264,7 +264,7 @@ def generateElementaryFluxMode( stoichiometryMatrix, reversibilityList ):
             for m in range( i+1, irreversibleOffset ):
                 if stoichiometryList[ m ][ j ] == 0:
                     continue
-                
+
                 if __checkModeDependency1( newModeList,\
                                            modeList[ i ], modeList[ m ] ) == 0:
 
@@ -290,7 +290,7 @@ def generateElementaryFluxMode( stoichiometryMatrix, reversibilityList ):
             for m in range( i+1, len( modeList ) ):
                 if stoichiometryList[ m ][ j ] == 0:
                     continue
-                
+
                 if __checkModeDependency1( newModeList,\
                                            modeList[ i ], modeList[ m ] ) == 0:
 
@@ -309,7 +309,7 @@ def generateElementaryFluxMode( stoichiometryMatrix, reversibilityList ):
             for m in range( irreversibleOffset ):
                 if stoichiometryList[ m ][ j ] == 0:
                     continue
-                
+
                 if __checkModeDependency1( newModeList,\
                                            modeList[ i ], modeList[ m ] ) == 0:
 
@@ -359,50 +359,50 @@ if __name__ == '__main__':
 
 
     def main( filename ):
-        
+
         anEmlSupport = EmlSupport( filename )
         pathwayProxy = anEmlSupport.createPathwayProxy()
-        
+
         stoichiometryMatrix = pathwayProxy.getStoichiometryMatrix()
 
-        # print pathwayProxy.getProcessList()        
-        # print pathwayProxy.getVariableList()
+        # print( pathwayProxy.getProcessList())
+        # print( pathwayProxy.getVariableList())
 
 ##         stoichiometryMatrix = array( [ [ 1., 0., 0., 0., 2. ], [ 0., 0., 1.0, 0., 1. ], [ 1.0, 0.0, 1.0, 0.0, 3.0 ], [ -2.0, 0.0, -2.0, 0.0, -6.0 ] ] )
 ##         stoichiometryMatrix = array( [ [ 1., 2., 3., 4. ], [ 1., 1., 1., 1. ], [ 2., 3., 4., 5. ] ] )
 ##         stoichiometryMatrix = array( [ [ 1., 2., 3. ], [ 0., 2., 10. ], [ 2., 3., 4. ] ] )
 
-        print 'input matrix = '
-        print stoichiometryMatrix
+        print( 'input matrix = ' )
+        print( stoichiometryMatrix )
 
         ( linkMatrix, kernelMatrix, independentList ) = generateFullRankMatrix( stoichiometryMatrix )
         reducedMatrix = numpy.take( stoichiometryMatrix, independentList, 0 )
 
-        print 'link matrix = '
-        print linkMatrix
-        print 'kernel matrix = '
-        print kernelMatrix
-        print 'reduced matrix = '
-        print reducedMatrix
+        print( 'link matrix = ' )
+        print( linkMatrix )
+        print( 'kernel matrix = ' )
+        print( kernelMatrix )
+        print( 'reduced matrix = ' )
+        print( reducedMatrix )
 
-        # print 'reconstructed input matrix = '
-        # print numpy.dot( linkMatrix, reducedMatrix )
-        # print 'null space = '
-        # print numpy.dot( stoichiometryMatrix, kernelMatrix )
+        # print( 'reconstructed input matrix = ' )
+        # print( numpy.dot( linkMatrix, reducedMatrix ) )
+        # print( 'null space = ' )
+        # print( numpy.dot( stoichiometryMatrix, kernelMatrix ) )
 
         reversibilityList = pathwayProxy.getReversibilityList()
-        
+
 ##         stoichiometryMatrix = numpy.transpose( array( [ [ 0, 0, 1, 0, 0 ], [ 0, -1, 0, 2, 0 ], [ -1, 0, 0, 0, 1 ], [ -2, 0, 2, 1, -1 ], [ 0, 0, 0, -1, 0 ], [ 1, 0, 0, 0, 0 ], [ 0, 1, -1, 0, 0 ], [ 0, -1, 1, 0, 0 ], [ 0, 0, 0, 0, -1 ] ], float ) )
 ##         reversibilityList = [ 1, 1, 1, 1, 0, 0, 0, 0, 0 ]
 
-        print 'input list ='
-        print reversibilityList
+        print( 'input list =' )
+        print( reversibilityList )
 
-        print 'elementary flux mode list ='
-        print generateElementaryFluxMode( stoichiometryMatrix, reversibilityList )
-        
+        print( 'elementary flux mode list =' )
+        print( generateElementaryFluxMode( stoichiometryMatrix, reversibilityList ) )
+
     # end of main
-    
+
 
     if len( sys.argv ) > 1:
         main( sys.argv[ 1 ] )

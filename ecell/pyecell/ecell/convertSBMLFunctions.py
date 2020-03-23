@@ -70,7 +70,7 @@ class SBML_Base( object ):
                     return '/' + aCompartmentID
 
                 else:
-                    return '%s/%s' % ( self.get_path( aCompartment[ 'Outside' ] ), aCompartmentID )
+                    return '{}/{}'.format( self.get_path( aCompartment[ 'Outside' ] ), aCompartmentID )
 
 
     # =========================================================
@@ -79,7 +79,7 @@ class SBML_Base( object ):
 
         for aSpecies in aModel.SpeciesList:
             if ( aSpecies[ aModel.keys[ 'ID' ] ] == aSpeciesID ):
-                return '%s:%s' % ( SBML_Base.get_path( self, aSpecies[ 'Compartment' ], aModel ), aSpeciesID )
+                return '{}:{}'.format( SBML_Base.get_path( self, aSpecies[ 'Compartment' ], aModel ), aSpeciesID )
 
 
     # =========================================================
@@ -112,13 +112,13 @@ class SBML_Base( object ):
 
     def convert_dic_to_FullID( self, anEntityDic ):
 
-        return "%(Type)s:%(Path)s:%(EntityName)s" % anEntityDic
+        return "{Type}:{Path}:{EntityName}".format( anEntityDic )
 
     # =========================================================
 
     def get_variable_type( self, aName, aModel ):
 
-##        print "SBML_Base.get_variable_type( %s )" % aName
+##        print( "SBML_Base.get_variable_type( {} )".format( aName ) )
 
         IdKey = aModel.keys[ 'ID' ]
 
@@ -134,7 +134,7 @@ class SBML_Base( object ):
             if aCompartment[ IdKey ] == aName:
                 return libsbml.SBML_COMPARTMENT
 
-        raise TypeError, "Variable type must be Species, Parameter, or Compartment (got %s)" % aName
+        raise TypeError( "Variable type must be Species, Parameter, or Compartment (got {})".format( aName ))
 
 
     # =========================================================
@@ -154,8 +154,7 @@ class SBML_Base( object ):
             aName = 'SIZE'
 
         else:
-            raise TypeError,\
-                "Variable type must be Species, Parameter, or Compartment"
+            raise TypeError( "Variable type must be Species, Parameter, or Compartment" )
 
         anEntityDic = dict(
             Type       = 'Variable',
@@ -177,8 +176,7 @@ class SBML_Base( object ):
         elif ( aVariableType == libsbml.SBML_COMPARTMENT ):
             anEntityList = aModel.CompartmentList
         else:
-            raise TypeError,\
-                "Variable type must be Species, Parameter, or Compartment"
+            raise TypeError( "Variable type must be Species, Parameter, or Compartment" )
 
         anEntity = filter(
             lambda anElement: self.get_ID( anElement ) == anID,
@@ -213,22 +211,21 @@ class SBML_Base( object ):
 
         if isinstance( formula, str ):
             if aDenominator != 1.0:
-                formula = '( 1.0 / %s ) * ( %s )' % ( aDenominator, formula )
+                formula = '( 1.0 / {} ) * ( {} )'.format( aDenominator, formula )
 
             preprocessedFormula = formula.replace( '<t>', self.Model.TimeSymbol )
             aASTRootNode = libsbml.parseFormula( preprocessedFormula )
 
         elif isinstance( formula, libsbml.ASTNode ):
            if aDenominator != 1.0:
-                aASTRootNode = libsbml.parseFormula( '( 1.0 / %s ) * ( x )' % aDenominator )
+                aASTRootNode = libsbml.parseFormula( '( 1.0 / {} ) * ( x )'.format( aDenominator ) )
                 aASTRootNode.removeChild( 1 )
                 aASTRootNode.addChild( formula.deepCopy() )
            else:
                aASTRootNode = formula
 
         else:
-            raise Exception,"DEBUG : Formula must be str or libsbml.ASTNode instance."
-
+            raise Exception("DEBUG : Formula must be str or libsbml.ASTNode instance." )
 ##        dump_tree_construction_of_AST_node( aASTRootNode )
 
         aASTRootNode = preprocess_math_tree( aASTRootNode, aModel.TimeSymbol )
@@ -284,7 +281,7 @@ class SBML_Base( object ):
                     if( variableName != '' ):
 
                         anASTNode.setType( libsbml.AST_NAME )
-                        anASTNode.setName( '%s.NumberConc' % ( variableName ) )
+                        anASTNode.setName( '{}.NumberConc'.format( variableName ) )
                         return anASTNode
 
         return anASTNode
@@ -593,8 +590,7 @@ class SBML_Species( SBML_Base ):
         aCompartmentID = aSpecies[ 'Compartment' ]
 
         if ( aCompartmentID == '' ):
-            raise NameError, 'compartment property of Species must be defined'
-
+            raise NameError('compartment property of Species must be defined' )
         anEntityDic = {
             'Type'       : 'Variable',
             'Path'       : self.get_path( aCompartmentID ),
@@ -623,10 +619,8 @@ class SBML_Species( SBML_Base ):
                         'Property' : 'NumberConc',
                         'Value'    : float( aSpecies[ 'InitialConcentration' ] ) }
                 else:
-                    raise ValueError, 'InitialAmount or InitialConcentration of Species [%s] must be defined.' % self.get_ID( aSpecies )
-
-        raise ValueError, 'InitialAmount or InitialConcentration of Species [%s] must be defined.' % self.get_ID( aSpecies )
-
+                    raise ValueError('InitialAmount or InitialConcentration of Species [{}] must be defined.'.format(self.get_ID( aSpecies )) )
+        raise ValueError('InitialAmount or InitialConcentration of Species [{}] must be defined.'.format(self.get_ID( aSpecies )) )
     # =========================================================
 
     def is_constant( self, aSpecies ):
@@ -716,13 +710,11 @@ class SBML_Rule( SBML_Base ):
             anIDHeader = 'Rate'
 
         else:
-            raise TypeError,\
-                "Variable type must be Species, Parameter, or Compartment"
-
+            raise TypeError("Variable type must be Species, Parameter, or Compartment" )
         anEntityDic = {
             'Type'       : 'Process',
             'Path'       : self.Model.EntityPath[ 'Rule' ],
-            'EntityName' : '%s_%s' % ( anIDHeader, aRule[ 'Variable' ] ) }
+            'EntityName' : '{}_{}'.format( anIDHeader, aRule[ 'Variable' ] ) }
 
         return self.convert_dic_to_FullID( anEntityDic )
 
@@ -798,9 +790,7 @@ class SBML_Reaction( SBML_Base ):
         if ( aReaction[ self.Model.keys[ 'ID' ] ] != '' ):
             return 'Process:/:' + aReaction[ self.Model.keys[ 'ID' ] ]
         else:
-            raise NameError,"Reaction must set the Reaction name"
-
-
+            raise NameError( "Reaction must set the Reaction name" )
     # =========================================================
 
     def _convert_SBML_variable_to_ecell_Expression( self, anASTNode, aLocalParameterList = [] ):
@@ -848,7 +838,7 @@ class SBML_Reaction( SBML_Base ):
             else:
                 aName = anASTNode.getName()
 
-##                print "Local Parameter: %s" % aLocalParameterList
+##                print( "Local Parameter: {}".format(aLocalParameterList) )
                 for aLocalParameter in aLocalParameterList:
                     if aLocalParameter[ self.Model.keys[ 'ID' ] ] == aName:
                         return anASTNode
@@ -863,8 +853,7 @@ class SBML_Reaction( SBML_Base ):
                                 variableName =  aVariableReference[0]
 
                         if( self.Model.Level >= 2 and variableName == '' ):
-                            raise NameError,"in libSBML :"+aName+" isn't defined in VariableReferenceList"
-
+                            raise NameError( "in libSBML :"+aName+" isn't defined in VariableReferenceList" )
                         elif( self.Model.Level == 1 and variableName == '' ):
 
                             aModifierList = []
@@ -880,7 +869,7 @@ class SBML_Reaction( SBML_Base ):
                             variableName = aModifierList[0]
 
                         anASTNode.setType( libsbml.AST_NAME )
-                        anASTNode.setName( '%s.NumberConc' % ( variableName ) )
+                        anASTNode.setName( '{}.NumberConc'.format( variableName ) )
 
                         return anASTNode
 
@@ -908,14 +897,14 @@ class SBML_Reaction( SBML_Base ):
                             variableName = aParameterList[0]
 
 
-                        anASTNode.setName( '%s.Value' % ( variableName ) )
+                        anASTNode.setName( '{}.Value'.format( variableName ) )
 
                         return anASTNode
 
 ##                if variableName == '':
                 variableName = self.add_Entity_to_VariableReferenceList( aName )
                 if variableName != '':
-                    anASTNode.setName( '%s.Value' % ( variableName ) )
+                    anASTNode.setName( '{}.Value'.format( variableName ) )
                     return anASTNode
 
                 return anASTNode
@@ -944,15 +933,15 @@ class SBML_Reaction( SBML_Base ):
         # Left side (reactant terms)
         if ( len( aReaction[ 'Reactants' ] ) > 0 ):
             if ( aReaction[ 'Reactants' ][0][ 'Stoichiometry' ] == 1.0 ):
-                theLeftSide = "[%s]" % aReaction[ 'Reactants' ][0][ self.Model.keys[ 'ID' ] ]
+                theLeftSide = "[{}]".format(aReaction[ 'Reactants' ][0][ self.Model.keys[ 'ID' ] ])
             else:
-                theLeftSide = "%s x [%s]" % ( int( aReaction[ 'Reactants' ][0][ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aReaction[ 'Reactants' ][0][ self.Model.keys[ 'ID' ] ] )
+                theLeftSide = "{} x [{}]".format( int( aReaction[ 'Reactants' ][0][ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aReaction[ 'Reactants' ][0][ self.Model.keys[ 'ID' ] ] )
 
             for aSubstrate in aReaction[ 'Reactants' ][1:]:
                 if ( aSubstrate[ 'Stoichiometry' ] == 1.0 ):
-                    theLeftSide += " + [%s]" % aSubstrate[ self.Model.keys[ 'ID' ] ]
+                    theLeftSide += " + [{}]".format(aSubstrate[ self.Model.keys[ 'ID' ] ])
                 else:
-                    theLeftSide += " + %s x [%s]" % ( int( aSubstrate[ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aSubstrate[ self.Model.keys[ 'ID' ] ] )
+                    theLeftSide += " + {} x [{}]".format( int( aSubstrate[ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aSubstrate[ self.Model.keys[ 'ID' ] ] )
 
             theLeftSide += " "
 
@@ -962,15 +951,15 @@ class SBML_Reaction( SBML_Base ):
         # Right side (reactant terms)
         if ( len( aReaction[ 'Products' ] ) > 0 ):
             if ( aReaction[ 'Products' ][0][ 'Stoichiometry' ] == 1.0 ):
-                theRightSide = "[%s]" % aReaction[ 'Products' ][0][ self.Model.keys[ 'ID' ] ]
+                theRightSide = "[{}]".format(aReaction[ 'Products' ][0][ self.Model.keys[ 'ID' ] ])
             else:
-                theRightSide = "%s x [%s]" % ( int( aReaction[ 'Products' ][0][ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aReaction[ 'Products' ][0][ self.Model.keys[ 'ID' ] ] )
+                theRightSide = "{} x [{}]".format( int( aReaction[ 'Products' ][0][ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aReaction[ 'Products' ][0][ self.Model.keys[ 'ID' ] ] )
 
             for aProduct in aReaction[ 'Products' ][1:]:
                 if ( aProduct[ 'Stoichiometry' ] == 1.0 ):
-                    theRightSide += " + [%s]" % aProduct[ self.Model.keys[ 'ID' ] ]
+                    theRightSide += " + [{}]".format(aProduct[ self.Model.keys[ 'ID' ] ])
                 else:
-                    theRightSide += " + %s x [%s]" % ( int( aProduct[ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aProduct[ self.Model.keys[ 'ID' ] ] )
+                    theRightSide += " + {} x [{}]".format( int( aProduct[ 'Stoichiometry' ] * aReaction[ 'CommonDemoninator' ] ), aProduct[ self.Model.keys[ 'ID' ] ] )
 
         else:
             theRightSide = ""
@@ -980,11 +969,11 @@ class SBML_Reaction( SBML_Base ):
         else:
             theArrow = "<->"
 
-        theEquation = "%s%s %s;" % ( theLeftSide, theArrow, theRightSide )
+        theEquation = "{}{} {};".format( theLeftSide, theArrow, theRightSide )
 
         # Effector
         if ( len( aReaction[ 'Modifiers' ] ) > 0 ):
-            theEquation = "%s { %s };" % ( theEquation, ", ".join( aReaction[ 'Modifiers' ] ) )
+            theEquation = "{} { {} };".format( theEquation, ", ".join( aReaction[ 'Modifiers' ] ) )
 
         return theEquation
 
@@ -1030,8 +1019,7 @@ class SBML_Parameter( SBML_Base ):
         if ( aParameter[ self.Model.keys[ 'ID' ] ] != '' ):
             return 'Variable:/SBMLParameter:' + aParameter[ self.Model.keys[ 'ID' ] ]
         else:
-            raise NameError, "Parameter must set the Parameter Name"
-
+            raise NameError("Parameter must set the Parameter Name" )
     # =========================================================
 
     def get_System_FullID( self ):

@@ -14,25 +14,25 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
 """
 
 __program__ = 'sbmlsupport'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -96,13 +96,13 @@ def createIdFromFullID( fullIDString ):
 
 def getSBaseAnnotation( sbaseObj, pn, aXMLNamespaceList ):
 
-    propertyName = '%s:%s' % ( ECELL_XML_NAMESPACE_PREFIX, pn )
+    propertyName = '{}:{}'.format( ECELL_XML_NAMESPACE_PREFIX, pn )
 
     if sbaseObj.isSetAnnotation():
         annotationString = '<xml'
         for i in range( aXMLNamespaceList.getLength() ):
-            annotationString += ' xmlns:%s="%s"' % ( aXMLNamespaceList.getPrefix( i ), aXMLNamespaceList.getURI( i ) )
-        annotationString = '%s>%s</xml>' % ( annotationString, sbaseObj.getAnnotation() )
+            annotationString += ' xmlns:{}="{}"'.format( aXMLNamespaceList.getPrefix( i ), aXMLNamespaceList.getURI( i ) )
+        annotationString = '{}>{}</xml>'.format( annotationString, sbaseObj.getAnnotation() )
 
         annotationDoc = xml.dom.minidom.parseString( annotationString )
         annotationNode = annotationDoc.childNodes[ 0 ].childNodes[ 0 ]
@@ -115,7 +115,7 @@ def getSBaseAnnotation( sbaseObj, pn, aXMLNamespaceList ):
 
         if targetNode != None:
             if len( targetNode.childNodes ) != 1:
-                raise SBMLConvertError, 'Annotation [%s] is invalid' % ( propertyName )
+                raise SBMLConvertError('Annotation [{}] is invalid'.format( propertyName ) )
             return targetNode.childNodes[ 0 ].data
 
         annotationDoc.unlink()
@@ -128,18 +128,17 @@ def getSBaseAnnotation( sbaseObj, pn, aXMLNamespaceList ):
 def setSBaseAnnotation( sbaseObj, pn, value, aXMLNamespaceList ):
 
     if type( value ) != str:
-        raise TypeError, 'Value must be a string'
-
-    propertyName = '%s:%s' % ( ECELL_XML_NAMESPACE_PREFIX, pn )
+        raise TypeError('Value must be a string' )
+    propertyName = '{}:{}'.format( ECELL_XML_NAMESPACE_PREFIX, pn )
     if not sbaseObj.isSetAnnotation():
-        annotationString = '<annotation><%s>%s</%s></annotation>' % ( propertyName, value, propertyName )
+        annotationString = '<annotation><{}>{}</{}></annotation>'.format( propertyName, value, propertyName )
         sbaseObj.setAnnotation( annotationString )
 
     else:
         annotationString = '<xml'
         for i in range( aXMLNamespaceList.getLength() ):
-            annotationString += ' xmlns:%s="%s"' % ( aXMLNamespaceList.getPrefix( i ), aXMLNamespaceList.getURI( i ) )
-        annotationString = '%s>%s</xml>' % ( annotationString, sbaseObj.getAnnotation() )
+            annotationString += ' xmlns:{}="{}"'.format( aXMLNamespaceList.getPrefix( i ), aXMLNamespaceList.getURI( i ) )
+        annotationString = '{}>{}</xml>'.format( annotationString, sbaseObj.getAnnotation() )
 
         annotationDoc = xml.dom.minidom.parseString( annotationString )
         annotationNode = annotationDoc.childNodes[ 0 ].childNodes[ 0 ]
@@ -158,9 +157,9 @@ def setSBaseAnnotation( sbaseObj, pn, value, aXMLNamespaceList ):
 
         else:
             if len( targetNode.childNodes ) != 1:
-                raise SBMLConvertError, 'Annotation [%s] is invalid' % ( propertyName )
+                raise SBMLConvertError('Annotation [{}] is invalid'.format( propertyName ) )
             if targetNode.childNodes[ 0 ].data != value:
-                ## print 'Annotation [%s] is overwritten' % ( propertyName )
+                ## print( 'Annotation [{}] is overwritten'.format( propertyName ) )
                 targetNode.childNodes[ 0 ].data = value
 
 # end of setSBaseAnnotation
@@ -192,7 +191,7 @@ class SBMLIdManager:
         self.ruleDict = {}
 
         self.idDict = None
-        
+
         self.__checkIds( aModel )
 
     # end of initialize
@@ -213,7 +212,7 @@ class SBMLIdManager:
                  or self.reactionDict.has_key( id ) )
 
     # end of isIdExist
-    
+
 
     def getCompartmentFullID( self, id ):
 
@@ -223,10 +222,10 @@ class SBMLIdManager:
             return None
 
     # end of getCompartmentFullID
-    
-    
+
+
     def getSpeciesFullID( self, id ):
-        
+
         if self.speciesDict.has_key( id ):
             return self.speciesDict[ id ]
         else:
@@ -234,9 +233,9 @@ class SBMLIdManager:
 
     # end of getSpeciesFullID
 
-    
+
     def getParameterFullID( self, id ):
-        
+
         if self.parameterDict.has_key( id ):
             return self.parameterDict[ id ]
         else:
@@ -246,7 +245,7 @@ class SBMLIdManager:
 
 
     def getReactionFullID( self, id ):
-        
+
         if self.reactionDict.has_key( id ):
             return self.reactionDict[ id ]
         else:
@@ -270,7 +269,7 @@ class SBMLIdManager:
             return ( None, None )
 
     # end of getIdFromFullID
-    
+
 
     def searchIdFromFullID( self, fullIDString ):
 
@@ -306,7 +305,7 @@ class SBMLIdManager:
         return ( None, None )
 
     # end of searchIdFromFullID
-    
+
 
     def searchFullIDFromId( self, id ):
 
@@ -329,10 +328,10 @@ class SBMLIdManager:
         return ( None, None )
 
     # end of searchFullIDFromId
-    
+
 
     def getRuleFullID( self, i ):
-        
+
         if self.ruleDict.has_key( i ):
             return self.ruleDict[ i ][ 0 ]
         else:
@@ -345,7 +344,7 @@ class SBMLIdManager:
 
         if self.idDict != None:
             return self.idDict
-            
+
         idDict = {}
 
         for id in self.compartmentDict.keys():
@@ -355,9 +354,9 @@ class SBMLIdManager:
 
             fullID = ecell.ecssupport.createFullID( fullIDString )
             systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-            idDict[ 'Variable:%s:SIZE' % ( systemPath ) ] \
+            idDict[ 'Variable:{}:SIZE'.format( systemPath ) ] \
                     = ( id, libsbml.SBML_COMPARTMENT )
-            
+
         for id in self.speciesDict.keys():
             idDict[ self.speciesDict[ id ] ] = ( id, libsbml.SBML_SPECIES )
 
@@ -374,8 +373,8 @@ class SBMLIdManager:
         return idDict
 
     # end of createIdDict
-    
-    
+
+
     def __checkIds( self, aModel ):
 
         ## __createCompartmentFullID must be called primarily
@@ -384,12 +383,10 @@ class SBMLIdManager:
             aCompartment = aModel.getCompartment( i )
             id = aCompartment.getId()
             if not id:
-                raise SBMLConvertError, 'Compartment [%s] has no Id' % ( i )
-
+                raise SBMLConvertError('Compartment [{}] has no Id'.format( i ) )
             fullIDString = self.__createCompartmentFullID( aModel, id )
             if fullIDList.count( fullIDString ) != 0:
-                raise SBMLConvertError, \
-                      'FullID [%s] is assigned twice' % ( fullIDString )
+                raise SBMLConvertError('FullID [{}] is assigned twice'.format( fullIDString ) )
             fullIDList.append( fullIDString )
 
             self.compartmentDict[ id ] = fullIDString
@@ -399,12 +396,10 @@ class SBMLIdManager:
             aSpecies = aModel.getSpecies( i )
             id = aSpecies.getId()
             if not id:
-                raise SBMLConvertError, 'Species [%s] has no Id' % ( i )
-
+                raise SBMLConvertError('Species [{}] has no Id'.format( i ) )
             fullIDString = self.__createSpeciesFullID( aModel, id )
             if fullIDList.count( fullIDString ) != 0:
-                raise SBMLConvertError, \
-                      'FullID [%s] is assigned twice' % ( fullIDString )
+                raise SBMLConvertError('FullID [{}] is assigned twice'.format( fullIDString ) )
             fullIDList.append( fullIDString )
 
             self.speciesDict[ id ] = fullIDString
@@ -413,12 +408,10 @@ class SBMLIdManager:
             aParameter = aModel.getParameter( i )
             id = aParameter.getId()
             if not id:
-                raise SBMLConvertError, 'Parameter [%s] has no Id' % ( i )
-
+                raise SBMLConvertError('Parameter [{}] has no Id'.format( i ) )
             fullIDString = self.__createParameterFullID( aModel, id )
             if fullIDList.count( fullIDString ) != 0:
-                raise SBMLConvertError, \
-                      'FullID [%s] is assigned twice' % ( fullIDString )
+                raise SBMLConvertError('FullID [{}] is assigned twice'.format( fullIDString ) )
             fullIDList.append( fullIDString )
 
             self.parameterDict[ id ] = fullIDString
@@ -428,12 +421,10 @@ class SBMLIdManager:
             aReaction = aModel.getReaction( i )
             id = aReaction.getId()
             if not id:
-                raise SBMLConvertError, 'Reaction [%s] has no Id' % ( i )
-
+                raise SBMLConvertError('Reaction [{}] has no Id'.format( i ) )
             fullIDString = self.__createReactionFullID( aModel, id )
             if fullIDList.count( fullIDString ) != 0:
-                raise SBMLConvertError, \
-                      'FullID [%s] is assigned twice' % ( fullIDString )
+                raise SBMLConvertError('FullID [{}] is assigned twice'.format( fullIDString ) )
             fullIDList.append( fullIDString )
 
             self.reactionDict[ id ] = fullIDString
@@ -443,19 +434,18 @@ class SBMLIdManager:
 
             fullIDString = self.__createRuleFullID( aModel, i )
             if fullIDList.count( fullIDString ) != 0:
-                raise SBMLConvertError, \
-                      'FullID [%s] is assigned twice' % ( fullIDString )
+                raise SBMLConvertError('FullID [{}] is assigned twice'.format( fullIDString ) )
             fullIDList.append( fullIDString )
 
             self.ruleDict[ i ] = ( fullIDString, aRule.getTypeCode() )
 
     # end of checkIds
-    
+
 
     def __createCompartmentFullID( self, aModel, sbmlId ):
 
         aCompartment = aModel.getCompartment( sbmlId )
-        
+
         annotation = getSBaseAnnotation( aCompartment, 'ID', self.theXMLNamespaceList )
         if annotation == '/':
             return self.getNamespace()
@@ -469,7 +459,7 @@ class SBMLIdManager:
         fullID = ecell.ecssupport.createFullID( fullIDString )
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
 
-        return 'System:%s:%s' % ( systemPath, self.__createSObjectID( aCompartment, self.theXMLNamespaceList ) )
+        return 'System:{}:{}'.format( systemPath, self.__createSObjectID( aCompartment, self.theXMLNamespaceList ) )
 
     # end of __createCompartmentFullID
 
@@ -479,19 +469,17 @@ class SBMLIdManager:
         aSpecies = aModel.getSpecies( sbmlId )
 
         if not aSpecies.isSetCompartment():
-            raise SBMLConvertError, 'Species [%s] has no compartment' % ( sbmlId )
-
+            raise SBMLConvertError('Species [{}] has no compartment'.format( sbmlId ) )
         fullIDString = self.getCompartmentFullID( aSpecies.getCompartment() )
         if not fullIDString:
-            raise SBMLConvertError, 'Compartment [%s] is not found' % ( aSpecies.getCompartment() )
-        
+            raise SBMLConvertError('Compartment [{}] is not found'.format( aSpecies.getCompartment() ) )
         fullID = ecell.ecssupport.createFullID( fullIDString )
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
 
-        return 'Variable:%s:%s' % ( systemPath, self.__createSObjectID( aSpecies, self.theXMLNamespaceList ) )
+        return 'Variable:{}:{}'.format( systemPath, self.__createSObjectID( aSpecies, self.theXMLNamespaceList ) )
 
     # end of __createSpeciesFullID
-    
+
 
     def __createParameterFullID( self, aModel, sbmlId ):
 
@@ -501,18 +489,17 @@ class SBMLIdManager:
         if annotation != None and self.idRegex.match( annotation ):
             fullIDString = self.getCompartmentFullID( annotation )
             if not fullIDString:
-                raise SBMLConvertError, 'Compartment [%s] is not found' % ( annotation )
-        
+                raise SBMLConvertError('Compartment [{}] is not found'.format( annotation ) )
         else:
             fullIDString = self.getNamespace()
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-            
-        return 'Variable:%s:%s' % ( systemPath, self.__createSObjectID( aParameter, self.theXMLNamespaceList ) )
+
+        return 'Variable:{}:{}'.format( systemPath, self.__createSObjectID( aParameter, self.theXMLNamespaceList ) )
 
     # end of __createParameterFullID
-    
+
 
     def __createReactionFullID( self, aModel, sbmlId ):
 
@@ -522,14 +509,14 @@ class SBMLIdManager:
         if annotation != None and self.idRegex.match( annotation ):
             fullIDString = self.getCompartmentFullID( annotation )
             if not fullIDString:
-                raise SBMLConvertError, 'Compartment [%s] is not found' % ( annotation )
+                raise SBMLConvertError('Compartment [{}] is not found'.format( annotation ) )
         else:
             fullIDString = self.getNamespace()
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-            
-        return 'Process:%s:%s' % ( systemPath, self.__createSObjectID( aReaction, self.theXMLNamespaceList ) )
+
+        return 'Process:{}:{}'.format( systemPath, self.__createSObjectID( aReaction, self.theXMLNamespaceList ) )
 
     # end of __createReactionFullID
 
@@ -537,20 +524,20 @@ class SBMLIdManager:
     def __createRuleFullID( self, aModel, i ):
 
         aRule = aModel.getRule( i )
-            
+
         annotation = getSBaseAnnotation( aRule, 'compartment', self.theXMLNamespaceList )
         if annotation != None and self.idRegex.match( annotation ):
             fullIDString = self.getCompartmentFullID( annotation )
             if not fullIDString:
-                raise SBMLConvertError, 'Compartment [%s] is not found' % ( annotation )
+                raise SBMLConvertError('Compartment [{}] is not found'.format( annotation ) )
         else:
             fullIDString = self.getNamespace()
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-        
-        return 'Process:%s:%s' % ( systemPath, self.__createSObjectID( aRule, self.theXMLNamespaceList, 'Rule%s' % ( i ) ) )
-    
+
+        return 'Process:{}:{}'.format( systemPath, self.__createSObjectID( aRule, self.theXMLNamespaceList, 'Rule{}'.format( i ) ) )
+
     # end of __createRuleFulllID
 
 
@@ -558,7 +545,7 @@ class SBMLIdManager:
 
         if not default:
             default = sbmlObj.getId()
-        
+
         annotation = getSBaseAnnotation( sbmlObj, 'ID', self.theXMLNamespaceList )
         if annotation != None and self.idRegex.match( annotation ):
             return annotation
@@ -572,7 +559,7 @@ class SBMLIdManager:
 
 
 if __name__ == '__main__':
-    
+
     import sbmlsupport
     import sys
     import os.path
@@ -583,11 +570,11 @@ if __name__ == '__main__':
         sbmlDocument = libsbml.readSBML( filename )
         aSBMLIdManager = sbmlsupport.SBMLIdManager( sbmlDocument )
 
-        print aSBMLIdManager.compartmentDict
-        print aSBMLIdManager.speciesDict
-        print aSBMLIdManager.parameterDict
-        print aSBMLIdManager.reactionDict
-        print aSBMLIdManager.ruleDict
+        print( aSBMLIdManager.compartmentDict )
+        print( aSBMLIdManager.speciesDict )
+        print( aSBMLIdManager.parameterDict )
+        print( aSBMLIdManager.reactionDict )
+        print( aSBMLIdManager.ruleDict )
 
     # end of main
 

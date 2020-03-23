@@ -13,17 +13,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 #
 # Designed by Koichi Takahashi <shafi@e-cell.org>
@@ -79,7 +79,7 @@ class AbstractSessionProxy:
         self.__theStdoutTimeout = 0
 
     def __del__( self ):
-        '''Before destractor, this method is called. 
+        '''Before destractor, this method is called.
         Return None
         '''
 
@@ -91,10 +91,10 @@ class AbstractSessionProxy:
     def getJobID( self ):
         '''Return the job id
         Return int : job id
-        ''' 
+        '''
 
         # return the job id
-        return self.__theLastJobID 
+        return self.__theLastJobID
 
     def getStartTime( self ):
         return self.__theStartTime
@@ -103,7 +103,7 @@ class AbstractSessionProxy:
         '''Set a script file name.
         scriptfilename(str) -- a script file name
         Return None
-        ''' 
+        '''
 
         # Set the script file name.
         self.__theScriptFileName = scriptfilename
@@ -111,10 +111,10 @@ class AbstractSessionProxy:
     def getScriptFileName( self ):
         '''return the script file name
         Return str : script file name
-        ''' 
+        '''
 
         # Return the script file name
-        return self.__theScriptFileName 
+        return self.__theScriptFileName
 
     def setInterpreter( self, interpreter ):
         '''Set an interpreter.
@@ -128,16 +128,16 @@ class AbstractSessionProxy:
     def getInterpreter( self ):
         '''Return the interpreter.
         Return str : interpreter
-        ''' 
+        '''
 
         # return the interpreter
-        return self.__theInterpreter 
+        return self.__theInterpreter
 
     def setArgument( self, argument ):
         '''Set an argument.
         argument(str) -- an argument to be set to script
         Return None
-        ''' 
+        '''
         # set the argument
         self.__theArguments = argument.split()
 
@@ -145,7 +145,7 @@ class AbstractSessionProxy:
         self.__theArguments = arguments
 
     def getArgument( self ):
-        '''Return the argument.''' 
+        '''Return the argument.'''
 
         # return the artument
         return ' '.join( self.__theArguments )
@@ -157,16 +157,16 @@ class AbstractSessionProxy:
         '''Set an extra file list.
         extrafilelist(list of str)  -- extra file list
         Return None
-        ''' 
+        '''
         self.__theExtraFileList = list( extrafilelist )
 
     def getExtraFileList( self ):
         '''Returns the extra file list.
         Return list of str : extra file list
-        ''' 
+        '''
 
         # return the extra file list
-        return self.__theExtraFileList 
+        return self.__theExtraFileList
 
     def setTimeout( self, timeout ):
         '''Set a timeout.
@@ -184,7 +184,7 @@ class AbstractSessionProxy:
         '''
 
         # return the time out
-        return self.__theTimeout 
+        return self.__theTimeout
 
     def setStdoutTimeout( self, timeout ):
         '''Set a stdout writing timeout.
@@ -202,7 +202,7 @@ class AbstractSessionProxy:
         '''
 
         # return the time out
-        return self.__theStdoutTimeout 
+        return self.__theStdoutTimeout
 
     def run( self ):
         '''run process
@@ -236,7 +236,7 @@ class AbstractSessionProxy:
         raise NotImplementedError
         '''
 
-        # When this method is not implemented in sub class, 
+        # When this method is not implemented in sub class,
         # raise NotImplementedError
         caller = inspect.getouterframes(inspect.currentframe())[0][3]
         raise NotImplementedError(caller + ' must be implemented in subclass')
@@ -337,7 +337,7 @@ class AbstractSessionProxy:
         '''Get the option list.
         Return list of str
         '''
-        return self.__theOptionList 
+        return self.__theOptionList
 
     def getEnvironmentVariables( self ):
         return self.__theEnvironmentVariables
@@ -517,7 +517,7 @@ class AbstractSystemProxy:
         '''return the stdout of the job
 
         jobid(int) -- job id
-        
+
         Return str : the stdout
         '''
         return self.jobs[ jobid ].getStdout()
@@ -526,7 +526,7 @@ class AbstractSystemProxy:
         '''return the stderr of the job
 
         jobid(int) -- job id
-        
+
         Return str : the stderr
         '''
         return self.jobs[ jobid ].getStderr()
@@ -717,7 +717,7 @@ class SessionManager( object ):
         '''Set the number of jobs to be runned concurrently.
 
         number(int) -- the number of concurrent jobs
-        Return None 
+        Return None
         '''
 
         # set the number of concurrency
@@ -733,7 +733,7 @@ class SessionManager( object ):
             self.__theConcurrency = self.getDefaultConcurrency()
 
         # return the number of concurrency
-        return self.__theConcurrency 
+        return self.__theConcurrency
 
     def getDefaultConcurrency( self ):
         '''Return the default number of jobs to be runned concurrently.
@@ -746,8 +746,8 @@ class SessionManager( object ):
 
     def setTmpRootDir( self, tmprootdir ):
         '''Set temporary root directory.
-        When run method is called, tmprootdir is created on current working 
-        directory.  Then, below 'tmp' directory, the directory whose name 
+        When run method is called, tmprootdir is created on current working
+        directory.  Then, below 'tmp' directory, the directory whose name
         is same as pid of this process is also created.
         For example, if tmprootdir is 'work' and pid is 12345, './work/12345'
         is created whtn run method is called.
@@ -778,15 +778,15 @@ class SessionManager( object ):
         Temporary directory is created below temporary root directory,
         and named pid of this process.
         See setTmpRootDir about the detail of temporary directory
-        For example, if tmprootdir is 'work' and pid is 12345, 
+        For example, if tmprootdir is 'work' and pid is 12345,
         this method returns './work/12345'.
-        
+
         Return str : a temporaty directory
         '''
 
         # return temporary directory
         return self.__theTmpDir
-    
+
     def setTmpDirRemovable( self, deleteflag ):
         '''Set a removable flag of tmp directory.
 
@@ -811,7 +811,7 @@ class SessionManager( object ):
         '''
 
         # return delete flag of tmp directory
-        return self.__theTmpRemovable 
+        return self.__theTmpRemovable
 
     def registerSessionProxy( self, scriptfile, interpreter, arguments = None,
                      extrafilelist = [], timeout = 0, stdout_timeout = 0 ):
@@ -929,20 +929,20 @@ class SessionManager( object ):
         return self.__theSystemProxy.getSessionProxiesByStatus( QUEUED )
 
     def getRunningSessionProxyList( self ):
-        '''Return the list of running job. 
+        '''Return the list of running job.
         Return list : the list of AbstractSessionProxy
         '''
         return self.__theSystemProxy.getSessionProxiesByStatus( RUN )
 
     def getErrorSessionProxyList( self ):
-        '''Return the list of error job 
+        '''Return the list of error job
 
         Return list : the list of AbstractSessionProxy
         '''
         return self.__theSystemProxy.getSessionProxiesByStatus( ERROR )
 
     def getFinishedSessionProxyList( self ):
-        '''Return the list of finished job. 
+        '''Return the list of finished job.
 
         Return list : list of AbstractSessionProxy
         '''
@@ -952,7 +952,7 @@ class SessionManager( object ):
         '''Check all jobs are finished or not.
         When the number of jobs whose status is QUEUED or RUN = 0, return True.
 
-        Return boolean 
+        Return boolean
         '''
 
         # If there is job who status is QUEUED or RUN, return False
@@ -968,7 +968,7 @@ class SessionManager( object ):
         '''Check the existance of error job.
         When the number of jobs whose status is ERROR > 0, return True.
 
-        Return boolean 
+        Return boolean
         '''
 
         # If there is job who status is ERROR, return True.
@@ -983,7 +983,7 @@ class SessionManager( object ):
         '''Check the existance of running job.
         When the number of jobs who status is RUN > 0, return True.
 
-        Return boolean 
+        Return boolean
         '''
         # If there is job who status is RUN, return True.
         for job in self.getSessionProxies():
@@ -1016,15 +1016,15 @@ class SessionManager( object ):
         '''
 
         # return the update interval
-        return self.__theUpdateInterval 
+        return self.__theUpdateInterval
 
     def setGlobalRunTimeout( self, timeout=0 ):
         '''Set a timeout of run method.
         When the time of run method reach the timeout,
-        stop method is called. Then running jobs and queued jobs 
+        stop method is called. Then running jobs and queued jobs
         are finished compulsorily and their status become ERROR.
 
-        timeout(int) -- a timeout of run method (sec.) 
+        timeout(int) -- a timeout of run method (sec.)
                         if timeout<=0, no limit is set. Default is 0.
         Return None
         '''
@@ -1040,7 +1040,7 @@ class SessionManager( object ):
         '''
 
         # return the timeout
-        return self.__theGlobalRunTimeout 
+        return self.__theGlobalRunTimeout
 
     def run( self, block = True ):
         '''Execute the QUEUED jobs.
@@ -1066,7 +1066,7 @@ class SessionManager( object ):
         # create a tmp directory.
         if not os.path.exists( self.__theTmpDir):
             os.mkdir( self.__theTmpDir )
-        
+
 
         # create job directories and copies sources
         for job in self.getSessionProxies():
@@ -1207,7 +1207,7 @@ class SessionManager( object ):
         self.__theMessageMethod( message )
 
     def __plainMessageMethod( message ):
-        print message
+        print( message )
     __plainMessageMethod = staticmethod( __plainMessageMethod )
 
 if __name__ == "__main__":

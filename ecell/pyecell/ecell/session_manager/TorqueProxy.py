@@ -110,7 +110,7 @@ class SessionProxy( AbstractSessionProxy ):
                 )
             #print "MSG: " + msg
             if msg == None:
-                raise RuntimeError, '{} returned no result.'.format( QSUB )
+                raise RuntimeError('{} returned no result.'.format( QSUB ))
             self.__theTorqueJobID = msg
         finally:
             os.chdir( aCwd )
