@@ -2,19 +2,19 @@
 
 
 PACKAGE=ecell
-VERSION=3.3.alpha1
+VERSION=3.3.01
 
-PYTHON=/Volumes/Home/ynaito/opt/anaconda2/bin/python
+PYTHON=/Volumes/Home/ynaito/.conda/envs/py37/bin/python
 DEBUGGER=gdb
 
 BASENAME=`basename $0`
 
-prefix=/Volumes/Home/ynaito/opt/anaconda2
+prefix=/Volumes/Home/ynaito/.conda/envs/py37
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
-pythondir=${prefix}/lib/python2.7/site-packages
-pyexecdir=${exec_prefix}/lib/python2.7/site-packages
-PYTHON_INCLUDES=" -I/Volumes/Home/ynaito/opt/anaconda2/include/python2.7"
+pythondir=${prefix}/lib/python3.7/site-packages
+pyexecdir=${exec_prefix}/lib/python3.7/site-packages
+PYTHON_INCLUDES=" -I/Volumes/Home/ynaito/.conda/envs/py37/include/python3.7"
 BOOST_LIBRARIES="-lboost_python"
 
 ECELL_DIRNAME=ecell-3.3
