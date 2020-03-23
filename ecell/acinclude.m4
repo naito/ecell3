@@ -290,9 +290,9 @@ AC_DEFUN([ECELL_CHECK_BOOST_PYTHON], [
     LIBS="$LIBS -l$BOOST_PYTHON_LIBNAME $PYTHON_LIBS"
     AC_MSG_CHECKING([for Boost.Python runtime library availability])
     AC_TRY_LINK([
-#include <boost/python/module.hpp>
+#include <boost/python/object_fwd.hpp>
     ], [
-boost::python::detail::init_module("dummy", 0);
+boost::python::object *test_object;
     ], [
       AC_MSG_RESULT([yes])
       AC_DEFINE(HAVE_BOOST_PYTHON, 1, [Define to 1 if Boost.Python is available])
