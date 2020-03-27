@@ -168,11 +168,11 @@ class Session:
 
             # add comment
             aCurrentInfo = '''<!-- created by ecell.Session.saveModel
- date: %s
- currenttime: %s
+ date: {}
+ currenttime: {}
 -->
 <eml>
-''' % ( time.asctime( time.localtime() ) , self.getCurrentTime() )
+'''.format( time.asctime( time.localtime() ) , self.getCurrentTime() )
             aString = anEml.asString()
             aBuffer = aCurrentInfo.join( aString.split( '<eml>\n' ) )
             aFileObject = open( aModel, 'w' )
