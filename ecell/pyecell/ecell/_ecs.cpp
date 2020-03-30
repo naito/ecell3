@@ -694,8 +694,11 @@ private:
         std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_name << '\n';
         std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
 
+        std::cout << PyArray_DescrFromObject( reinterpret_cast< PyObject* >( this ), 0 ) << '\n';
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1b): " << '\n';
+
         PyArray_Descr* descr( PyArray_DescrFromObject(
-            reinterpret_cast< PyObject* >( this ), 0 ) );
+            reinterpret_cast< PyObject* >( this ), NULL ) );
             std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
         BOOST_ASSERT( descr != NULL );
 
