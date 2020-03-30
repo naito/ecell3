@@ -76,13 +76,59 @@ message( '\n' )
 
 from ecell.ECDDataFile import *
 
-message('saving S.ecd..')
-message( 'Logger data:\n%s' % S_Logger.getData(0,2000,.5))
-aDataFile = ECDDataFile( S_Logger.getData(0,2000,.5) )
+# message( 'Logger data:\n%s' % S_Logger.getData(0,2000,.5))
+message( "\necell3-session>>> S_Logger_data = S_Logger.getData(0,2000,.5)" )
+S_Logger_data = S_Logger.getData(0,2000,.5)
+print( type( S_Logger_data ) )
+
+message( '\necell3-session>>> type( S_Logger_data )' )
+print( type( S_Logger_data ))
+
+message( '\necell3-session>>> dir( S_Logger_data )' )
+print( dir( S_Logger_data ))
+
+#message( '\necell3-session>>> vars( S_Logger_data )' )
+#print( vars( S_Logger_data ))
+
+message( "\necell3-session>>> aDataFile = ECDDataFile( S_Logger_data )" )
+aDataFile = ECDDataFile( S_Logger_data )
+
+message( "\necell3-session>>> aDataFile.setDataName( S_Logger.getName() )" )
 aDataFile.setDataName( S_Logger.getName() )
+
+message( "\necell3-session>>> aDataFile.setNote( '' )" )
 aDataFile.setNote( '' )
-message( 'ECD contents:\n%s' % aDataFile.getHeaderString())
+
+message( "\necell3-session>>> aDataFile.getHeaderString()" )
+aDataFile.getHeaderString()
+
+message( "\necell3-session>>> ecell3-session>>> aDataFile.getDataName()" )
+aDataFile.getDataName()
+
+message( "\necell3-session>>> aDataFile.getSizeOfColumn()" )
+aDataFile.getSizeOfColumn()
+
+message( "\necell3-session>>> aDataFile.getSizeOfLine()" )
+aDataFile.getSizeOfLine()
+
+message( "\necell3-session>>> theSimulator.getLoggerData('Variable:/:S:Value', 0, 500 )" )
+theSimulator.getLoggerData('Variable:/:S:Value', 0, 500 )
+
+message( '\necell3-session>>> type( aDataFile )' )
+print( type( aDataFile ))
+
+message( '\necell3-session>>> dir( aDataFile )' )
+print( dir( aDataFile ))
+
+#message( '\necell3-session>>> vars( aDataFile )' )
+#print( vars( aDataFile ))
+
+message( '\necell3-session>>> aDataFile.getData()' )
+aDataFile.getData()
+message( 'No return: succeeded.' )
 message( '%s\n' % aDataFile.getData())
+
+message( "\necell3-session>>> aDataFile.save( 'S.ecd' )" )
 aDataFile.save( 'S.ecd' )
 
 #message('loading')
