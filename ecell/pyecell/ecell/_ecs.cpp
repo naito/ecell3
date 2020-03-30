@@ -312,23 +312,23 @@ struct PolymorphRetriever
     {
         if( PyFloat_Check( aPyObjectPtr ) )
         {
-            //std::cout << "PyFloat" << '\n';
+            std::cout << "PyFloat" << '\n';
             return Polymorph( PyFloat_AS_DOUBLE( aPyObjectPtr ) );
         }
         else if( PyLong_Check( aPyObjectPtr ) )
         {
-            //std::cout << "PyLong" << '\n';
+            std::cout << "PyLong" << '\n';
             return Polymorph( PyLong_AS_LONG( aPyObjectPtr ) );
         }
         else if( PyBytes_Check( aPyObjectPtr ) )
         {
-            //std::cout << "PyBytes" << '\n';
+            std::cout << "PyBytes" << '\n';
             return Polymorph( PyBytes_AS_STRING( aPyObjectPtr ),
                               PyBytes_GET_SIZE( aPyObjectPtr ) );
         }
         else if( PyUnicode_Check( aPyObjectPtr ) )
         {
-            //std::cout << "PyUnicode" << '\n';
+            std::cout << "PyUnicode" << '\n';
             aPyObjectPtr = PyUnicode_AsEncodedString( aPyObjectPtr, NULL, NULL );
             if ( aPyObjectPtr )
             {
@@ -346,10 +346,10 @@ struct PolymorphRetriever
         }
         else if ( PySequence_Check( aPyObjectPtr ) )
         {
-            //std::cout << "PySequence" << '\n';
+            std::cout << "PySequence" << '\n';
             return Polymorph( PolymorphValue::create( pyseq_range( aPyObjectPtr ) ) );
         }
-        //std::cout << "Py___Others" << '\n';
+        std::cout << "Py___Others" << '\n';
         // conversion is failed. ( convert with repr() ? )
         PyErr_SetString( PyExc_TypeError,
                          "Unacceptable type of an object in the tuple." );
@@ -680,7 +680,7 @@ private:
     DataPointVectorWrapper( boost::shared_ptr< DataPointVector > const& aVector )
         : theVector( aVector )
     {
-        //std::cout << "DataPointVectorWrapper::DataPointVectorWrapper" << '\n';
+        std::cout << "DataPointVectorWrapper::DataPointVectorWrapper" << '\n';
     }
 
     ~DataPointVectorWrapper()
@@ -689,17 +689,17 @@ private:
 
     PyObject* asPyArray()
     {
-        //std::cout << "DataPointVectorWrapper::asPyArray()-(1): ";
-        //std::cout << PyArray_DescrCheck(reinterpret_cast< PyObject* >( this )) << '\n';
-        //std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_name << '\n';
-        //std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1): ";
+        std::cout << PyArray_DescrCheck(reinterpret_cast< PyObject* >( this )) << '\n';
+        std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_name << '\n';
+        std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
 
         PyArray_Descr* descr( PyArray_DescrFromObject(
-            //std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
             reinterpret_cast< PyObject* >( this ), 0 ) );
+            std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
         BOOST_ASSERT( descr != NULL );
 
-        //std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
+        std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
         return PyArray_CheckFromAny(
                 reinterpret_cast< PyObject* >( this ),
                 descr, 0, 0, 0, NULL );
@@ -715,9 +715,9 @@ public:
 
     static DataPointVectorWrapper* create( boost::shared_ptr< DataPointVector > const& aVector )
     {
-        //std::cout << " DataPointVectorWrapper::create()  (1)" << '\n';
+        std::cout << " DataPointVectorWrapper::create()  (1)" << '\n';
         new DataPointVectorWrapper( aVector );
-        //std::cout << " DataPointVectorWrapper::create()  (2)" << '\n';
+        std::cout << " DataPointVectorWrapper::create()  (2)" << '\n';
         return new DataPointVectorWrapper( aVector );
     }
 
@@ -741,7 +741,7 @@ public:
 
     static PyObject* __str__( DataPointVectorWrapper* self )
     {
-        //std::cout << "DataPointVectorWrapper::__str__()" << '\n';
+        std::cout << "DataPointVectorWrapper::__str__()" << '\n';
         return PyObject_Str( self->asPyArray() );
     }
 
@@ -1266,20 +1266,20 @@ public:
     static PyObject*
     convert( boost::shared_ptr< DataPointVector > const& aVectorSharedPtr )
     {
-        //std::cout << "DataPointVectorSharedPtrConverter (1)" << '\n';
+        std::cout << "DataPointVectorSharedPtrConverter (1)" << '\n';
         if (aVectorSharedPtr->getElementSize() == sizeof( DataPoint ))
         {
-            //std::cout << "DataPointVectorSharedPtrConverter (3)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (3)" << '\n';
             DataPointVectorWrapper<libecs::DataPoint>* a = DataPointVectorWrapper< DataPoint >::create(aVectorSharedPtr );
-            //std::cout << "DataPointVectorSharedPtrConverter (4)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (4)" << '\n';
             PyObject* aa = reinterpret_cast< PyObject* >( a );
-            //std::cout << "DataPointVectorSharedPtrConverter (5)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (5)" << '\n';
         } else {
-            //std::cout << "DataPointVectorSharedPtrConverter (6)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (6)" << '\n';
             DataPointVectorWrapper<libecs::LongDataPoint>* a = DataPointVectorWrapper< LongDataPoint >::create(aVectorSharedPtr );
-            //std::cout << "DataPointVectorSharedPtrConverter (7)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (7)" << '\n';
             PyObject* aa = reinterpret_cast< PyObject* >( a );
-            //std::cout << "DataPointVectorSharedPtrConverter (8)" << '\n';
+            std::cout << "DataPointVectorSharedPtrConverter (8)" << '\n';
         }
         return aVectorSharedPtr->getElementSize() == sizeof( DataPoint ) ?
                 reinterpret_cast< PyObject* >(
