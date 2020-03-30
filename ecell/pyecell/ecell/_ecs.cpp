@@ -695,8 +695,8 @@ private:
         //std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
 
         PyArray_Descr* descr( PyArray_DescrFromObject(
-            reinterpret_cast< PyObject* >( this ), NULL ) );
             //std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
+            reinterpret_cast< PyObject* >( this ), 0 ) );
         BOOST_ASSERT( descr != NULL );
 
         //std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
@@ -2745,8 +2745,9 @@ static void EcsObject___setattr__( py::back_reference< TecsObject_* > aSelf, py:
 try
 {
     py::handle<> aDescr( py::allow_null( PyObject_GetAttr( reinterpret_cast< PyObject* >( Py_TYPE( aSelf.source().ptr() ) ), key.ptr() ) ) );
-    if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !Py_TYPE( aDescr.get() )->tp_descr_set )
+    //if ( !aDescr || !( aDescr->ob_type->tp_flags & 0 ) || !Py_TYPE( aDescr.get() )->tp_descr_set )
     /* A simple "->ob_type" remains here. */
+    if ( !aDescr || true || !Py_TYPE( aDescr.get() )->tp_descr_set )
     {
         PyErr_Clear();
         EcsObject* self = aSelf.get();
