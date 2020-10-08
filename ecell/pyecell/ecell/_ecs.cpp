@@ -28,7 +28,6 @@
 // E-Cell Project.
 //
 
-
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
@@ -50,6 +49,7 @@
 #include <boost/format.hpp>
 #include <boost/format/group.hpp>
 #include <boost/python.hpp>
+//#include <boost/python/numpy.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/object.hpp>
 #include <boost/python/wrapper.hpp>
@@ -97,18 +97,20 @@ typedef int Py_ssize_t;
     } while (0)
 #endif
 
-#if PY_VERSION_HEX >= 0x03000000
+#if PY_MAJOR_VERSION >= 3
 void *
 #else
 void
 #endif
-import_array_without_return()
+wrapped_import_array()
 {
   import_array();
+  return (void*) 1;
 }
 
 using namespace libecs;
 namespace py = boost::python;
+//namespace npy = boost::python::numpy;
 
 inline boost::optional< py::object > generic_getattr( py::object anObj, const char* aName, bool return_null_if_not_exists )
 {
@@ -689,20 +691,66 @@ private:
 
     PyObject* asPyArray()
     {
-        std::cout << "DataPointVectorWrapper::asPyArray()-(1): ";
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1): " << '\n';
         std::cout << PyArray_DescrCheck(reinterpret_cast< PyObject* >( this )) << '\n';
         std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_name << '\n';
         std::cout << Py_TYPE( reinterpret_cast< PyObject* >( this ) )->tp_as_sequence->sq_length << '\n';
 
-        std::cout << PyArray_DescrFromObject( reinterpret_cast< PyObject* >( this ), 0 ) << '\n';
         std::cout << "DataPointVectorWrapper::asPyArray()-(1b): " << '\n';
-
-        PyArray_Descr* descr( PyArray_DescrFromObject(
-            reinterpret_cast< PyObject* >( this ), NULL ) );
+        std::cout << "    PyArray_Descr: " << PyArray_DescrFromType(NPY_DOUBLE) << '\n';
+        std::cout << "    kind     : " << PyArray_DescrFromType(NPY_DOUBLE)->kind << '\n';
+        std::cout << "    type     : " << PyArray_DescrFromType(NPY_DOUBLE)->type << '\n';
+        std::cout << "    byteorder: " << PyArray_DescrFromType(NPY_DOUBLE)->byteorder << '\n';
+        std::cout << "    flags    : " << PyArray_DescrFromType(NPY_DOUBLE)->flags << '\n';
+        std::cout << "    type_num : " << PyArray_DescrFromType(NPY_DOUBLE)->type_num << '\n';
+        std::cout << "    elsize   : " << PyArray_DescrFromType(NPY_DOUBLE)->elsize << '\n';
+        std::cout << "    alignment: " << PyArray_DescrFromType(NPY_DOUBLE)->alignment << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(1c): " << '\n';
+        /*
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1b): " << '\n';
+        std::cout << PyArray_DescrFromObject( reinterpret_cast< PyObject* >( this ), 0 ) << '\n';
+        std::cout << "DataPointVectorWrapper::asPyArray()-(1c): " << '\n';
+        */
+        PyArray_Descr* descr( PyArray_DescrFromType(NPY_DOUBLE) );
             std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
         BOOST_ASSERT( descr != NULL );
 
         std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
+        PyObject* op = reinterpret_cast< PyObject* >( this );
+        PyArrayObject *arr = NULL;
+        PyArray_Descr *dtype = NULL;
+        int ndim = 0;
+        npy_intp dims[NPY_MAXDIMS];
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3b)" << '\n';
+        std::cout << "        PyArray_Check(op): ";
+        std::cout << PyArray_Check(op) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3c)" << '\n';
+        std::cout << "        PyArray_IsScalar(op, Generic): ";
+        std::cout << PyArray_IsScalar(op, Generic) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3d)" << '\n';
+        std::cout << "        !PyBytes_Check(op) && !PyUnicode_Check(op): ";
+        std::cout << (!PyBytes_Check(op) && !PyUnicode_Check(op)) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3e)" << '\n';
+        PyObject *memoryview = PyMemoryView_FromObject(op);
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3f)" << '\n';
+        std::cout << "        (memoryview == NULL): ";
+        std::cout << (memoryview == NULL) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3g)" << '\n';
+        PyObject *tmp = PyArray_FromStructInterface(op);
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3h)" << '\n';
+        std::cout << "        (tmp == NULL): ";
+        std::cout << (tmp == NULL) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3i)" << '\n';
+        std::cout << "        (tmp == Py_NotImplemented): ";
+        std::cout << (tmp == Py_NotImplemented) << '\n';
+        std::cout << "    DataPointVectorWrapper::asPyArray()-(3z)" << '\n';
+        std::cout << "        PyArray_GetArrayParamsFromObject(): ";
+        std::cout << PyArray_GetArrayParamsFromObject(op,descr, 0, &dtype, &ndim, dims, &arr, NULL) << '\n';
+        std::cout << "DataPointVectorWrapper::asPyArray()-(4)" << '\n';
+        PyObject* anArray = PyArray_CheckFromAny(
+                reinterpret_cast< PyObject* >( this ),
+                descr, 0, 0, 0, NULL );
+        std::cout << "DataPointVectorWrapper::asPyArray()-(5)" << '\n';
         return PyArray_CheckFromAny(
                 reinterpret_cast< PyObject* >( this ),
                 descr, 0, 0, 0, NULL );
@@ -773,18 +821,24 @@ public:
 
     static Py_ssize_t __len__( DataPointVectorWrapper* self )
     {
+        std::cout << "DataPointVectorWrapper::__len__() (1)" << '\n';
+        Py_ssize_t l = self->theVector->getSize();
+        std::cout << "DataPointVectorWrapper::__len__() (2)" << '\n';
         return self->theVector->getSize();
     }
 
     static PyObject* __getitem__( DataPointVectorWrapper* self, Py_ssize_t idx )
     {
+        std::cout << "DataPointVectorWrapper::__getitem__() (1)" << '\n';
         if ( idx < 0 || idx >= static_cast< Py_ssize_t >( self->theVector->getSize() ) )
         {
             PyErr_SetObject(PyExc_IndexError,
                     PyBytes_FromString("index out of range"));
         return NULL;
         }
-
+        std::cout << "DataPointVectorWrapper::__getitem__() (2)" << '\n';
+        PyObject* i = toPyObject( &getItem( *self->theVector, idx ) );
+        std::cout << "DataPointVectorWrapper::__getitem__() (3)" << '\n';
         return toPyObject( &getItem( *self->theVector, idx ) );
     }
 
@@ -828,17 +882,22 @@ public:
 
     static int __contains__( DataPointVectorWrapper* self, PyObject *e )
     {
+        std::cout << "DataPointVectorWrapper::__contains__() (1)" << '\n';
         if ( !PyArray_Check( e ) || PyArray_NDIM( e ) != 1
                 || PyArray_DIMS( e )[ 0 ] < static_cast< Py_ssize_t >( theNumOfElemsPerEntry ) )
         {
+            std::cout << "DataPointVectorWrapper::__contains__() (2)" << '\n';
             return 1;
         }
 
-
+        std::cout << "DataPointVectorWrapper::__contains__() (3)" << '\n';
         DataPoint const& dp( *reinterpret_cast< DataPoint* >( PyArray_DATA( e ) ) );
         DataPoint const* begin( reinterpret_cast< DataPoint const* >(
                           self->theVector->getRawArray() ) );
         DataPoint const* end( begin + self->theVector->getSize() );
+        std::cout << "DataPointVectorWrapper::__contains__() (4): ";
+        std::cout << std::find( begin, end, dp ) << '\n';
+        std::cout << "DataPointVectorWrapper::__contains__() (5)" << '\n';
         return end == std::find( begin, end, dp );
     }
 
@@ -2850,7 +2909,8 @@ AbstractSimulator* Entity_getModel(Entity const& entity)
 BOOST_PYTHON_MODULE( _ecs )
 {
     // without this it crashes when Logger::getData() is called. why?
-    import_array_without_return();
+    Py_Initialize();
+    wrapped_import_array();
 
     DataPointVectorWrapper< DataPoint >::__class_init__();
     DataPointVectorWrapper< LongDataPoint >::__class_init__();
