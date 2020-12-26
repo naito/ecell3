@@ -238,6 +238,7 @@ AC_SUBST(BOOST_PYTHON_LIBNAME)
 AM_CONDITIONAL([HAVE_PYTHON_LIB], [test ! -z "$PYTHON_LIBS"])
 AC_SUBST([PYTHON_LIBS])
 
+AC_MSG_CHECKING([for using compiler extensions])
 AC_ARG_ENABLE( compiler-extensions,,
                USE_COMPILER_EXTENSIONS=yes,
                USE_COMPILER_EXTENSIONS=no

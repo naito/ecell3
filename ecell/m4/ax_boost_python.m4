@@ -53,6 +53,8 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
+#   modified by Yasuhiro Naito
+
 #serial 23
 
 AC_DEFUN([AX_BOOST_PYTHON],
@@ -92,7 +94,7 @@ BOOST_PYTHON_MODULE(test) { throw "Boost::Python test."; }]], [])],
     ac_cv_boost_python=yes, ac_cv_boost_python=no)
 ])
 if test "$ac_cv_boost_python" = "yes"; then
-  AC_DEFINE(HAVE_BOOST_PYTHON,,[define if the Boost::Python library is available])
+  AC_DEFINE(HAVE_BOOST_PYTHON, 1,[define to 1 if the Boost::Python library is available])
   ax_python_lib=boost_python
   AC_ARG_WITH([boost-python],AS_HELP_STRING([--with-boost-python],[specify yes/no or the boost python library or suffix to use]),
   [if test "x$with_boost_python" != "xno" -a "x$with_boost_python" != "xyes"; then
@@ -110,6 +112,8 @@ BOOST_PYTHON_MODULE(test) { throw "Boost::Python test."; }]], [])],
         [AS_VAR_SET([ax_Lib], [yes])],
         [AS_VAR_SET([ax_Lib], [no])])])
     AS_VAR_IF([ax_Lib], [yes], [BOOST_PYTHON_LIB=-l$ax_lib break], [])
+    AS_VAR_IF([ax_Lib], [yes], [BOOST_PYTHON_LIBNAME=$BOOST_PYTHON_LIB], [])
+    AS_VAR_IF([ax_Lib], [yes], [ifelse([$1], [],, [$1])], [ifelse([$2], [],, [$2])])
     AS_VAR_POPDEF([ax_Lib])dnl
   done
   AC_SUBST(BOOST_PYTHON_LIB)

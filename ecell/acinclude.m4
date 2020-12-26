@@ -281,31 +281,10 @@ AC_DEFUN([ECELL_CHECK_BOOST], [
 ])
 
 AC_DEFUN([ECELL_CHECK_BOOST_PYTHON], [
-  AC_REQUIRE([AM_CHECK_PYTHON_HEADERS])
-
-  ac_save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
-  AC_CHECK_HEADER([boost/python.hpp], [
-    ac_save_LIBS="$LIBS"
-    LIBS="$LIBS -l$BOOST_PYTHON_LIBNAME $PYTHON_LIBS"
-    AC_MSG_CHECKING([for Boost.Python runtime library availability])
-    AC_TRY_LINK([
-#include <boost/python/object_fwd.hpp>
-    ], [
-boost::python::object *test_object;
-    ], [
-      AC_MSG_RESULT([yes])
-      AC_DEFINE(HAVE_BOOST_PYTHON, 1, [Define to 1 if Boost.Python is available])
-      ifelse([$1], [],, [$1])
-    ], [
-      AC_MSG_RESULT([no])
-      ifelse([$2], [],, [$2])
-    ])
-    LIBS="$ac_save_LIBS"
-  ], [
-    ifelse([$2], [],, [$2])
-  ])
-  CPPFLAGS="$ac_save_CPPFLAGS"
+  sinclude(m4/ax_python_devel.m4)
+  sinclude(m4/ax_boost_base.m4)
+  sinclude(m4/ax_boost_python.m4)
+  AX_BOOST_PYTHON(,$2) dnl # define HAVE_BOOST_PYTHON, set BOOST_PYTHON_LIB
 ])
 
 AC_DEFUN([ECELL_CHECK_BOOST_RANGE_ADL_BARRIER], [
