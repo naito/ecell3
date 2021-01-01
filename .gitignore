@@ -40,6 +40,7 @@ depcomp
 /ecell/pyecell/ecell3-eml2em
 /ecell/pyecell/ecell3-eml2sbml
 /ecell/pyecell/ecell3-ipython
+/ecell/pyecell/ecell3-jupyter
 /ecell/pyecell/ecell3-python
 /ecell/pyecell/ecell3-sbml2eml
 /ecell/pyecell/ecell3-session
