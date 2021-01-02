@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 2017-2020 Keio University
-#       Copyright (C) 2017-2020 RIKEN
+#       Copyright (C) 2017-2021 Keio University
+#       Copyright (C) 2017-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -110,7 +110,7 @@ class SessionProxy( AbstractSessionProxy ):
                 )
             #print "MSG: " + msg
             if msg == None:
-                raise RuntimeError('{} returned no result.'.format( QSUB ))
+                raise RuntimeError, '{} returned no result.'.format( QSUB )
             self.__theTorqueJobID = msg
         finally:
             os.chdir( aCwd )

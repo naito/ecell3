@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -49,7 +49,7 @@ class MessageWindow( Window ):
 
 	def __init__( self ):
 		Window.__init__( self,
-			os.path.join( GLADEFILE_PATH, 'MessageWindow.ui' ),
+			os.path.join( GLADEFILE_PATH, 'MessageWindow.glade' ),
 			'top_frame' )
 		self.isShown = False
 		self.messageBuffer = gtk.TextBuffer(None)

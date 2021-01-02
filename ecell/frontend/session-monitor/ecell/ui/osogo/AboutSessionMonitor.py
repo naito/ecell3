@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -48,7 +48,7 @@ class AboutSessionMonitor:
 		""" 
 		self.theMainWindow = aMainWindow	
 		
-		filename = os.path.join( config.GLADEFILE_PATH, "AboutSessionMonitor.ui" )
+		filename = os.path.join( config.GLADEFILE_PATH, "AboutSessionMonitor.glade" )
 		widgets = glade.XML(filename,"attachment_box")
 		att_box = widgets.get_widget("attachment_box")
 

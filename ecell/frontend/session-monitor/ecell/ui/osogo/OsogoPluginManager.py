@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -140,7 +140,7 @@ class OsogoPluginManager(PluginManager):
         """
 
         for aPath in PLUGIN_PATH:
-            aFileList = glob.glob( os.path.join( aPath, '*.ui' ) )
+            aFileList = glob.glob( os.path.join( aPath, '*.glade' ) )
             for aFile in aFileList:
                 aModulePath = os.path.splitext( aFile )[0]
                 if( os.path.isfile( aModulePath + '.py' ) ):

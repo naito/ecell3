@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -311,13 +311,13 @@ class EntityListWindow(OsogoWindow):
         if self.thePropertyWindow != None:
             return
         self.thePropertyWindow = self.thePluginManager.createInstance(
-            'PropertyWindow', [], rootWidget='PropertyWindow', parent=self ) 
+            'PropertyWindow', [], rootWidget='top_frame', parent=self ) 
         if self.theStatusbar is not None:
             self.thePropertyWindow.setStatusBar( self.theStatusbar )
 
-        self.thePropertyWindow['top_frame'].reparent( self['property_area'] )
+        aPropertyWindowTopVBox = self.thePropertyWindow['top_frame']
+        self['property_area'].add( aPropertyWindowTopVBox )
         self.thePropertyWindow.setParent( self )
-        self.thePropertyWindow['PropertyWindow'].destroy()
 
 
 

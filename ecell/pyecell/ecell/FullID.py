@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -27,7 +27,7 @@
 # 
 #END_HEADER
 
-from .ecs_constants import *
+from ecs_constants import *
 
 import types
 
@@ -217,117 +217,117 @@ def convertToSystemPathList( aValue ):
 if __name__ == '__main__':
 
     aSystemPath = createSystemPath( ( '/' , 'CELL' , 'CYTOPLASM' ) )
-    print(aSystemPath)
+    print aSystemPath
 
-    print()
+    print
 
     aTuple = ( SYSTEM , ( '/' , 'CELL' , 'CYTOPLASM' ) , 'CHROMOSOME' )
     aFullID = createFullID( aTuple )
-    print(aFullID)
+    print aFullID
 
     aFullID = createFullID( 'System:/CELL/CYTOPLASM:CHROMOSOME' )
-    print(aFullID)
+    print aFullID
 
     aFullID = createFullID( ( SYSTEM , aSystemPath , 'CHROMOSOME' ) )
-    print(aFullID)
+    print aFullID
 
-    print()
+    print
 
     aTuple = ( VARIABLE , ( '/' , 'CELL' , 'CYTOPLASM' ) , 'ATP' , 'CONC' )
     aFullPN = createFullPN( aTuple )
-    print(aFullPN)
+    print aFullPN
 
     aFullPN = createFullPN( 'Variable:/CELL/CYTOPLASM:ATP:CONC' )
-    print(aFullPN)
+    print aFullPN
 
-    print()
+    print
 
-    print(aSystemPath)
-    print(aSystemPath.getFullID())
-    print(aSystemPath.getFullPN( 'VOLUME' ))
-    print(aSystemPath.getString())
+    print aSystemPath
+    print aSystemPath.getFullID()
+    print aSystemPath.getFullPN( 'VOLUME' )
+    print aSystemPath.getString()
 
-    print()
+    print
 
-    print(aFullID)
-    print(aFullID.getFullPN( 'VOLUME' ))
-    print(aFullID.getFullID())
-    print(aFullID.getString())
-    print(aFullID.getSuperSystemFullID())
+    print aFullID
+    print aFullID.getFullPN( 'VOLUME' )
+    print aFullID.getFullID()
+    print aFullID.getString()
+    print aFullID.getSuperSystemFullID()
 
     try:
-        print(aFullID.convertToSystemPath())
+        print aFullID.convertToSystemPath()
     except TypeError:
-        print('type error!')
+        print 'type error!'
 
 
     aFullID = createFullID( 'Variable:/CELL/CYTOPLASM:ATP' )
     try:
-        print(aFullID.convertToSystemPath())
+        print aFullID.convertToSystemPath()
     except TypeError:
-        print('type error!')
+        print 'type error!'
 
-    print()
+    print
 
-    print(aFullPN)
-    print(aFullPN.getFullPN( 'VOLUME' ))
-    print(aFullPN.getFullID())
-    print(aFullPN.getString())
+    print aFullPN
+    print aFullPN.getFullPN( 'VOLUME' )
+    print aFullPN.getFullID()
+    print aFullPN.getString()
 
-    print(aFullPN.getSuperSystemFullID())
+    print aFullPN.getSuperSystemFullID()
 
     try:
-        print(aFullPN.convertToSystemPath())
+        print aFullPN.convertToSystemPath()
     except TypeError:
-        print('type error!')
+        print 'type error!'
 
     aFullPN = createFullPN( 'System:/CELL:CYTOPLASM:VOLUME' )
 
     try:
-        print(aFullPN.convertToSystemPath())
+        print aFullPN.convertToSystemPath()
     except TypeError:
-        print('type error!')
+        print 'type error!'
 
-    print() 
+    print 
 
-    print(aSystemPath)
-    print(aSystemPath.isAbsolute())
+    print aSystemPath
+    print aSystemPath.isAbsolute()
     aRelativeSystemPath = createSystemPath('CHROMOSOME/GENE')
-    print(aRelativeSystemPath)
-    print(aRelativeSystemPath.isAbsolute())
-    print(aSystemPath.joinSystemPath( aRelativeSystemPath ))
+    print aRelativeSystemPath
+    print aRelativeSystemPath.isAbsolute()
+    print aSystemPath.joinSystemPath( aRelativeSystemPath )
 
     aRelativeSystemPath = createSystemPath('CHROMOSOME/../GENE')
-    print(aRelativeSystemPath)
-    print(aSystemPath.joinSystemPath( aRelativeSystemPath ))
+    print aRelativeSystemPath
+    print aSystemPath.joinSystemPath( aRelativeSystemPath )
     
     aRelativeSystemPath = createSystemPath('../../ENVIRONMENT')
-    print(aRelativeSystemPath)
-    print(aSystemPath.joinSystemPath( aRelativeSystemPath ))
+    print aRelativeSystemPath
+    print aSystemPath.joinSystemPath( aRelativeSystemPath )
 
-    print() 
+    print 
     
     aSystemPath = createSystemPath( 'A/B/C' )
     aRelativeSystemPath = createSystemPath( '../E/F/../../G/H/I/J/..' )
-    print(aSystemPath)
-    print(aRelativeSystemPath)
-    print(aSystemPath.joinSystemPath( aRelativeSystemPath ))
+    print aSystemPath
+    print aRelativeSystemPath
+    print aSystemPath.joinSystemPath( aRelativeSystemPath )
     
-    print()
+    print
     
     aSystemPath = createSystemPath( 'A/B/C' )
     aRelativeSystemPath = createSystemPath( '../../../E/F/../../../../G/H/I/J/..' )
-    print(aSystemPath)
-    print(aRelativeSystemPath)
-    print(aSystemPath.joinSystemPath( aRelativeSystemPath ))
+    print aSystemPath
+    print aRelativeSystemPath
+    print aSystemPath.joinSystemPath( aRelativeSystemPath )
     
-    print()
+    print
     
     aSystemPath = createSystemPath( '' )
-    print(aSystemPath)
+    print aSystemPath
 
-    print()
+    print
     
-    print('end')
+    print 'end'
 
     

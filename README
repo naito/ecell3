@@ -10,7 +10,7 @@ E-Cell dev mailing list <dev@e-cell.org>
 
 What is E-Cell System?
 ======================
-E-Cell is a generic software package for cellular modeling and simulation.  
+E-Cell is a generic software package for cellular modeling and simulation.
 
 Files and directories
 =====================
@@ -20,7 +20,7 @@ In the package, files are organized as follows::
    |
    +- INSTALL:   Installation instructions
    |
-   +- ChangeLog: Automatically generated cvs log 
+   +- ChangeLog: Automatically generated cvs log
    |
    +- NEWS:      Project log
    |
@@ -42,11 +42,11 @@ In the package, files are organized as follows::
    |  |
    |  +- model-editor/ --> GUI model editor (ecell3-modeleditor)
    |  |
-   |  +- toollauncher/ --> GUI tool launcher 
+   |  +- toollauncher/ --> GUI tool launcher
    |
    +- dmtool/          --> C++ class library for dynamic loading of object
    |
-   +- doc/             --> Documentations 
+   +- doc/             --> Documentations
    |  |
    |  +- users-manual/ --> Users manual
    |  |
@@ -122,15 +122,15 @@ Basic Usage
 ---------------------------------------
 By default a python binding (pyecs) is built.
 
-To invoke a E-Cell Session Script interpreter in interactive mode, use ``ecell3-sesion`` script. Note that the script expects {PREFIX}/bin is included in PATH environment, where {PREFIX} is the directory path that was specified to configure. 
+To invoke a E-Cell Session Script interpreter in interactive mode, use ``ecell3-sesion`` script. Note that the script expects {PREFIX}/bin is included in PATH environment, where {PREFIX} is the directory path that was specified to configure.
 (If you have not specified it, it falls back to ``/usr/local``.)
 
 A typical command-line session is as follows::
 
    $ ecell3-session
    ecell3-session [ E-Cell SE Version 3.1.106, on Python Version 2.3.4 ]
-   Copyright (C) 1996-2020 Keio University
-   Copyright (C) 2008-2020 RIKEN
+   Copyright (C) 1996-2021 Keio University
+   Copyright (C) 2008-2021 RIKEN
    Copyright (C) 2005-2009 The Molecular Sciences Institute
    Send feedback to Koichi Takahashi <shafi@e-cell.org>
    ecell3-session>>>
@@ -177,25 +177,25 @@ Copyright Notice
 E-Cell System is distributed under the GNU General Public License
 version 2.
 
-  Copyright (C) 1996-2020 Keio University
-  Copyright (C) 2008-2020 RIKEN
+  Copyright (C) 1996-2021 Keio University
+  Copyright (C) 2008-2021 RIKEN
   Copyright (C) 2005-2009 The Molecular Sciences Institute
 
   E-Cell System is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
-  
+
   E-Cell System is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
   See the GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public
   License along with E-Cell System -- see the file COPYING.
   If not, write to the Free Software Foundation, Inc.,
   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 It should be mentioned this package contains the following softwares
 for convenience.  Please note that these are not covered by the license
 under which a copy of E-Cell System is licensed to you, while neither
@@ -213,19 +213,19 @@ every condition of the respective licenses.
             Department of Computer Science
             University of Chicago
             Chicago, IL  60637
-    
+
     Copyright (C) 2001, David M. Beazley
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
-    
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
-    
+
     You should have received a copy of the GNU Lesser General Public
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -234,7 +234,7 @@ every condition of the respective licenses.
 
     http://www.dabeaz.com/ply/
 
-* EmPy 
+* EmPy
 
   EmPy is written by Erik Max Francis and distributed under the GNU Lesser
   General Public License.  See COPYING.LGPLv2 or COPYING.LGPLv3 for the full
@@ -246,12 +246,12 @@ every condition of the respective licenses.
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
-    
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
-    
+
     You should have received a copy of the GNU Lesser General Public
     License along with this library; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -273,12 +273,12 @@ every condition of the respective licenses.
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-     
+
     As a special exception to the GNU Lesser General Public License,
     if you distribute this file as part of a program or library that
     is built using GNU libtool, you may include it under the same
     distribution terms that you use for the rest of that program.
-       
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -290,22 +290,22 @@ every condition of the respective licenses.
 
 * The Loki Library
 
-  Libecs contains part of The Loki Library, which is writen by Andrei 
+  Libecs contains part of The Loki Library, which is writen by Andrei
   Alexandrescu and the contributors.
 
     Copyright (c) 2001 by Andrei Alexandrescu
 
     This code accompanies the book:
-    Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+    Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
     Patterns Applied". Copyright (c) 2001. Addison-Wesley.
 
-    Permission to use, copy, modify, distribute and sell this software for any 
-    purpose is hereby granted without fee, provided that the above copyright 
-    notice appear in all copies and that both that copyright notice and this 
+    Permission to use, copy, modify, distribute and sell this software for any
+    purpose is hereby granted without fee, provided that the above copyright
+    notice appear in all copies and that both that copyright notice and this
     permission notice appear in supporting documentation.
 
-    The author or Addison-Wesley Longman make no representations about the 
-    suitability of this software for any purpose. It is provided "as is" 
+    The author or Addison-Wesley Longman make no representations about the
+    suitability of this software for any purpose. It is provided "as is"
     without express or implied warranty.
 
   The website for this software is located at:
@@ -325,16 +325,16 @@ every condition of the respective licenses.
      modify it under the terms of the GNU General Public License as
      published by the Free Software Foundation; either version 2 of the
      License, or (at your option) any later version.
-     
+
      This program is distributed in the hope that it will be useful, but
      WITHOUT ANY WARRANTY; without even the implied warranty of
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
      General Public License for more details.
-     
+
      You should have received a copy of the GNU General Public License
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-     USA. 
+     USA.
 
   The website for this software is located at:
 
@@ -347,4 +347,3 @@ every condition of the respective licenses.
    :alt: Build Status
 
 $Id$
-

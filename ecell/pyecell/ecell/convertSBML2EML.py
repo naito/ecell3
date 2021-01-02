@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -34,7 +34,7 @@ import types
 import decimal, fractions
 
 from ecell.eml import *
-from .convertSBMLFunctions import *
+from convertSBMLFunctions import *
 import libsbml
 
 
@@ -66,8 +66,8 @@ def convertSBML2EML( aSBMLString,
 
     theFunctionDefinitionConverter = libsbml.SBMLFunctionDefinitionConverter()
     theFunctionDefinitionConverter.setDocument( aSBMLDocument )
-    print("    FunctionDefinitionConverter: %s" % \
-        libsbml.OperationReturnValue_toString( theFunctionDefinitionConverter.convert() ))
+    print "    FunctionDefinitionConverter: %s" % \
+        libsbml.OperationReturnValue_toString( theFunctionDefinitionConverter.convert() )
 
     # ------------------------------
     #  Initial Assignment Converter
@@ -75,8 +75,8 @@ def convertSBML2EML( aSBMLString,
 
     theInitialAssignmentConverter = libsbml.SBMLInitialAssignmentConverter()
     theInitialAssignmentConverter.setDocument( aSBMLDocument )
-    print("    InitialAssignmentConverter:  %s" % \
-        libsbml.OperationReturnValue_toString( theInitialAssignmentConverter.convert() ))
+    print "    InitialAssignmentConverter:  %s" % \
+        libsbml.OperationReturnValue_toString( theInitialAssignmentConverter.convert() )
 
     ## FIXME: theInitialAssignmentConverter.convert() always returns None.
 
@@ -324,7 +324,8 @@ def set_Rules( theRule, anEml, StepperIDs ):
 
 
         else:
-            raise TypeError(" The type of Rule must be Algebraic, Assignment or Rate Rule")
+            raise TypeError,\
+                " The type of Rule must be Algebraic, Assignment or Rate Rule"
 
         # convert SBML formula  to E-Cell formula
         convertedFormula = [ str( theRule.convert_SBML_Formula_to_ecell_Expression( aRule[ 'Math' ] ) ) ]
@@ -515,17 +516,18 @@ def _update_VariableReferenceList_by_reactants_list( theReaction, aReactionID, a
                 'StoichiometryMath'            : None,
                 'Denominator'                  : 1 }
         else:
-            raise Exception("DEBUG : Unexpected instance during converting Reaction")
+            raise Exception,"DEBUG : Unexpected instance during converting Reaction"
         
         if ( _aReactingSpecies[ 'Denominator' ] != 1 ):     # ReactantDenominator
-            raise Exception("Stoichiometry Error : E-Cell System can't set a floating Stoichiometry")
+            raise Exception,"Stoichiometry Error : E-Cell System can't set a floating Stoichiometry"
         
         elif ( _aReactingSpecies[ 'StoichiometryMath' ] != None ):
-            raise Exception("At present, StoichiometryMath is not supported. ( Reaction ID: %s, Reactant ID: %s, StoichiometryMath: %s )" % ( aReactionID, _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ], _aReactingSpecies[ 'StoichiometryMath' ] ))
+            raise Exception,"At present, StoichiometryMath is not supported. ( Reaction ID: %s, Reactant ID: %s, StoichiometryMath: %s )" % ( aReactionID, _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ], _aReactingSpecies[ 'StoichiometryMath' ] )
         
         _aReactingSpeciesEntity = theReaction.Model.get_Entity_by_ID( _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ] )
         if ( _aReactingSpeciesEntity == False ) or ( _aReactingSpeciesEntity[ 0 ] != libsbml.SBML_SPECIES ):
-            raise TypeError('Species "%s" not found' % _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ])
+            raise TypeError,\
+                'Species "%s" not found' % _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ]
         else:
             _aReactingSpeciesEntity = _aReactingSpeciesEntity[ 1 ]
 
@@ -548,7 +550,7 @@ def _update_VariableReferenceList_by_reactants_list( theReaction, aReactionID, a
 ##            theReaction.SubstrateNumber = theReaction.SubstrateNumber + 1
             aVariableFullID = theReaction.Model.get_SpeciesReference_ID( _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ] )
             if ( aVariableFullID == None ):
-                raise NameError("Species "+ _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ] +" not found")
+                raise NameError,"Species "+ _aReactingSpecies[ theReaction.Model.keys[ 'ID' ] ] +" not found"
 
             aReactingSpeciesList.append( 'Variable:' + aVariableFullID )
  

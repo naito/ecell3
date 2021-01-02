@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -56,7 +56,7 @@ class OsogoWindow(Window):
 		aGladeFile   -- a glade file name (str)
 		"""
 		if gladeFile == None:
-			gladeFile = self.__class__.__name__ + '.ui'
+			gladeFile = self.__class__.__name__ + '.glade'
 
 		# calls superclass's constructor
 		Window.__init__(
@@ -197,7 +197,7 @@ class OsogoWindow(Window):
 
 		pass
 
-	def close( self ):
+	def close ( self ):
 		""" destroys Widgets and sets __theExist False"""
 		if self.exists():
 			self[self.theTopWidget].destroy()

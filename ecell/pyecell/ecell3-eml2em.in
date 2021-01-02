@@ -9,7 +9,7 @@ This program is part of E-Cell Simulation Environment Version 3.
 __program__ = 'ecell3-eml2em'
 __version__ = '1.0'
 __author__ = 'Kentarou Takahashi, Yasuhiro Naito and Koichi Takahashi <shafi@e-cell.org>'
-__copyright__ = 'Copyright (C) 2002-2020 Keio University'
+__copyright__ = 'Copyright (C) 2002-2021 Keio University'
 __license__ = 'GPL'
 
 
@@ -39,20 +39,20 @@ def expandValueList( aValue, aLevel=0 ):
     #              (3) list (or tuple).
 
     # (1) string.  Quote it if necessary.
-    if aType == bytes:
+    if aType == types.StringType:
         if QuoteRe.match( aValue ) is None:
             return '"' + aValue + '"'
         else:
             return aValue
         
     # (2) other non-list types (such as numbers).  Simply stringify.
-    if aType != tuple and aType != list:
+    if aType != types.TupleType and aType != types.ListType:
         return str( aValue )
 
     # (3) list or tuple.
     #     Recursively apply this method for nested lists.
     
-    aValue = list(map( expandValueList, aValue, (aLevel+1,) * len( aValue ) ))
+    aValue = map( expandValueList, aValue, (aLevel+1,) * len( aValue ) )
 
     aValueString = ''
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     def usage():
         aProgramName = os.path.basename( sys.argv[0] )
 
-        print('''
+        print '''
 %(appname)s -- convert a EML file to a EM file
         
 Usage:
@@ -233,7 +233,7 @@ Options:
                              even if it already exists.
     -o or --outfile=EMFILE : Specify output file name. '-' means stdout.
 
-''' % { 'appname': aProgramName })
+''' % { 'appname': aProgramName }
 
     # commandline processing
     try:

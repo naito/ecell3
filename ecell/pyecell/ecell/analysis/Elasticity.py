@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-#
+# 
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-#
+# 
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'Elasticity'
-__version__ = '1.1'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
+__version__ = '1.0'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -56,15 +56,15 @@ def getElasticityArray( pathwayProxy, fullPN ):
     processList = pathwayProxy.getProcessList()
 
     size = len( processList )
-
+    
     # first step
     elasticityArray = numpy.zeros( size, float )
-
+    
     aSession = pathwayProxy.theEmlSupport.createSession()
     aSession.theSimulator.initialize()
     for i in range( size ):
         elasticityArray[ i ] = aSession.theSimulator.getEntityProperty( processList[ i ] + ':Activity' )
-
+    
     # second step
     aSession = pathwayProxy.theEmlSupport.createSession()
 
@@ -95,7 +95,7 @@ def getAcculateElasticityArray( pathwayProxy, fullPN ):
     size = len( processList )
 
     elasticityArray = numpy.zeros( size, float )
-
+    
     # first step
     aSession = pathwayProxy.theEmlSupport.createSession()
 
@@ -108,14 +108,14 @@ def getAcculateElasticityArray( pathwayProxy, fullPN ):
     for c in range( size ):
         elasticityArray[ c ] = aSession.theSimulator.getEntityProperty( processList[ c ] + ':Activity' )
 
-    # second step
+    # second step    
     aSession = pathwayProxy.theEmlSupport.createSession()
     aSession.theSimulator.setEntityProperty( fullPN, value - aPerturbation )
     aSession.theSimulator.initialize()
     for c in range( size ):
         elasticityArray[ c ] -= 8.0 * aSession.theSimulator.getEntityProperty( processList[ c ] + ':Activity' )
 
-    # third step
+    # third step    
     aSession = pathwayProxy.theEmlSupport.createSession()
     aSession.theSimulator.setEntityProperty( fullPN, value + aPerturbation )
     aSession.theSimulator.initialize()
@@ -183,7 +183,7 @@ def convertToScaled( pathwayProxy, fullPN, elasticityArray ):
     for i in range( size ):
 
         anActivity = aSession.theSimulator.getEntityProperty( processList[ i ] + ':Activity' )
-
+        
         if anActivity != 0.0:
             scaledElasticityArray[ i ] = elasticityArray[ i ] * value / anActivity
         else:
@@ -200,7 +200,7 @@ def getScaledElasticity( pathwayProxy, fullPN ):
     calculate and return the scaled elasticities as (array)
     refer getElasticityArray( pathwayProxy, fullPN )
     '''
-
+    
     elasticityArray = getElasticity( pathwayProxy, fullPN )
     return convertToScaled( pathwayProxy, fullPN, elasticityArray )
 
@@ -244,7 +244,7 @@ def getElasticityMatrix( pathwayProxy, fullPNList ):
     fullPNList: (list) a list of property names
     return elasticityMatrix
     '''
-
+    
     processList = pathwayProxy.getProcessList()
 
     elasticityMatrix = numpy.zeros( ( len( fullPNList ), len( processList ) ), float )
@@ -311,7 +311,7 @@ def getEpsilonElasticityMatrix2( pathwayProxy ):
 
     incidentMatrix = pathwayProxy.getIncidentMatrix()
     independentGroupList = createIndependentGroupList( incidentMatrix )
-
+    
     activityBuffer = numpy.zeros( len( processList ), float )
 
     aSession = pathwayProxy.theEmlSupport.createSession()
@@ -319,7 +319,7 @@ def getEpsilonElasticityMatrix2( pathwayProxy ):
     aSession.theSimulator.initialize()
     for i in range( len( processList ) ):
         activityBuffer[ i ] = aSession.theSimulator.getEntityProperty( processList[ i ] + ':Activity' )
-
+    
     for groupList in independentGroupList:
 
         aSession = pathwayProxy.theEmlSupport.createSession()
@@ -356,28 +356,28 @@ if __name__ == '__main__':
 
 
     def main( fileName, fullPN=None ):
-
+        
         anEmlSupport = EmlSupport( fileName )
         pathwayProxy = anEmlSupport.createPathwayProxy()
 
         if fullPN != None:
 
-            print( 'elasticity array for \'%s\' =' % ( fullPN ))
-            print( getElasticityArray( pathwayProxy, fullPN ))
-            print( 'acculate elasticity array for \'%s\' =' % ( fullPN ))
-            print( getAcculateElasticityArray( pathwayProxy, fullPN ))
-            print( 'scaled elasticity array for \'%s\' =' % ( fullPN ))
-            print( getScaledElasticity( pathwayProxy, fullPN ))
+            print 'elasticity array for \'%s\' =' % ( fullPN )
+            print getElasticityArray( pathwayProxy, fullPN )
+            print 'acculate elasticity array for \'%s\' =' % ( fullPN )
+            print getAcculateElasticityArray( pathwayProxy, fullPN )
+            print 'scaled elasticity array for \'%s\' =' % ( fullPN )
+            print getScaledElasticity( pathwayProxy, fullPN )
 
-        print( 'epsilon elasticity matrix =' )
-        print( getEpsilonElasticityMatrix( pathwayProxy ))
-        print( 'scaled epsilon elasticity matrix =' )
-        print( getScaledEpsilonElasticityMatrix( pathwayProxy ))
-        print( 'epsilon elasticity matrix =' )
-        print( getEpsilonElasticityMatrix2( pathwayProxy ))
+        print 'epsilon elasticity matrix ='
+        print getEpsilonElasticityMatrix( pathwayProxy )
+        print 'scaled epsilon elasticity matrix ='
+        print getScaledEpsilonElasticityMatrix( pathwayProxy )
+        print 'epsilon elasticity matrix ='
+        print getEpsilonElasticityMatrix2( pathwayProxy )
 
     # end of main
-
+    
 
     if len( sys.argv ) > 1:
         main( sys.argv[ 1 ] )

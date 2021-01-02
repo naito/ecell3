@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2020 Keio University
-#       Copyright (C) 2008-2020 RIKEN
+#       Copyright (C) 1996-2021 Keio University
+#       Copyright (C) 2008-2021 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-#
+# 
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-#
+# 
 #END_HEADER
 
 import sys
@@ -147,7 +147,7 @@ def t_whitespace(t):
 
 # Error handling rule
 def t_error(t):
-    print( "Illegal character '{}' at line {} in {}.".format( t.value[0], t.lineno , t.lexer.filename))
+    print "Illegal character '%s' at line %d in %s." % ( t.value[0], t.lineno , t.lexer.filename)
     t.skip(1)
 
 # Parsing rules
@@ -163,7 +163,7 @@ def createListleft( t ):
         length = len(t.slice) - 1
     else:
         return [t]
-
+    
     if length == 2:
         aList = t[1]
         aList.append(t[2])
@@ -186,7 +186,7 @@ class SystemStmt(object):
         self.id = id
         self.properties = properties
 
-class EntityStmt(object):
+class EntityStmt(object):  
     def __init__(self, type, classname, id, properties):
         self.type = type
         self.classname = classname
@@ -217,7 +217,7 @@ def p_stepper_stmt(t):
     stepper_stmt : stepper_decl LBRACE propertylist RBRACE
     '''
     t[0] = StepperStmt(t[1][0], t[1][1], t[3])
-
+    
 def p_system_stmt(t):
     '''
     system_stmt : system_decl LBRACE property_entity_list RBRACE
@@ -241,19 +241,19 @@ def p_info(t):
 
 def p_stepper_decl(t):
     '''
-    stepper_decl : Stepper name LPAREN name RPAREN
+    stepper_decl : Stepper name LPAREN name RPAREN 
                  | Stepper name LPAREN name RPAREN info
     '''
     t[0] = t[2], t[4]
 
 def p_system_decl(t):
     '''
-    system_decl : System name LPAREN systempath RPAREN
+    system_decl : System name LPAREN systempath RPAREN 
                 | System name LPAREN systempath RPAREN info
 
     '''
     t[0] = t[2], t[4]
-
+   
 def p_variable_or_process(t):
     '''
     variable_or_process : Variable
@@ -321,7 +321,7 @@ def p_valuelist(t):
               | value
     '''
     t[0] = createListleft( t )
-
+    
 
 def p_string(t):
     '''
@@ -344,14 +344,14 @@ def p_name(t):
 def p_empty(t):
     '''
     empty :
-    '''
+    '''    
     t[0] = None
 
 def p_error(t):
     if t is None:
-        print( "Syntax error" )
+        print "Syntax error"
     else:
-        print( "Syntax error at line {} in {}. ".format( t.lineno, t.value ))
+        print "Syntax error at line %d in %s. " % ( t.lineno, t.value )
 
 def initializePLY(outputdir):
     lextabmod = LEXTAB.split('.')
@@ -397,12 +397,12 @@ def patchEm2Eml( anEml, anEmFileObject, debug=0 ):
             anEml.createEntity( aNode.classname, anId )
             for aPropertyOrEntity in aNode.properties:
                 if isinstance( aPropertyOrEntity, EntityStmt ):
-                    anEntityId = '{}:{}:{}'.format( aPropertyOrEntity.type, aNode.id, aPropertyOrEntity.id )
+                    anEntityId = '%s:%s:%s' % ( aPropertyOrEntity.type, aNode.id, aPropertyOrEntity.id )
                     anEml.createEntity( aPropertyOrEntity.classname, anEntityId )
                     for aProperty in aPropertyOrEntity.properties:
                         assert isinstance( aProperty, PropertyDef )
                         anEml.setEntityProperty( anEntityId, aProperty.name, aProperty.valuelist )
-
+                                
                 elif isinstance( aPropertyOrEntity, PropertyDef ):
                     anEml.setEntityProperty( anId, aPropertyOrEntity.name, aPropertyOrEntity.valuelist )
         else:
