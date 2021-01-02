@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -13,17 +13,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 #
 # Designed by Koichi Takahashi <shafi@e-cell.org>
@@ -60,9 +60,9 @@ class SessionProxy( AbstractSessionProxy ):
         self.__cancel()
 
     def getSGEJobID(self):
-        '''return job id 
+        '''return job id
         '''
-        return self.__theSGEJobID 
+        return self.__theSGEJobID
 
     def run( self ):
         '''run process
@@ -98,8 +98,8 @@ class SessionProxy( AbstractSessionProxy ):
                 r'Your job (\d+) \("(?:[^"]|\\")*"\) has been submitted', msg
                 )
             if m == None:
-                raise RuntimeError, '%s returned unexpected result: %s' % (
-                        QSUB, msg )
+                raise RuntimeError('{} returned unexpected result: {}'.format(
+                        QSUB, msg ))
             self.__theSGEJobID = m.group( 1 )
         finally:
             os.chdir( aCwd )
@@ -123,7 +123,7 @@ class SessionProxy( AbstractSessionProxy ):
             self.__cancel()
 
         # set error status
-        self.setStatus( ERROR ) 
+        self.setStatus( ERROR )
 
 class SystemProxy( AbstractSystemProxy ):
     def __init__( self, sessionManager ):
@@ -175,9 +175,9 @@ class SystemProxy( AbstractSystemProxy ):
         '''updates status
         Updates status using the result of qstat as below.
 
-        job-ID  prior name       user         state submit/start at     queue      master  ja-task-ID 
+        job-ID  prior name       user         state submit/start at     queue      master  ja-task-ID
         ---------------------------------------------------------------------------------------------
-        4243651     0 test.py    hoge         Eqw   08/28/2003 11:24:26                       
+        4243651     0 test.py    hoge         Eqw   08/28/2003 11:24:26
 
         When the state is 'qw(queued/waiting)', 't(transfer)' or 'r(running)', it is set as RUN.
         When the state is 'Eqw(error)', the job is killed and its status is set as ERROR.
@@ -211,7 +211,7 @@ class SystemProxy( AbstractSystemProxy ):
                 # gets SGE job id
                 aSGEJobID = job.getSGEJobID()
 
-                # there is no SGE job id in the result of qstat, the job is 
+                # there is no SGE job id in the result of qstat, the job is
                 # considered to be finished
                 if not aStatusDict.has_key( aSGEJobID ):
                     # read standard error file

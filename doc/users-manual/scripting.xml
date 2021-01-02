@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 
-<chapter id="scripting">
-  <title>Scripting A Simulation Session</title>
+<chapter id="scripting"> 
+  <title>Scripting A Simulation Session</title> 
 
   <highlights>
     <para>By reading this chapter, you can get information about the
@@ -104,7 +104,7 @@
       <emphasis>batch mode</emphasis> or in <emphasis>interactive
       mode</emphasis>.
       </para>
-
+      
       <sect3>
 	<title>Batch mode</title>
 
@@ -137,11 +137,11 @@ executing the &ESS;.
 
         <screen><prompt>$</prompt> <userinput>&ecell3-session; <optional>-f model.eml</optional></userinput>
 ecell3-session [ for E-Cell SE Version 3, on Python Version 2.2.1 ]
-Copyright (C) 1996-2021 Keio University.
+Copyright (C) 1996-2020 Keio University.
 Send feedback to Koichi Takahashi <email>shafi@e-cell.org</email>
 <prompt>ecell3-session>>> </prompt>
         </screen>
-
+        
         The banner and the prompt shown here may vary according to the
         version you are using.  If the option <optional>-f model.eml</optional>
 is given, the &EML; file <filename>model.eml</filename> is loaded immediately before prompting.
@@ -215,16 +215,16 @@ Both ways, <option>-D</option> and <option>--parameters</option>, can be mixed.
 	<para>For example, to run the simulation for 10 seconds, use
     <methodname>run</methodname> method of the
     &Session; object.
-    <informalexample>
+    <informalexample> 
 	    <programlisting>self.run( 10 )</programlisting>
-	  </informalexample>
+	  </informalexample> 
     where <methodname>self.</methodname> points to the current
     &Session; object given by the
-    system. Alternatively, you can use <varname>theSession</varname>
+    system. Alternatively, you can use <varname>theSession</varname> 
     in place of the <varname>self</varname>.
-    <informalexample>
+    <informalexample> 
 	    <programlisting>theSession.run( 10 )</programlisting>
-	  </informalexample>
+	  </informalexample> 
     </para>
 
 	<para>Unlike usual &Python; script, you
@@ -249,7 +249,7 @@ Both ways, <option>-D</option> and <option>--parameters</option>, can be mixed.
       <informalexample>
 	    <screen><prompt>ecell3-session>>> </prompt><userinput>loadModel( 'simple.eml' )</userinput></screen>
 	  </informalexample>
-
+    
     Then the prompt changes from <prompt>ecell3-session>>> </prompt>
     to <prompt><replaceable>model_name</replaceable>,
     t=<replaceable>current time</replaceable>>>> </prompt>
@@ -306,13 +306,13 @@ Both ways, <option>-D</option> and <option>--parameters</option>, can be mixed.
 	  <emphasis>event checker</emphasis> and <emphasis>event
 	  handler</emphasis> are set.  If not, it raises an exception.
 	  See <methodname>setEventChecker</methodname>() in the method
-	  list of Session class.
+	  list of Session class. 
 	  </para>
 
-
+	
 
       </sect3>
-
+      
       <sect3>
 	<title>Getting current time</title>
 
@@ -326,7 +326,7 @@ Both ways, <option>-D</option> and <option>--parameters</option>, can be mixed.
 	</informalexample>
 
       </sect3>
-
+      
       <sect3>
 	<title>Printing messages</title>
 
@@ -353,14 +353,14 @@ Both ways, <option>-D</option> and <option>--parameters</option>, can be mixed.
 
 <example>
 	    <title>A simple &ESS; example.</title>
-
+	    
 	    <programlisting linenumbering="numbered">loadModel( 'simple.eml' )
 run( 100 )
 message( 'stopped at %f seconds.' % getCurrentTime() )
 </programlisting>
 	  </example>
         </para>
-
+	
       </sect3>
 
 
@@ -490,7 +490,7 @@ else:
 	<emphasis>FullPN</emphasis>, respectively.</para>
 
 	<informalexample>
-	  <programlisting><varname>aStepperStub</varname> = createStepperStub( <replaceable>'STEPPER_01'</replaceable> )</programlisting>
+	  <programlisting><varname>aStepperStub</varname> = createStepperStub( <replaceable>'STEPPER_01'</replaceable> )</programlisting> 
 
 	  <programlisting><varname>aLoggerStub</varname> = createLoggerStub( <replaceable>'Variable:/CELL/MT1:GLUCOSE:Concentration' </replaceable> )</programlisting>
 	</informalexample>
@@ -581,9 +581,9 @@ or equivalently,
 	<methodname>setProperty</methodname>() method or mutate an
 	object attribute with a	property name and the new value:
 <informalexample>
-	    <programlisting>aStub.getProperty( 'Activity', aNewValue )</programlisting>
+	    <programlisting>aStub.getProperty( 'Activity', aNewValue )</programlisting> 
 	  </informalexample>
-or equivalently,
+or equivalently, 
 <informalexample>
 	    <programlisting>aStub[ 'Activity' ] = aNewValue</programlisting>
 	  </informalexample>
@@ -729,7 +729,7 @@ the logged data before getting data, use
 </para>
 	<example>
 	  <title>An &ESS; to check ATP level every 10 seconds</title>
-
+	  
 	  <programlisting linenumbering="numbered">loadModel( 'simple.eml' )
 
 ATP = createEntityStub( 'Variable:/CELL:ATP' )
@@ -795,7 +795,7 @@ Numeric.shape( ARRAY ) )</methodname> returns
 
     <sect2>
       <title>Saving and loading data</title>
-
+      
       <para>To save data to an &ECD; file, say,
 	<filename>datafile.ecd</filename>, instantiate an
 	<classname>ECDDataFile</classname> object and use
@@ -911,7 +911,7 @@ Now the data is stored in a matrix variable with the same name as the file witho
 <informalexample>
 	  <screen><prompt>octave:2> </prompt><userinput>mean(datafile)</userinput>
 <computeroutput>ans =
-
+ 
    5.0663  51.7158  51.7158  51.2396  52.2386</computeroutput>
 </screen>
 	</informalexample>
@@ -1021,8 +1021,8 @@ Now the data is stored in a matrix variable with the same name as the file witho
       <informalexample>
 	<screen>
 <prompt>ecell3-session>>> </prompt><userinput>theSimulator.getDMInfo()</userinput>
-<computeroutput>(('Process', 'GillespieProcess', '/usr/lib/ecell/3.2/GillespieProcess.so'),
-('Stepper', 'DiscreteTimeStepper', ''),
+<computeroutput>(('Process', 'GillespieProcess', '/usr/lib/ecell/3.2/GillespieProcess.so'), 
+('Stepper', 'DiscreteTimeStepper', ''), 
 ('Stepper', 'NRStepper', '/usr/lib/ecell/3.2/NRStepper.so'), ... )</computeroutput>
 </screen>
       </informalexample>
@@ -1048,7 +1048,7 @@ Now the data is stored in a matrix variable with the same name as the file witho
 	&Python;, &ecell3-python;
 	sets some environment variables to ensure that it can find
 	necessary &ecell; &Python; extension
-	modules and the Standard &DM; Library.
+	modules and the Standard &DM; Library. 
 	After processing the commandline options,
 	&ecell3-session; command creates an
 	<classname>ecell.ecs.Simulator</classname> object, and then
@@ -1062,7 +1062,7 @@ Now the data is stored in a matrix variable with the same name as the file witho
 	command, use <programlisting>import ecell</programlisting>
 	statement from the prompt:
 <informalexample>
-	  <screen><prompt>$ </prompt><userinput>ecell3-python</userinput>
+	  <screen><prompt>$ </prompt><userinput>ecell3-python</userinput> 
 <computeroutput>Python 2.2.2 (#1, Feb 24 2003, 19:13:11)
 [GCC 3.2.2 20030222 (Red Hat Linux 3.2.2-4)] on linux2
 Type "help", "copyright", "credits" or "license" for more information.</computeroutput>
@@ -1074,7 +1074,7 @@ or, (on UNIX-like systems) execute a file starting with:
 <programlisting>#!/usr/bin/env ecell3-python
 import ecell
 [...]
-</programlisting>
+</programlisting> 
 	</para>
 
 
@@ -1094,7 +1094,7 @@ import ecell
 <computeroutput>[...]
 
 Configurations:
-
+ 
         PACKAGE         = ecell
         VERSION         = 3.2.0
         PYTHON          = /usr/bin/python
@@ -1204,7 +1204,7 @@ It automatically runs the program with the commandline options with '<parameter>
   <sect1>
     <title>&ecell; Python Library API</title>
 
-    <para>This section provides a list of some commonly used
+    <para>This section provides a list of some commonly used 
       classes in &ecell; Python library and their APIs.
       </para>
 
@@ -1276,7 +1276,7 @@ It automatically runs the program with the commandline options with '<parameter>
 
   </sect1>
 
-
+  
 
 
 </chapter>
@@ -1287,3 +1287,4 @@ mode: sgml
 sgml-parent-document: ("users-manual.xml" "book" "chapter")
 End:
 -->
+

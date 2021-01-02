@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,25 +14,25 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
 """
 
 __program__ = 'SBMLImporter'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -56,7 +56,7 @@ class SBMLImporter:
     def __init__( self, aSBMLDocument=None ):
 
         self.theSBMLDocument = None
-        
+
         if aSBMLDocument != None:
             self.loadSBML( aSBMLDocument )
 
@@ -79,20 +79,16 @@ class SBMLImporter:
             fatalerrorList = []
             for i in range( self.theSBMLDocument.getNumFatals() ):
                 fatalerrorList.append( self.theSBMLDocument.getFatal( i ) )
-    
-            self.theSBMLDocument = None
-            raise SBMLConvertError, \
-                  'This SBML document is invalid: %s' \
-                  % ( ', '.join( fatalerrorList ) )
 
+            self.theSBMLDocument = None
+            raise SBMLConvertError('This SBML document is invalid: {:s}'.format( ', '.join( fatalerrorList ) ) )
     # end of loadSBML
-    
+
 
     def convertSBMLToEML( self ):
 
         if not self.theSBMLDocument:
-            raise SBMLConvertError, 'No SBML document is defined'
-
+            raise SBMLConvertError('No SBML document is defined' )
         anEml = ecell.eml.Eml()
 
         aModelImporter = ModelImporter( self.theSBMLDocument )
@@ -101,7 +97,7 @@ class SBMLImporter:
         return anEml
 
     # end of convertSBMLToEML
-    
+
 
     def createSession( self, aSession=None ):
 
@@ -109,15 +105,14 @@ class SBMLImporter:
             aSession = ecell.Session( ecell.emc.Simulator() )
 
         if not self.theSBMLDocument:
-            raise SBMLConvertError, 'No SBML document is defined'
-
+            raise SBMLConvertError('No SBML document is defined' )
         anEml = self.convertSBMLToEML()
         aSession.loadModel( anEml ) # is this supported now?
 
         return aSession
 
     # createSession
-    
+
 
     def saveAsEML( self, filename ):
 
@@ -125,7 +120,7 @@ class SBMLImporter:
         anEml.save( filename )
 
     # end of saveAsEML
-    
+
 
 # end of SBMLImporter
 
@@ -134,7 +129,7 @@ class SBaseImporter:
 
 
     def __init__( self, rootobj, sbmlId=None ):
-        
+
         self.initialize( rootobj, sbmlId )
 
     # end of __init__
@@ -152,28 +147,28 @@ class SBaseImporter:
 
         import inspect
         caller = inspect.getouterframes( inspect.currentframe() )[ 0 ][ 3 ]
-        raise NotImplementedError( '%s must be implemented in sub class' % ( caller ) )
+        raise NotImplementedError( '{:s} must be implemented in sub class'.format( caller ) )
 
     # end of getSBase
-    
+
 
     def getFullID( self ):
 
         import inspect
         caller = inspect.getouterframes( inspect.currentframe() )[ 0 ][ 3 ]
-        raise NotImplementedError( '%s must be implemented in sub class' % ( caller ) )
+        raise NotImplementedError( '{:s} must be implemented in sub class'.format( caller ) )
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
         import inspect
         caller = inspect.getouterframes( inspect.currentframe() )[ 0 ][ 3 ]
-        raise NotImplementedError( '%s must be implemented in sub class' % ( caller ) )
+        raise NotImplementedError( '{:s} must be implemented in sub class'.format( caller ) )
 
     # end of writeEML
-    
+
 
 # end of SBaseImporter
 
@@ -186,7 +181,7 @@ class ModelImporter( SBaseImporter ):
         SBaseImporter.__init__( self, aSBMLDocument )
 
     # end of __init__
-    
+
 
     def initialize( self, aSBMLDocument, sbmlId=None ):
 
@@ -200,7 +195,7 @@ class ModelImporter( SBaseImporter ):
 
         aModel = self.rootobj.getModel()
         if not aModel:
-            raise SBMLConvertError, 'Model is not found'
+            raise SBMLConvertError('Model is not found' )
         else:
             return aModel
 
@@ -212,7 +207,7 @@ class ModelImporter( SBaseImporter ):
         return self.theSBMLIdManager.getNamespace()
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
@@ -220,9 +215,7 @@ class ModelImporter( SBaseImporter ):
         if not anEml.isEntityExist( fullIDString ):
             anEml.createEntity( 'System', fullIDString )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'System [%s] is already exist' % ( fullIDString )
-
+##             raise SBMLConvertError('System [{:s}] is already exist'.format( fullIDString ) )
         if anEml.getStepperList().count( ODE_STEPPER_ID ) == 0:
             anEml.createStepper( 'ODEStepper', ODE_STEPPER_ID )
 
@@ -242,7 +235,7 @@ class ModelImporter( SBaseImporter ):
             aSpeciesImporter.writeEML( anEml )
 
         for i in range( self.theSBase.getNumParameters() ):
-            aParameterImporter = ParameterImporter( self, i )        
+            aParameterImporter = ParameterImporter( self, i )
             aParameterImporter.writeEML( anEml )
 
         for i in range( self.theSBase.getNumReactions() ):
@@ -256,10 +249,9 @@ class ModelImporter( SBaseImporter ):
         if self.theSBase.getNumEvents() > 0 \
                or self.theSBase.getNumFunctionDefinitions() > 0 \
                or self.theSBase.getNumUnitDefinitions() > 0:
-            raise SBMLConvertError, 'Event, FunctionDefinition and UnitDefinition is not supported'
-        
+            raise SBMLConvertError('Event, FunctionDefinition and UnitDefinition is not supported' )
     # end of writeEML
-    
+
 
 # end of ModelImporter
 
@@ -268,21 +260,19 @@ class CompartmentImporter( SBaseImporter ):
 
 
     def __init__( self, aModelImporter, sbmlId ):
-        
+
         SBaseImporter.__init__( self, aModelImporter, sbmlId )
 
     # end of __init__
 
 
     def getSBase( self, sbmlId ):
-        
+
         aCompartment = self.rootobj.theSBase.getCompartment( sbmlId )
         if not aCompartment:
-            raise SBMLConvertError, \
-                  'Compartment [%s] is not found' % ( sbmlId )
+            raise SBMLConvertError('Compartment [{:s}] is not found'.format( sbmlId ) )
         elif not aCompartment.isSetId():
-            raise SBMLConvertError, \
-                  'Compartment [%s] has no id' % ( sbmlId )
+            raise SBMLConvertError('Compartment [{:s}] has no id'.format( sbmlId ) )
         else:
             return aCompartment
 
@@ -295,18 +285,18 @@ class CompartmentImporter( SBaseImporter ):
         return self.rootobj.theSBMLIdManager.getCompartmentFullID( sbmlId )
 
     # end of getFullID
-    
+
 
     def createEntity( self, anEml, fullIDString ):
 
         if anEml.isEntityExist( fullIDString ):
             return
-        
+
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if fullID[ 0 ] != ecell.ecs_constants.SYSTEM:
             return
 
-        if fullID[ 1 ] != '':        
+        if fullID[ 1 ] != '':
             newSysID = ecell.ecssupport.createFullIDFromSystemPath( fullID[ 1 ] )
             newSysIDString = ecell.ecssupport.createFullIDString( newSysID )
             if not anEml.isEntityExist( newSysIDString ):
@@ -315,7 +305,7 @@ class CompartmentImporter( SBaseImporter ):
         anEml.createEntity( 'System', fullIDString )
 
     # end of createEntity
-    
+
 
     def writeEML( self, anEml ):
 
@@ -324,9 +314,7 @@ class CompartmentImporter( SBaseImporter ):
             # Use not anEml.createEntity but self.createEntity
             self.createEntity( anEml, fullIDString )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'System [%s] already exists' % ( fullIDString )
-
+##             raise SBMLConvertError('System [{:s}] already exists'.format( fullIDString ) )
         ## ODEStepper is set as default
         if anEml.getStepperList().count( ODE_STEPPER_ID ) == 0:
             anEml.createStepper( 'ODEStepper', ODE_STEPPER_ID )
@@ -337,19 +325,17 @@ class CompartmentImporter( SBaseImporter ):
         if self.theSBase.isSetSize():
             fullID = ecell.ecssupport.createFullID( fullIDString )
             fullPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-            sizeFullIDString = 'Variable:%s:SIZE' % ( fullPath )
+            sizeFullIDString = 'Variable:{:s}:SIZE'.format( fullPath )
             if not anEml.isEntityExist( sizeFullIDString ):
                 anEml.createEntity( 'Variable', sizeFullIDString )
                 anEml.setEntityProperty( sizeFullIDString, 'Value', \
                                          [ str( self.theSBase.getSize() ) ] )
 ##             else:
-##                 raise SBMLConvertError, \
-##                       'Variable [%s] already exists' % ( sizeFullIDString )
-
+##                 raise SBMLConvertError('Variable [{:s}] already exists'.format( sizeFullIDString ) )
         else:
             fullID = ecell.ecssupport.createFullID( fullIDString )
             fullPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-            sizeFullIDString = 'Variable:%s:SIZE' % ( fullPath )
+            sizeFullIDString = 'Variable:{:s}:SIZE'.format( fullPath )
             if not anEml.isEntityExist( sizeFullIDString ):
                 anEml.createEntity( 'Variable', sizeFullIDString )
                 anEml.setEntityProperty( sizeFullIDString, 'Value', [ '1.0' ] )
@@ -378,17 +364,16 @@ class SpeciesImporter( SBaseImporter ):
 
         aSpecies = self.rootobj.theSBase.getSpecies( sbmlId )
         if not aSpecies:
-            raise SBMLConvertError, 'Species [%s] is not found' % ( sbmlId )
+            raise SBMLConvertError('Species [{:s}] is not found'.format( sbmlId ) )
         elif not aSpecies.isSetId():
-            raise SBMLConvertError, 'Species [%s] has no id' % ( sbmlId )
+            raise SBMLConvertError('Species [{:s}] has no id'.format( sbmlId ) )
         elif not aSpecies.isSetCompartment():
-            raise SBMLConvertError, \
-                  'Species [%s] has no compartment' % ( sbmlId )
+            raise SBMLConvertError('Species [{:s}] has no compartment'.format( sbmlId ) )
         else:
             return aSpecies
 
     # end of getSBase
-    
+
 
     def getFullID( self ):
 
@@ -396,7 +381,7 @@ class SpeciesImporter( SBaseImporter ):
         return self.rootobj.theSBMLIdManager.getSpeciesFullID( sbmlId )
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
@@ -404,9 +389,7 @@ class SpeciesImporter( SBaseImporter ):
         if not anEml.isEntityExist( fullIDString ):
             anEml.createEntity( 'Variable', fullIDString )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'Variable [%s] already exists' % ( fullIDString )
-            
+##             raise SBMLConvertError('Variable [{:s}] already exists'.format( fullIDString ) )
         if self.theSBase.isSetInitialAmount():
             initialAmount = self.theSBase.getInitialAmount()
             anEml.setEntityProperty( fullIDString, \
@@ -416,17 +399,14 @@ class SpeciesImporter( SBaseImporter ):
             compartment = self.theSBase.getCompartment()
             aCompartment = self.rootobj.theSBase.getCompartment( compartment )
             if not aCompartment:
-                raise SBMLConvertError, \
-                      'Compartment [%s] is not found' % ( compartment )
-
+                raise SBMLConvertError('Compartment [{:s}] is not found'.format( compartment ) )
             initialAmount = self.theSBase.getInitialConcentration() \
                             * aCompartment.getSize()
             anEml.setEntityProperty( fullIDString, \
                                      'Value', [ str( initialAmount ) ] )
 
 ##         else:
-##             raise SBMLConvertError, 'Species [%s] has neither initialAmount nor initialConcentration' % ( self.theSBase.getId() )
-
+##             raise SBMLConvertError('Species [{:s}] has neither initialAmount nor initialConcentration'.format( self.theSBase.getId() ) )
         if self.theSBase.isSetName():
             anEml.setEntityProperty( fullIDString, \
                                      'Name', [ self.theSBase.getName() ] )
@@ -444,19 +424,19 @@ class ParameterImporter( SBaseImporter ):
 
 
     def __init__( self, aModelImporter, sbmlId ):
-        
+
         SBaseImporter.__init__( self, aModelImporter, sbmlId )
 
     # end of __init__
 
 
     def getSBase( self, sbmlId ):
-        
+
         aParameter = self.rootobj.theSBase.getParameter( sbmlId )
         if not aParameter:
-            raise SBMLConvertError, 'Parameter [%s] is not found' % ( sbmlId )
+            raise SBMLConvertError('Parameter [{:s}] is not found'.format( sbmlId ) )
         elif not aParameter.isSetId():
-            raise SBMLConvertError, 'Parameter [%s] has no id' % ( sbmlId )
+            raise SBMLConvertError('Parameter [{:s}] has no id'.format( sbmlId ) )
         else:
             return aParameter
 
@@ -469,30 +449,26 @@ class ParameterImporter( SBaseImporter ):
         return self.rootobj.theSBMLIdManager.getParameterFullID( sbmlId )
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
-        fullIDString = self.getFullID()        
+        fullIDString = self.getFullID()
         if not anEml.isEntityExist( fullIDString ):
             anEml.createEntity( 'Variable', fullIDString )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'Variable [%s] is already exist' % ( fullIDString )
-        
+##             raise SBMLConvertError('Variable [{:s}] is already exist'.format( fullIDString ) )
         if self.theSBase.isSetValue():
             anEml.setEntityProperty( fullIDString, 'Value', \
                                      [ str( self.theSBase.getValue() ) ] )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'Parameter [%s] has no value' % ( self.theSBase.getId() )
-
+##             raise SBMLConvertError('Parameter [{:s}] has no value'.format( self.theSBase.getId() ) )
         if self.theSBase.isSetName():
             anEml.setEntityProperty( fullIDString, \
                                      'Name', [ self.theSBase.getName() ] )
 
     # end of writeEML
-    
+
 
 # end of ParameterImporter
 
@@ -506,7 +482,7 @@ class RuleImporter( SBaseImporter ):
 
 
     def __init__( self, aModelImporter, sbmlId ):
-        
+
         SBaseImporter.__init__( self, aModelImporter, sbmlId )
 
     # end of __init__
@@ -517,7 +493,7 @@ class RuleImporter( SBaseImporter ):
         SBaseImporter.initialize( self, aModelImporter, sbmlId )
 
         self.sbmlId = sbmlId
-        
+
         self.theExpression = None
         self.theVariableReferenceList = None
 
@@ -525,21 +501,18 @@ class RuleImporter( SBaseImporter ):
 
 
     def getSBase( self, sbmlId ):
-        
+
         aRule = self.rootobj.theSBase.getRule( sbmlId )
         if not aRule:
-            raise SBMLConvertError, 'Rule [%s] not found' % ( sbmlId )
+            raise SBMLConvertError('Rule [{:s}] not found'.format( sbmlId ) )
         if not aRule.isSetMath():
-            raise SBMLConvertError, 'Rule [%s] has no math' % ( sbmlId )
-
+            raise SBMLConvertError('Rule [{:s}] has no math'.format( sbmlId ) )
         # SBML_ASSIGNMENT_RULE or SBML_RATE_RULE
 ##         if aRule.getType() == 1 or aRule.getType() == 2:
         if type( aRule ) == libsbml.AssignmentRulePtr \
                or type( aRule ) == libsbml.RateRulePtr:
             if not aRule.isSetVariable():
-                raise SBMLConvertError, \
-                      'Rule [%d] has no variable' % ( sbmlId )
-            
+                raise SBMLConvertError('Rule [{:d}] has no variable'.format( sbmlId ) )
         return aRule
 
     # end of getSBase
@@ -550,7 +523,7 @@ class RuleImporter( SBaseImporter ):
         return self.rootobj.theSBMLIdManager.getRuleFullID( self.sbmlId )
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
@@ -569,12 +542,9 @@ class RuleImporter( SBaseImporter ):
                                          'StepperID', \
                                          [ PASSIVE_STEPPER_ID ] )
             else:
-                raise SBMLConvertError, \
-                      'Algebraic and Rate Rule are not supported'
+                raise SBMLConvertError('Algebraic and Rate Rule are not supported' )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'Process [%s] is already exist' % ( fullIDString )
-
+##             raise SBMLConvertError('Process [{:s}] is already exist'.format( fullIDString ) )
         self.initializeVariableReferenceList()
         anEml.setEntityProperty( fullIDString, \
                                  'Expression', [ self.theExpression ] )
@@ -582,14 +552,14 @@ class RuleImporter( SBaseImporter ):
                                  self.theVariableReferenceList )
 
     # end of writeEML
-    
+
 
     def initializeVariableReferenceList( self ):
 
         self.theVariableReferenceList = []
 
         formulaString = self.theSBase.getFormula()
-        
+
         anASTNode = libsbml.parseFormula( formulaString )
         self.__convertFormulaToExpression( anASTNode )
 
@@ -608,16 +578,14 @@ class RuleImporter( SBaseImporter ):
             if sbaseType == libsbml.SBML_SPECIES \
                    or sbaseType == libsbml.SBML_PARAMETER:
                 pass
-            
+
             elif sbaseType == libsbml.SBML_COMPARTMENT:
                 fullID = ecell.ecssupport.createFullID( fullIDString )
                 systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-                fullIDString = 'Variable:%s:SIZE' % ( systemPath )
+                fullIDString = 'Variable:{:s}:SIZE'.format( systemPath )
 
             else:
-                raise SBMLConvertError, \
-                      'SBase [%s] is not found' % ( variable )
-
+                raise SBMLConvertError('SBase [{:s}] is not found'.format( variable ) )
             self.__addVariableReference( fullIDString, 1 )
 
     # end of initializeVariableReferenceList
@@ -634,11 +602,10 @@ class RuleImporter( SBaseImporter ):
             if aVariableReference[ 1 ] == fullIDString:
 
                 if aVariableReference[ 2 ] != str( stoichiometry ):
-                    
+
 ##                     if not aVariableReference[ 2 ] == '0' \
 ##                            and not stoichiometry == 0:
-##                         raise SBMLConvertError, 'Unable to overwrite the stoichiometry for Variable [%s]' % ( fullID )
-
+##                         raise SBMLConvertError('Unable to overwrite the stoichiometry for Variable [{:s}]'.format( fullID ) )
                     coeff = int( aVariableReference[ 2 ] )
                     self.theVariableReferenceList[ i ][ 2 ] = str( stoichiometry + coeff )
                     return aVariableReference[ 0 ]
@@ -648,13 +615,10 @@ class RuleImporter( SBaseImporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if not fullID[ 0 ] == ecell.ecssupport.VARIABLE:
-            raise SBMLConvertError, \
-                  'The type of Entity [%s] must be Variable' % ( fullIDString )
-
+            raise SBMLConvertError('The type of Entity [{:s}] must be Variable'.format( fullIDString ) )
         ( name, sbaseType ) = self.rootobj.theSBMLIdManager.getIdFromFullID( fullIDString )
         if not name:
-            raise SBMLConvertError, 'There is no SBase corresponding Entity [%s]' % ( fullIDString )
-        
+            raise SBMLConvertError('There is no SBase corresponding Entity [{:s}]'.format( fullIDString ) )
         self.theVariableReferenceList.append( [ name, fullIDString, str( stoichiometry ) ] )
 
         return name
@@ -678,7 +642,7 @@ class RuleImporter( SBaseImporter ):
         elif numChildren == 0:
 
             if not anASTNode.isNumber():
-                
+
                 name = anASTNode.getName()
                 ( fullIDString, sbaseType ) \
                   = self.rootobj.theSBMLIdManager.searchFullIDFromId( name )
@@ -688,36 +652,35 @@ class RuleImporter( SBaseImporter ):
                     variableName = self.__addVariableReference( fullIDString )
 
                     fullID = ecell.ecssupport.createFullID( fullIDString )
-                    sizeName = self.__addVariableReference( 'Variable:%s:SIZE' % ( fullID[ 1 ] ) )
-                    
+                    sizeName = self.__addVariableReference( 'Variable:{:s}:SIZE'.format( fullID[ 1 ] ) )
+
                     anASTNode.setType( libsbml.AST_DIVIDE )
                     anASTNode.addChild( libsbml.ASTNode( libsbml.AST_NAME ) )
                     anASTNode.addChild( libsbml.ASTNode( libsbml.AST_NAME ) )
-                    anASTNode.getLeftChild().setName( '%s.Value' % ( variableName ) )
-                    anASTNode.getRightChild().setName( '%s.Value' % ( sizeName ) )
+                    anASTNode.getLeftChild().setName( '{:s}.Value'.format( variableName ) )
+                    anASTNode.getRightChild().setName( '{:s}.Value'.format( sizeName ) )
                     return anASTNode
-                    
+
                 elif sbaseType == libsbml.SBML_PARAMETER:
 
                     variableName = self.__addVariableReference( fullIDString )
 
-                    anASTNode.setName( '%s.Value' % ( variableName ) )
+                    anASTNode.setName( '{:s}.Value'.format( variableName ) )
                     return anASTNode
 
                 elif sbaseType == libsbml.SBML_COMPARTMENT:
 
                     fullID = ecell.ecssupport.createFullID( fullIDString )
                     systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-                    fullIDString = 'Variable:%s:SIZE' % ( systemPath )
-                    
+                    fullIDString = 'Variable:{:s}:SIZE'.format( systemPath )
+
                     variableName = self.__addVariableReference( fullIDString )
 
-                    anASTNode.setName( '%s.Value' % ( variableName ) )
+                    anASTNode.setName( '{:s}.Value'.format( variableName ) )
                     return anASTNode
 
                 else:
-                    raise SBMLConvertError, 'SBase [%s] not found' % ( name )
-
+                    raise SBMLConvertError('SBase [{:s}] not found'.format( name ) )
     # end of __convertFormulaToExpression
 
 
@@ -728,7 +691,7 @@ class ReactionImporter( SBaseImporter ):
 
 
     def __init__( self, aModelImporter, sbmlId ):
-        
+
         SBaseImporter.__init__( self, aModelImporter, sbmlId )
 
     # end of __init__
@@ -739,7 +702,7 @@ class ReactionImporter( SBaseImporter ):
         SBaseImporter.initialize( self, aModelImporter, sbmlId )
 
         self.theParameterDict = None
-        
+
         self.theExpression = None
         self.theVariableReferenceList = None
 
@@ -747,15 +710,14 @@ class ReactionImporter( SBaseImporter ):
 
 
     def getSBase( self, sbmlId ):
-        
+
         aReaction = self.rootobj.theSBase.getReaction( sbmlId )
         if not aReaction:
-            raise SBMLConvertError, 'Reaction [%s] is not found' % ( sbmlId )
+            raise SBMLConvertError('Reaction [{:s}] is not found'.format( sbmlId ) )
         elif not aReaction.isSetId():
-            raise SBMLConvertError, 'Reaction [%s] has no id' % ( sbmlId )
+            raise SBMLConvertError('Reaction [{:s}] has no id'.format( sbmlId ) )
         elif not aReaction.isSetKineticLaw():
-            raise SBMLConvertError, \
-                  'Reaction [%s] has no kinetic law' % ( sbmlId )
+            raise SBMLConvertError('Reaction [{:s}] has no kinetic law'.format( sbmlId ) )
         else:
             return aReaction
 
@@ -768,7 +730,7 @@ class ReactionImporter( SBaseImporter ):
         return self.rootobj.theSBMLIdManager.getReactionFullID( sbmlId )
 
     # end of getFullID
-    
+
 
     def writeEML( self, anEml ):
 
@@ -776,10 +738,8 @@ class ReactionImporter( SBaseImporter ):
         if not anEml.isEntityExist( fullID ):
             anEml.createEntity( 'ExpressionFluxProcess', fullID )
 ##         else:
-##             raise SBMLConvertError, \
-##                   'Process [%s] already exists' % ( fullID )
-        
-        self.initializeVariableReferenceList()    
+##             raise SBMLConvertError('Process [{:s}] already exists'.format( fullID ) )
+        self.initializeVariableReferenceList()
         anEml.setEntityProperty( fullID, \
                                  'Expression', [ self.theExpression ] )
         anEml.setEntityProperty( fullID, 'VariableReferenceList', \
@@ -805,13 +765,11 @@ class ReactionImporter( SBaseImporter ):
         for i in range( aKineticLaw.getNumParameters() ):
             aParameter = aKineticLaw.getParameter( i )
             if not aParameter.isSetId():
-                raise SBMLConvertError, \
-                      'Reaction [%s] is invalid' % ( self.theSBase.getId() )
+                raise SBMLConvertError('Reaction [{:s}] is invalid'.format( self.theSBase.getId() ) )
             elif not  aParameter.isSetValue():
-                raise SBMLConvertError, 'Parameter [%s] of Reaction [%s] has no value' % ( aParameter.getId(), self.theSBase.getId() )
-
+                raise SBMLConvertError('Parameter [{:s}] of Reaction [{:s}] has no value'.format( aParameter.getId(), self.theSBase.getId() ) )
             self.theParameterDict[ aParameter.getId() ] = aParameter.getValue()
-        
+
         formulaString = aKineticLaw.getFormula()
         anASTNode = libsbml.parseFormula( formulaString )
         self.__convertFormulaToExpression( anASTNode )
@@ -820,47 +778,37 @@ class ReactionImporter( SBaseImporter ):
             aReactant = self.theSBase.getReactant( i )
 
             if not aReactant.isSetSpecies():
-                raise SBMLConvertError, 'Species is not defined for Reactant [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-            
+                raise SBMLConvertError('Species is not defined for Reactant [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             ( fullIDString, sbaseType ) \
               = self.rootobj.theSBMLIdManager.searchFullIDFromId( aReactant.getSpecies() )
             if not ( sbaseType == libsbml.SBML_SPECIES \
                      or sbaseType == libsbml.SBML_PARAMETER \
                      or sbaseType == libsbml.SBML_COMPARTMENT ):
-                raise SBMLConvertError, \
-                      'SBase [%s] not found' % ( aReactant.getSpecies() )
-
+                raise SBMLConvertError('SBase [{:s}] not found'.format( aReactant.getSpecies() ) )
             if aReactant.isSetStoichiometryMath():
-                raise SBMLConvertError, 'Stoichiometry Math is not supported. Check Reactant [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-            
+                raise SBMLConvertError('Stoichiometry Math is not supported. Check Reactant [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             stoichiometry = aReactant.getStoichiometry()
             if stoichiometry != int( stoichiometry ):
-                raise SBMLConvertError, 'Stoichiometry must be integer. Check Reactant [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-            
+                raise SBMLConvertError('Stoichiometry must be integer. Check Reactant [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             variableName = self.__addVariableReference( fullIDString, \
                                                         -int( stoichiometry ) )
-            
+
         for i in range( self.theSBase.getNumProducts() ):
             aProduct = self.theSBase.getProduct( i )
 
             if not aProduct.isSetSpecies():
-                raise SBMLConvertError, 'Species is not defined for Product [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-
+                raise SBMLConvertError('Species is not defined for Product [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             ( fullIDString, sbaseType ) \
               = self.rootobj.theSBMLIdManager.searchFullIDFromId( aProduct.getSpecies() )
             if not ( sbaseType == libsbml.SBML_SPECIES \
                      or sbaseType == libsbml.SBML_PARAMETER \
                      or sbaseType == libsbml.SBML_COMPARTMENT ):
-                raise SBMLConvertError, \
-                      'SBase [%s] not found' % ( aProduct.getSpecies() )
-
+                raise SBMLConvertError('SBase [{:s}] not found'.format( aProduct.getSpecies() ) )
             if aProduct.isSetStoichiometryMath():
-                raise SBMLConvertError, 'Stoichiometry Math is not supported. Check Product [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-            
+                raise SBMLConvertError('Stoichiometry Math is not supported. Check Product [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             stoichiometry = aProduct.getStoichiometry()
             if stoichiometry != int( stoichiometry ):
-                raise SBMLConvertError, 'Stoichiometry must be integer. Check Product [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-            
+                raise SBMLConvertError('Stoichiometry must be integer. Check Product [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             variableName = self.__addVariableReference( fullIDString, \
                                                         int( stoichiometry ) )
 
@@ -869,16 +817,13 @@ class ReactionImporter( SBaseImporter ):
             aModifier = self.theSBase.getModifier( i )
 
             if not aModifier.isSetSpecies():
-                raise SBMLConvertError, 'Species is not defined for Modifier [%d] of Reaction [%s]' % ( i, self.theSBase.getId() )
-
+                raise SBMLConvertError('Species is not defined for Modifier [{:d}] of Reaction [{:s}]'.format( i, self.theSBase.getId() ) )
             ( fullIDString, sbaseType ) \
               = self.rootobj.theSBMLIdManager.searchFullIDFromId( aModifier.getSpecies() )
             if not ( sbaseType == libsbml.SBML_SPECIES \
                      or sbaseType == libsbml.SBML_PARAMETER \
                      or sbaseType == libsbml.SBML_COMPARTMENT ):
-                raise SBMLConvertError, \
-                      'SBase [%s] not found' % ( aModifier.getSpecies() )
-
+                raise SBMLConvertError('SBase [{:s}] not found'.format( aModifier.getSpecies() ) )
             variableName = self.__addVariableReference( fullIDString )
 
         self.theExpression = libsbml.formulaToString( anASTNode )
@@ -897,11 +842,10 @@ class ReactionImporter( SBaseImporter ):
             if aVariableReference[ 1 ] == fullIDString:
 
                 if aVariableReference[ 2 ] != str( stoichiometry ):
-                    
+
 ##                     if not aVariableReference[ 2 ] == '0' \
 ##                            and not stoichiometry == 0:
-##                         raise SBMLConvertError, 'Unable to overwrite the stoichiometry for Variable [%s]' % ( fullID )
-
+##                         raise SBMLConvertError('Unable to overwrite the stoichiometry for Variable [{:s}]'.format( fullID ) )
                     coeff = int( aVariableReference[ 2 ] )
                     self.theVariableReferenceList[ i ][ 2 ] = str( stoichiometry + coeff )
                     return aVariableReference[ 0 ]
@@ -911,14 +855,11 @@ class ReactionImporter( SBaseImporter ):
 
         fullID = ecell.ecssupport.createFullID( fullIDString )
         if not fullID[ 0 ] == ecell.ecssupport.VARIABLE:
-            raise SBMLConvertError, \
-                  'The type of Entity [%s] must be Variable' % ( fullIDString )
-
+            raise SBMLConvertError('The type of Entity [{:s}] must be Variable'.format( fullIDString ) )
         ( name, sbaseType ) = self.rootobj.theSBMLIdManager.getIdFromFullID( fullIDString )
-            
+
         if not name:
-            raise SBMLConvertError, 'There is no SBase corresponding Entity [%s]' % ( fullIDString )
-        
+            raise SBMLConvertError('There is no SBase corresponding Entity [{:s}]'.format( fullIDString ) )
         self.theVariableReferenceList.append( [ name, fullIDString, str( stoichiometry ) ] )
 
         return name
@@ -954,39 +895,38 @@ class ReactionImporter( SBaseImporter ):
                     variableName = self.__addVariableReference( fullIDString )
 
                     fullID = ecell.ecssupport.createFullID( fullIDString )
-                    sizeName = self.__addVariableReference( 'Variable:%s:SIZE' % ( fullID[ 1 ] ) )
-                    
+                    sizeName = self.__addVariableReference( 'Variable:{:s}:SIZE'.format( fullID[ 1 ] ) )
+
                     anASTNode.setType( libsbml.AST_DIVIDE )
                     anASTNode.addChild( libsbml.ASTNode( libsbml.AST_NAME ) )
                     anASTNode.addChild( libsbml.ASTNode( libsbml.AST_NAME ) )
-                    anASTNode.getLeftChild().setName( '%s.Value' % ( variableName ) )
-                    anASTNode.getRightChild().setName( '%s.Value' % ( sizeName ) )
+                    anASTNode.getLeftChild().setName( '{:s}.Value'.format( variableName ) )
+                    anASTNode.getRightChild().setName( '{:s}.Value'.format( sizeName ) )
                     return anASTNode
-                    
+
                 elif sbaseType == libsbml.SBML_PARAMETER:
 
                     variableName = self.__addVariableReference( fullIDString )
 
-                    anASTNode.setName( '%s.Value' % ( variableName ) )
+                    anASTNode.setName( '{:s}.Value'.format( variableName ) )
                     return anASTNode
 
                 elif sbaseType == libsbml.SBML_COMPARTMENT:
 
                     fullID = ecell.ecssupport.createFullID( fullIDString )
                     systemPath = ecell.ecssupport.createSystemPathFromFullID( fullID )
-                    fullIDString = 'Variable:%s:SIZE' % ( systemPath )
-                    
+                    fullIDString = 'Variable:{:s}:SIZE'.format( systemPath )
+
                     variableName = self.__addVariableReference( fullIDString )
 
-                    anASTNode.setName( '%s.Value' % ( variableName ) )
+                    anASTNode.setName( '{:s}.Value'.format( variableName ) )
                     return anASTNode
 
                 elif self.theParameterDict.has_key( name ):
                     return anASTNode
 
                 else:
-                    raise SBMLConvertError, 'Reaction [%s] has no parameter [%s]' % ( self.theSBase.getId(), name )
-                
+                    raise SBMLConvertError('Reaction [{:s}] has no parameter [{:s}]'.format( self.theSBase.getId(), name ) )
     # end of __convertFormulaToExpression
 
 
@@ -1006,7 +946,7 @@ if __name__ == '__main__':
           = os.path.splitext( os.path.basename( filename ) )
 
         aSBMLImporter = SBMLImporter.SBMLImporter( filename )
-        aSBMLImporter.saveAsEML( '%s.eml' % ( basenameString ) )
+        aSBMLImporter.saveAsEML( '{:s}.eml'.format( basenameString ) )
 
     # end of main
 

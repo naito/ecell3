@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 # -----------------------------------------------------------------------------
 #  expressionparser.py
@@ -77,7 +77,7 @@ t_COMMA   = r'.'
 
 def t_NUMBER(t):
     r' (\d+(\.\d*)?|\d*\.\d+)([eE][+-]?\d+)? '
-        
+
     return t
 
 
@@ -87,11 +87,11 @@ t_ignore = " \t"
 def t_newline(t):
     r'\n+'
     t.lineno += t.value.count("\n")
-    
+
 def t_error(t):
-    print "Illegal character '%s'" % t.value[0]
+    print( "Illegal character '{}'".format( t.value[0] ))
     t.skip(1)
-    
+
 
 # Parsing rules
 
@@ -143,7 +143,7 @@ def p_expression_arguments(t):
                  | expression
                  | empty'''
 #    print "arguments"
-    if len(t.slice) == 4: 
+    if len(t.slice) == 4:
         t[0] = str( t[1] + t[2] + t[3] )
     else:
         t[0] = str( t[1] )
@@ -168,7 +168,7 @@ def p_expression_system_function(t):
                 t[0] = '(' + aCompartmentID + '*N_A)'
 
             else:
-                raise AttributeError, "getSuperSystem attribute must be Size or SizeN_A"
+                raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
         else:
 
@@ -178,7 +178,7 @@ def p_expression_system_function(t):
 
                     aFastColon = aVariableReference[1].index( ':' )
                     aLastColon = aVariableReference[1].rindex( ':' )
-                    
+
                     aSystemPath = aVariableReference[1][aFastColon+1:aLastColon]
 
                     if ( aSystemPath == '.' ):
@@ -195,7 +195,7 @@ def p_expression_system_function(t):
                             t[0] = '(' + aCompartmentID + '*N_A)'
 
                         else:
-                            raise AttributeError, "getSuperSystem attribute must be Size or SizeN_A"
+                            raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
                     else:
 
@@ -211,23 +211,23 @@ def p_expression_system_function(t):
                             t[0] = '(' + aCompartmentID + '*N_A)'
 
                         else:
-                            raise AttributeError,"getSuperSystem attribute must be Size or SizeN_A"
+                            raise AttributeError( "getSuperSystem attribute must be Size or SizeN_A" )
 
     else:
-        raise TypeError, str( t[1] ) + " doesn't have " + str( t[3] )
+        raise TypeError( str( t[1] ) + " doesn't have " + str( t[3] ) )
 
-            
+
 def p_expression_function(t):
     'Function : NAME LPAREN arguments RPAREN'
 
     global aDelayFlag
-    
+
     if ( t[1] == 'delay' ):
         aDelayFlag = True
-        
+
     t[0] = str( t[1] + t[2] + t[3] + t[4] )
 
-    
+
 def p_expression_variablereference(t):
     'VariableReference : NAME COMMA NAME'
 #    print "VariableReference"
@@ -239,14 +239,14 @@ def p_expression_variablereference(t):
 
             aFastColon = aVariableReference[1].index( ':' )
             aLastColon = aVariableReference[1].rindex( ':' )
-            
+
             aSystemPath = aVariableReference[1][aFastColon+1:aLastColon]
-            aVariable = aVariableReference[1][aLastColon+1:]            
+            aVariable = aVariableReference[1][aLastColon+1:]
 
 
             # --------------------------------------------------------------
             # If there are some VariableReference which call getValue()
-            # function "ID.Value", this VariableReference must be 
+            # function "ID.Value", this VariableReference must be
             # distingish between [Species] and [Parameter].
             #
             # If it is the [Species], it must be converted into
@@ -254,13 +254,13 @@ def p_expression_variablereference(t):
             #
             # In case of [Parameter], it must be without change.
             # --------------------------------------------------------------
-            
+
             # VariableReference attribute is Value
             if ( aSystemPath == '/SBMLParameter' ):
 
                 if( ( ( 'SBMLParameter__' + aVariable )\
                       in theID_Namespace ) == False ):
-                        
+
                     aVariableID.append( aVariable )
                 else:
                     aVariableID.append( 'SBMLParameter__' + aVariable )
@@ -270,7 +270,7 @@ def p_expression_variablereference(t):
 
                 if( ( ( 'SBMLParameter__' + aVariable )\
                       in theID_Namespace ) == False ):
-                        
+
                     aVariableID.append( aVariable )
                 else:
                     aVariableID.append( 'SBMLParameter__' + aVariable )
@@ -292,9 +292,9 @@ def p_expression_variablereference(t):
                         aVariableID.append( getVariableID( aVariable,\
                                                            aSystemPath[1:],\
                                                            t[3] ) )
-                        
+
     if ( aVariableID == [] ):
-        raise NameError, "not find VariableReference ID"
+        raise NameError( "not find VariableReference ID" )
 
     t[0] = aVariableID[0]
 
@@ -308,7 +308,7 @@ def p_empty(t):
     t[0] = ''
 
 def p_error(t):
-    print "Syntax error at '%s'" % t.value
+    print( "Syntax error at '{}'".format( t.value ))
 
 
 
@@ -334,8 +334,8 @@ def getVariableID( aVariableID, aPath, aType ):
         aSystem = aPath[aLastSlash+1:]
 
     # in case of Compartment
-    if( aVariableID == 'SIZE' ): 
-        
+    if( aVariableID == 'SIZE' ):
+
         if ( aPath == '' ): # Root system
             return 'default'
 
@@ -344,23 +344,23 @@ def getVariableID( aVariableID, aPath, aType ):
                                 aPath.replace( '/', '__' ) ) ):
 
                 return 'default__' + aPath.replace( '/', '__' )
-            else:                                    
+            else:
                 return aSystem
 
     # in case of Species
     else:
         if ( aPath == '' ): # Root system
-            
+
             if( isID_Namespace( 'default__' + aVariableID ) ):
-                
+
                 aVariableID = 'default__' + aVariableID
 
             aSystem = 'default'
-            
+
         else: # other system
             if( isID_Namespace( aPath.replace( '/', '__' ) + '__' +\
                                 aVariableID ) ):
-                
+
                 aVariableID = aPath.replace( '/', '__' ) + '__' +\
                               aVariableID
 
@@ -368,7 +368,7 @@ def getVariableID( aVariableID, aPath, aType ):
     if( aType == 'Value' ):
 
         return '(' + aVariableID + '/' + aSystem + '/N_A)'
-        
+
     elif( aType == 'NumberConc' ):
 
         return '(' + aVariableID + '/N_A)'
@@ -378,23 +378,23 @@ def getVariableID( aVariableID, aPath, aType ):
         return aVariableID
 
     else:
-        raise AttributeError,"VariableReference attribute must be MolarConc, NumberConc and Value"
-                    
+        raise AttributeError( "VariableReference attribute must be MolarConc, NumberConc and Value" )
+
 
 
 def convertExpression( anExpression, aVariableReferenceListObject, aReactionPathObject, ID_Namespace, debug=0 ):
-  
+
     global aVariableReferenceList
     global aReactionPath
     global aDelayFlag
     global theID_Namespace
-    
+
     aVariableReferenceList = aVariableReferenceListObject
     aReactionPath = aReactionPathObject
     aDelayFlag = False
     theID_Namespace = ID_Namespace
-    
-    aLexer = lex.lex( lextab="expressionlextab" )    
+
+    aLexer = lex.lex( lextab="expressionlextab" )
     aParser = yacc.yacc( optimize=1, tabmodule="expressionparsetab" )
 
     return [ aParser.parse( anExpression, lexer=aLexer, debug=debug ),

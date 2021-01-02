@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -90,7 +90,7 @@ class PluginModule:
 
         aConstructor = self.theModule.__dict__[self.theName]
         anArgumentTuple = ( self.theDirectoryName,  data, pluginManager, rootWidget )
-        instance = apply( aConstructor, anArgumentTuple )
+        instance = aConstructor(*anArgumentTuple)
         instance.theParent = parent
         return instance
     

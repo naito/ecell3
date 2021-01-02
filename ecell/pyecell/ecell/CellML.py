@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -182,7 +182,7 @@ class CellML( object ):
             _sc_ls =[ _sc for _sc in self.stoichiometry_list if CellML._is_same_variable_address( _sc.variable_address, va ) ]
             
             if len( _sc_ls ) != 1:
-                raise TypeError, "{0} must be included just once in '{1}'".format( self.variable, self.math.do.math.get_expression_str() )
+                raise TypeError("{0} must be included just once in '{1}'".format( self.variable, self.math.do.math.get_expression_str() ))
             
             _sc_ls.pop().coefficient = coefficient
 
@@ -215,7 +215,7 @@ class CellML( object ):
         elif self.root_node.tag == '{http://www.cellml.org/cellml/1.1#}model':
             self.namespace =  'http://www.cellml.org/cellml/1.1#'
         else:
-            raise TypeError, "CellML version is not specified."
+            raise TypeError("CellML version is not specified.")
 
         self.tag = dict(
             
@@ -273,7 +273,7 @@ class CellML( object ):
         for component_node in self.root_node.iterfind( './/' + self.tag[ 'component' ] ):
             
             if not self._has_name( component_node ):
-                raise TypeError, "Component must have name attribute."
+                raise TypeError("Component must have name attribute.")
             else:
                 _component_name = component_node.get( 'name' )
             
@@ -283,7 +283,7 @@ class CellML( object ):
             for variable_node in component_node.iterfind( './' + self.tag[ 'variable' ] ):
                 
                 if not self._has_name( variable_node ):
-                    raise TypeError, "Variable must have name attribute. ( in component: %s )" % component_node.get( 'name' )
+                    raise TypeError("Variable must have name attribute. ( in component: %s )" % component_node.get( 'name' ))
                 
                 _variables.append( self.get_local_variable( variable_node ) )
             
@@ -339,10 +339,10 @@ class CellML( object ):
     def _dump_components( self ):
         
         for c in self.components:
-            print '\ncomponent: {0.name}'.format( c )
-            print '  variables:'
+            print('\ncomponent: {0.name}'.format( c ))
+            print('  variables:')
             for v in c.variables:
-                print '    name: {0.name:<16}  public_interface: {0.public_interface:<4}  connection: {0.connection}'.format( v )
+                print('    name: {0.name:<16}  public_interface: {0.public_interface:<4}  connection: {0.connection}'.format( v ))
 
     ##-------------------------------------------------------------------------------------------------
     ##-------------------------------------------------------------------------------------------------
@@ -365,7 +365,7 @@ class CellML( object ):
             
             # groupエレメントの子に、relationship_refエレメントがなければエラー
             if gn.find( './' + self.tag[ 'relationship_ref' ] ) == None:
-                raise TypeError, "<group> must have <relationship_ref> sub node."
+                raise TypeError("<group> must have <relationship_ref> sub node.")
             
             # <group relationship='containment'> に対する処理
             if gn.find( './' + self.tag[ 'relationship_ref' ] ).get( 'relationship' ) == 'containment':
@@ -373,7 +373,7 @@ class CellML( object ):
                 for top_level_cr in gn.iterfind( './' + self.tag[ 'component_ref' ] ):
                     
                     if top_level_cr.get( 'component' ) == None:
-                        raise TypeError, "<component_ref> must have 'component' attribute."
+                        raise TypeError("<component_ref> must have 'component' attribute.")
                     
                     # print top_level_cr.get( 'component' )
                     self.containment_hierarchies[ str( top_level_cr.get( 'component' ) ) ] = \
@@ -392,7 +392,7 @@ class CellML( object ):
         
         for child_cr in cr.iterfind( './' + self.tag[ 'component_ref' ] ):
             if child_cr.get( 'component' ) == None:
-                raise TypeError, "<component_ref> must have 'component' attribute."
+                raise TypeError("<component_ref> must have 'component' attribute.")
             
             cr_dict[ str( child_cr.get( 'component' ) ) ] = self._get_component_ref_dict( child_cr )
         
@@ -412,10 +412,10 @@ class CellML( object ):
     def _dump_containment_hierarchies( self ):
         
         depth = 0
-        print '\n########################################################\nhierarchie:\n'
+        print('\n########################################################\nhierarchie:\n')
         
-        for c, sub in self.containment_hierarchies.iteritems():
-            print '{0}{1}'.format( ''.join( [ '  ' ] * depth ), c )
+        for c, sub in self.containment_hierarchies.items():
+            print('{0}{1}'.format( ''.join( [ '  ' ] * depth ), c ))
             
             self._dump_containment_hierarchies_recursive( sub, depth )
 
@@ -424,8 +424,8 @@ class CellML( object ):
         
         depth += 1
         
-        for c, sub in node.iteritems():
-            print '{0}{1}'.format( ''.join( [ '  ' ] * depth ), c )
+        for c, sub in node.items():
+            print('{0}{1}'.format( ''.join( [ '  ' ] * depth ), c ))
             
             self._dump_containment_hierarchies_recursive( sub, depth )
 
@@ -450,7 +450,7 @@ class CellML( object ):
             map_variables_iter  = ce.iterfind( './' + self.tag[ 'map_variables' ] )
             
             if None in ( map_components, map_variables_iter ):
-                raise TypeError, "<connection> must have both of <map_components> and <map_variables> sub nodes."
+                raise TypeError("<connection> must have both of <map_components> and <map_variables> sub nodes.")
             
             for map_variables in map_variables_iter:
                 
@@ -510,14 +510,14 @@ class CellML( object ):
     ##-------------------------------------------------------------------------------------------------
     def _dump_connections( self ):
         
-        print '\n########################################################\nconnection:\n'
+        print('\n########################################################\nconnection:\n')
         
         for cn in self.connections:
             # cn for connection list
             for va in cn:
                 _indent = ''.join( [' '] * ( 60 - len( va.component ) - len( va.name ) ) )
-                print '  {0.component}:{0.name}{1}{2}'.format( va, _indent, self._get_local_variable_by_variable_address( va ).public_interface )
-            print ''
+                print('  {0.component}:{0.name}{1}{2}'.format( va, _indent, self._get_local_variable_by_variable_address( va ).public_interface ))
+            print('')
 
 
     ##-------------------------------------------------------------------------------------------------
@@ -574,7 +574,7 @@ class CellML( object ):
             return genuine.pop( 0 )
         
         else:
-            raise TypeError, "Exact 1 variable among connection must be set public_interface = 'out'."
+            raise TypeError("Exact 1 variable among connection must be set public_interface = 'out'.")
 
     ##-------------------------------------------------------------------------------------------------
     def _get_local_variable_by_variable_address( self, variable_address ):
@@ -636,28 +636,28 @@ class CellML( object ):
                     break
             
             if not _flag:
-                raise TypeError, "gloval variable for [ {0}:{1} ] is not found.".format( gm.component, ci.text )
+                raise TypeError("gloval variable for [ {0}:{1} ] is not found.".format( gm.component, ci.text ))
         
         gm.math.variable = gm.math.get_equation_variable()
 
     ##-------------------------------------------------------------------------------------------------
     def _dump_global_variables( self ):
         
-        print '\n########################################################\nglobal_variables:\n'
+        print('\n########################################################\nglobal_variables:\n')
         
         for gv in self.global_variables:
             _indent = ''.join( [' '] * ( 60 - len( gv.component ) - len( gv.name ) ) )
-            print '  {0.component}:{0.name}{1}initial value = {0.initial_value}'.format( gv, _indent )
-        print ''
+            print('  {0.component}:{0.name}{1}initial value = {0.initial_value}'.format( gv, _indent ))
+        print('')
 
     ##-------------------------------------------------------------------------------------------------
     def _dump_global_maths( self ):
         
-        print '\n########################################################\nglobal_maths:\n'
+        print('\n########################################################\nglobal_maths:\n')
         
         for gm in self.global_maths:
-            print '  {0}\n'.format( gm.get_expression_str() )
-        print ''
+            print('  {0}\n'.format( gm.get_expression_str() ))
+        print('')
 
 
     ##-------------------------------------------------------------------------------------------------
@@ -715,7 +715,7 @@ class CellML( object ):
         m = [ _m for _m in c.maths if ( _m.type == CELLML_MATH_ASSIGNMENT_EQUATION ) and ( _m.variable == va.name ) ]
         
         if len( m ) >= 2:
-            raise TypeError, "multiple maths describe variable '{0.name}' in component '{0.component}'.".format( va )
+            raise TypeError("multiple maths describe variable '{0.name}' in component '{0.component}'.".format( va ))
         
         elif len( m ) == 0:
             return False
@@ -743,7 +743,7 @@ class CellML( object ):
         _value = None
         
         if math.type != CELLML_MATH_ASSIGNMENT_EQUATION:
-            raise TypeError, "_calc_math(): math.type must be assignment equation. ({0.component}:{0.name})".format( va )
+            raise TypeError("_calc_math(): math.type must be assignment equation. ({0.component}:{0.name})".format( va ))
         
         if   element.tag == math.tag[ 'cn' ]:
 #            print '_calc_math( {0.component}:{0.name} )  <cn>'.format( va )
@@ -777,7 +777,7 @@ class CellML( object ):
             _value = self._calc_math_piecewise( math, element, va )
         
         else:
-            raise TypeError, "_calc_math(): element tag '{0._get_tag_without_namespace(0.root_node.tag)}' is not implemented.".format( math )
+            raise TypeError("_calc_math(): element tag '{0._get_tag_without_namespace(0.root_node.tag)}' is not implemented.".format( math ))
         
 #        if element == math.right_side:
 #            print '_calc_math( {0.component}:{0.name} ) = {1}'.format( va, _value )
@@ -955,7 +955,7 @@ class CellML( object ):
                 return 0
         
         else:
-            raise TypeError, "_calc_math_apply(): tag '{0}' not cought in {1.component}:{1.name}".format( tag, va )
+            raise TypeError("_calc_math_apply(): tag '{0}' not cought in {1.component}:{1.name}".format( tag, va ))
             return None
 
 
@@ -986,16 +986,16 @@ class CellML( object ):
     ##-------------------------------------------------------------------------------------------------
     def _divide_polynomial_ode( self ):
         
-        print '\n########################################################\ndivided_odes:\n'
+        print('\n########################################################\ndivided_odes:\n')
         
         for rate_eq in [ gm for gm in self.global_maths if gm.math.type == CELLML_MATH_RATE_EQUATION ]:
 #            print '  {0}\n'.format( rate_eq.get_expression_str() )
             self._get_primary_terms( rate_eq )
         
-        print ''
+        print('')
         
         for do in self.divided_odes:
-            print '  {0:<16} : {1}\n'.format( do.variable, do.math.get_expression_str() )
+            print('  {0:<16} : {1}\n'.format( do.variable, do.math.get_expression_str() ))
         
         #self._integrate_terms()
 
@@ -1635,7 +1635,7 @@ class MathML( object ):
         left_side_Element = self._get_left_side_Element()
         
         if left_side_Element == None:
-            raise TypeError, "Left side of equation is not found."
+            raise TypeError("Left side of equation is not found.")
         
         tags = []
         
@@ -1643,7 +1643,7 @@ class MathML( object ):
             
             tags.append( element.tag )
         
-        for type, tag_pattern in self.tag_pattern.iteritems():
+        for type, tag_pattern in self.tag_pattern.items():
             if tags in tag_pattern:
                 return type
         
@@ -1655,7 +1655,7 @@ class MathML( object ):
         left_side_Element = self._get_left_side_Element()
         
         if left_side_Element == None:
-            raise TypeError, "Left side of equation is not found."
+            raise TypeError("Left side of equation is not found.")
         
         if left_side_Element.tag == self.tag[ 'apply' ]:  # differential equasion
             return left_side_Element.findall( './*' ).pop().text
@@ -1778,7 +1778,7 @@ class MathML( object ):
                 children = sub_element.findall( './*' )
                 
                 if len( children ) != 2:
-                    raise TypeError, '<piece> element must have exactly 2 children.'
+                    raise TypeError('<piece> element must have exactly 2 children.')
                 
                 piece_Expressions.append( 
                     dict(
@@ -1790,17 +1790,17 @@ class MathML( object ):
             elif sub_element.tag == self.tag[ 'otherwise' ]:
                 
                 if otherwise_Expression:
-                    raise TypeError, '<piecewise> element must have 0 or 1 <otherwise> child.'
+                    raise TypeError('<piecewise> element must have 0 or 1 <otherwise> child.')
                 
                 child = sub_element.findall( './*' )
                 
                 if len( child ) != 1:
-                    raise TypeError, '<otherwise> element must have exactly 1 child.'
+                    raise TypeError('<otherwise> element must have exactly 1 child.')
                 
                 otherwise_Expression = self._convert_element_to_Expression( child.pop() )
             
             else:
-                raise TypeError, '<piecewise> element\'s child must be <piece> or <otherwise> element.'
+                raise TypeError('<piecewise> element\'s child must be <piece> or <otherwise> element.')
             
         return self._arrange_piecewise_Expression( piece_Expressions, otherwise_Expression )
     
@@ -1822,7 +1822,7 @@ class MathML( object ):
         # Binary arithmetic
         elif tag == self.tag[ 'divide' ]:
             if len( children_Expressions ) != 2:
-                raise TypeError, 'Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = ( 
                 self._get_parenthesized_expression_string( 4, children_Expressions[ 0 ] ), 
@@ -1833,7 +1833,7 @@ class MathML( object ):
         
         elif tag == self.tag[ 'minus' ]:
             if len( children_Expressions ) != 2:
-                raise TypeError, 'Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag ))
             
 #            children_expression_strings = self._get_parenthesized_expression_strings( self.operator_priority[ tag ], children_Expressions )
             children_expression_strings = ( 
@@ -1845,7 +1845,7 @@ class MathML( object ):
         # Nary arithmetic
         elif tag in self.tag_group[ 'nary_arith' ]:
             if len( children_Expressions ) < 2:
-                raise TypeError, 'Operator "%s" must have >= 2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have >= 2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = self._get_parenthesized_expression_strings( self.operator_priority[ tag ], children_Expressions )
             operator = ' %s ' % self.operator_str[ tag ]
@@ -1855,7 +1855,7 @@ class MathML( object ):
         elif ( tag in self.tag_group[ 'unary_func' ] ) or \
              ( tag in self.tag_group[ 'unary_binary_func' ] and len( children_Expressions ) == 1 ):
             if len( children_Expressions ) != 1:
-                raise TypeError, 'Operator "%s" must have exactly 1 child.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have exactly 1 child.' % self._get_tag_without_namespace( tag ))
             
             return self.Expression( '%s( %s )' % ( self.operator_str[ tag ], 
                                                    children_Expressions[ 0 ].string ), 
@@ -1864,7 +1864,7 @@ class MathML( object ):
         # Binary function
         elif tag in self.tag_group[ 'binary_func' ]:
             if len( children_Expressions ) != 2:
-                raise TypeError, 'Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have exactly 2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = self._get_parenthesized_expression_strings( 0, children_Expressions )
             
@@ -1876,7 +1876,7 @@ class MathML( object ):
         # Binary function - root
         elif tag == self.tag[ 'root' ]:
             if len( children_Expressions ) != 2:
-                raise TypeError, 'Operator "%s" must have exactly 1 or 2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have exactly 1 or 2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = self._get_parenthesized_expression_strings( 0, children_Expressions )
             
@@ -1888,7 +1888,7 @@ class MathML( object ):
         # Nary nest function
         elif tag in self.tag_group[ 'nary_nest_func' ]:
             if len( children_Expressions ) < 2:
-                raise TypeError, 'Operator "%s" must have >=2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have >=2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = self._get_parenthesized_expression_strings( 0, children_Expressions )
             
@@ -1907,7 +1907,7 @@ class MathML( object ):
         # Nary chain function
         elif tag in self.tag_group[ 'nary_chain_func' ]:
             if len( children_Expressions ) < 2:
-                raise TypeError, 'Operator "%s" must have >=2 children.' % self._get_tag_without_namespace( tag )
+                raise TypeError('Operator "%s" must have >=2 children.' % self._get_tag_without_namespace( tag ))
             
             children_expression_strings = self._get_parenthesized_expression_strings( 0, children_Expressions )
             
@@ -1937,7 +1937,7 @@ class MathML( object ):
         # diff
         elif tag == self.tag[ 'diff' ]:
             if len( children_Expressions ) != 2:
-                raise TypeError, '"diff" element must have exactly 2 children.'
+                raise TypeError('"diff" element must have exactly 2 children.')
             
             ci   = children.pop().text
             bvar = children.pop()

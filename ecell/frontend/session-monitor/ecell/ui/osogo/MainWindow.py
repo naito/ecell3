@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -160,7 +160,7 @@ class MainWindow(OsogoWindow):
     """
     def __init__( self, aSession ):
         # calls super class's constructor
-        OsogoWindow.__init__( self, self, 'MainWindow.glade' )
+        OsogoWindow.__init__( self, self, 'MainWindow.ui' )
 
                 # -------------------------------------
         # stores pointer to Session
@@ -221,7 +221,8 @@ class MainWindow(OsogoWindow):
         # creates MessageWindow 
         # -------------------------------------
         self.theMessageWindow.openWindow()
-        self['messagearea'].add(self.theMessageWindow['top_frame'])
+        self.theMessageWindow['top_frame'].reparent( self['messagearea'] )
+        self.theMessageWindow['MessageWindow'].destroy()
 
         self.theSession.setMessageMethod( self.__printMessage )
         self.__expose(None,None)
@@ -320,8 +321,8 @@ class MainWindow(OsogoWindow):
         # -------------------------------------
 
         self.theEntityListWindow = self.theSession.createEntityListWindow( 'top_frame', self['statusbar'] )
-        self['entitylistarea'].add( self.theEntityListWindow['top_frame'] )
-
+        self.theEntityListWindow['top_frame'].reparent( self['entitylistarea'] )
+        self.theEntityListWindow['EntityListWindow'].destroy()
 
         # --------------------
         # set Timer entry
@@ -1086,9 +1087,3 @@ class MainWindow(OsogoWindow):
         """
         pass
         #return self.__deleted( *arg )
-
-
-
-
-
-

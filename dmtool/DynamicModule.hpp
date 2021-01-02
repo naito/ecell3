@@ -2,8 +2,8 @@
 //
 //       This file is part of the E-Cell System
 //
-//       Copyright (C) 1996-2021 Keio University
-//       Copyright (C) 2008-2021 RIKEN
+//       Copyright (C) 1996-2020 Keio University
+//       Copyright (C) 2008-2020 RIKEN
 //       Copyright (C) 2005-2009 The Molecular Sciences Institute
 //
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -13,17 +13,17 @@
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
-//
+// 
 // E-Cell System is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public
 // License along with E-Cell System -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
+// 
 //END_HEADER
 
 #ifndef __DYNAMICMODULE_HPP
@@ -46,18 +46,18 @@ class DynamicModuleInfo;
 /**
   Common base class of DynamicModule and SharedDynamicModule
 */
-
+  
 template < class T >
 class DynamicModule
 {
-public:
+public:        
 
     DynamicModule( enum DynamicModuleType aType ): theType( aType )
     {
     }
 
     virtual ~DynamicModule() {}
-
+ 
     virtual const char* getModuleName() const = 0;
 
     virtual const char* getFileName() const = 0;
@@ -84,7 +84,7 @@ public:
 
     typedef DynamicModule< T > Base;
 
-public:
+public:        
 
     StaticDynamicModule( enum DynamicModuleType aType,
                    DynamicModuleDescriptor const& desc )
@@ -105,7 +105,7 @@ public:
     {
         return *theDescriptor;
     }
-
+ 
     virtual const char* getModuleName() const
     {
         return theDescriptor->moduleName;

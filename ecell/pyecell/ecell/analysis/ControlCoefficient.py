@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'ControlCoefficient'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -141,11 +141,11 @@ def scaleControlCoefficient( pathwayProxy, unscaledCCCMatrix, unscaledFCCMatrix 
     # calculate initial activities and get initial values
     processList = pathwayProxy.getProcessList()
     variableList = pathwayProxy.getVariableList()
-    
+
     aSession = pathwayProxy.theEmlSupport.createSession()
 
     aSession.step()
-    
+
     activityBuffer = numpy.zeros( len( processList ), float )
     for i in range( len( processList ) ):
         activityBuffer[ i ] = aSession.theSimulator.getEntityProperty( processList[ i ] + ':Activity' )
@@ -180,27 +180,27 @@ if __name__ == '__main__':
 
 
     def main( filename ):
-        
+
         anEmlSupport = EmlSupport( filename )
         pathwayProxy = anEmlSupport.createPathwayProxy()
 
         ( unscaledCCCMatrix, unscaledFCCMatrix ) = calculateControlCoefficient( pathwayProxy )
 
-        print 'unscaled concentration control coefficients ='
-        print unscaledCCCMatrix
-        print 'unscaled flux control coefficients ='
-        print unscaledFCCMatrix
+        print( 'unscaled concentration control coefficients =' )
+        print( unscaledCCCMatrix )
+        print( 'unscaled flux control coefficients =' )
+        print( unscaledFCCMatrix )
 
         ( scaledCCCMatrix, scaledFCCMatrix ) = scaleControlCoefficient( pathwayProxy, unscaledCCCMatrix, unscaledFCCMatrix )
         # ( scaledCCCMatrix, scaledFCCMatrix ) = calculateControlCoefficient( pathwayProxy, 1 )
 
-        print 'scaled concentration control coefficients ='
-        print scaledCCCMatrix
-        print 'scaled flux control coefficients ='
-        print scaledFCCMatrix
+        print( 'scaled concentration control coefficients =' )
+        print( scaledCCCMatrix )
+        print( 'scaled flux control coefficients =' )
+        print( scaledFCCMatrix )
 
     # end of main
-    
+
 
     if len( sys.argv ) > 1:
         main( sys.argv[ 1 ] )

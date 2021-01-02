@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -31,7 +31,7 @@
 def printProperty( s, fullpn ):
     
     value = s.getEntityProperty( fullpn )
-    print fullpn, '\t=\t', value
+    print(fullpn, '\t=\t', value)
 
 def printAllProperties( s, fullid ):
 
@@ -41,12 +41,12 @@ def printAllProperties( s, fullid ):
         try:
             printProperty( s, fullpn )
         except:
-            print "failed to print %s:%s" % ( fullid, property )
+            print("failed to print %s:%s" % ( fullid, property ))
 
 def printStepperProperty( s, id, propertyname ):
     
     value = s.getStepperProperty( id, propertyname )
-    print id, ':', propertyname, '\t=\t', value
+    print(id, ':', propertyname, '\t=\t', value)
 
 def printAllStepperProperties( s, id ):
 
@@ -55,4 +55,4 @@ def printAllStepperProperties( s, id ):
         try:
             printStepperProperty( s, id, property )
         except:
-            print "failed to print %s:%s" % ( id, property )
+            print("failed to print %s:%s" % ( id, property ))

@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'emlsupport'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __copyright__ = ''
 __license__ = ''
 
@@ -61,8 +61,7 @@ class EmlSupport( ecell.eml.Eml ):
         '''
 
         if fileObject == None and fileName == None:
-            raise TypeError, ' fileObject(file) or fileName(str) must be set'
-        
+            raise TypeError(' fileObject(file) or fileName(str) must be set' )
         if type( fileName ) == str:
             self.setEmlFileName( fileName )
             fileObject = open( self.getEmlFileName() )
@@ -72,8 +71,7 @@ class EmlSupport( ecell.eml.Eml ):
             self.setEmlFileName( '' )
             ecell.eml.Eml.__init__( self, fileObject )
         else:
-            raise TypeError, ' fileObject(file) or fileName(str) must be set'
-
+            raise TypeError(' fileObject(file) or fileName(str) must be set' )
     # end of __init__
 
 
@@ -82,7 +80,7 @@ class EmlSupport( ecell.eml.Eml ):
         create and return the instance from file name
         return aSession
         '''
-        
+
         aSimulator = ecell.emc.Simulator()
         aSession = ecell.Session.Session( aSimulator )
         # aSession.loadModel( self )
@@ -91,13 +89,13 @@ class EmlSupport( ecell.eml.Eml ):
         ## Session can't recieve an ecell.eml.Eml instance, now
         ##
 
-        ## WARNING!! : calling Session's private functions        
+        ## WARNING!! : calling Session's private functions
         aSession._Session__loadStepper( self )
         aSession._Session__loadEntity( self )
         aSession._Session__loadAllProperty( self )
-        
+
         aSession.theModelName = self.getEmlFileName()
-        
+
         return aSession
 
     # end of createSession
@@ -111,7 +109,7 @@ class EmlSupport( ecell.eml.Eml ):
         '''
 
         processList = self.getProcessList()
-        
+
         if not indexList:
             return PathwayProxy.PathwayProxy( self, processList )
 
@@ -123,7 +121,7 @@ class EmlSupport( ecell.eml.Eml ):
 
     # end of createPathwayProxy
 
-    
+
     def setEmlFileName( self, fileName ):
         '''
         set the eml file name
@@ -133,8 +131,7 @@ class EmlSupport( ecell.eml.Eml ):
         if type( fileName ) == str:
             self.__theEmlFileName = os.path.abspath( fileName )
         else:
-            raise TypeError, ' The type of fileName must be string (file name) '
-
+            raise TypeError(' The type of fileName must be string (file name) ' )
     # end of setEmlFileName
 
 
@@ -147,7 +144,7 @@ class EmlSupport( ecell.eml.Eml ):
         return self.__theEmlFileName
 
     # end of getEmlFileName
-    
+
 
     def save( self, fileName=None ):
         '''
@@ -162,7 +159,7 @@ class EmlSupport( ecell.eml.Eml ):
             ecell.eml.Eml.save( self, self.getEmlFileName() )
 
     # end of save
-    
+
 
     def getAllEntityList( self, entityType, rootSystemPath ):
         '''
@@ -171,7 +168,7 @@ class EmlSupport( ecell.eml.Eml ):
         rootSystemPath: (str) the root system path
         return entityList
         '''
-        
+
         entityList = self.getEntityList( entityType, rootSystemPath )
 
         size = len( entityList )
@@ -196,20 +193,20 @@ class EmlSupport( ecell.eml.Eml ):
         '''
         getAllEntityList( \'System\', \'/\' )
         '''
-        
+
         systemList = self.getAllEntityList( 'System', '/' )
         systemList.append( 'System::/' )
 
         return systemList
 
     # end of getSystemList
-                                        
+
 
     def getVariableList( self ):
         '''
         getAllEntityList( \'Variable\', \'/\' )
         '''
-        
+
         return self.getAllEntityList( 'Variable', '/' )
 
     # end of getVariableList
@@ -219,7 +216,7 @@ class EmlSupport( ecell.eml.Eml ):
         '''
         getAllEntityList( \'Process\', \'/\' )
         '''
-        
+
         return self.getAllEntityList( 'Process', '/' )
 
     # end of getProcessList
@@ -235,7 +232,7 @@ class EmlSupport( ecell.eml.Eml ):
             self.setEntityProperty( fullID[ 0 ] + ':'+ fullID[ 1 ] + ':' + fullID[ 2 ], fullID[ 3 ], [ '%.8e' % value ] )
 
     # end of writeEntityProperty
-    
+
 
 # end of EmlSupport
 
@@ -249,18 +246,18 @@ if __name__ == '__main__':
 
 
     def main( fileName ):
-        
+
         anEmlSupport = EmlSupport( fileName )
 
-        print 'system fullID list ='
-        print anEmlSupport.getAllEntityList( 'System', '/' )
-        print 'variable fullID list ='
-        print anEmlSupport.getVariableList()
-        print 'process fullID list ='
-        print anEmlSupport.getProcessList()
+        print( 'system fullID list =' )
+        print( anEmlSupport.getAllEntityList( 'System', '/' ) )
+        print( 'variable fullID list =' )
+        print( anEmlSupport.getVariableList() )
+        print( 'process fullID list =' )
+        print( anEmlSupport.getProcessList() )
 
     # end of main
-    
+
 
     if len( sys.argv ) > 1:
         main( sys.argv[ 1 ] )

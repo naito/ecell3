@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14,17 +14,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 
 """
@@ -33,8 +33,8 @@ This program is the extension package for E-Cell System Version 3.
 """
 
 __program__ = 'PathwayProxy'
-__version__ = '1.0'
-__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>'
+__version__ = '1.1'
+__author__ = 'Kazunari Kaizu <kaizu@sfc.keio.ac.jp>, Yasuhiro Naito <ynaito@sfc.keio.ac.jp>'
 __coyright__ = ''
 __license__ = ''
 
@@ -78,18 +78,18 @@ class PathwayProxy:
         self.__variableList = []
 
         for processFullID in processList:
-            
+
 #            if not self.theEmlSupport.isEntityExist( processFullID ):
 #                continue
 
             self.__processList.append( processFullID )
-            
+
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-            
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -111,7 +111,7 @@ class PathwayProxy:
         return copy.copy( self.__processList )
 
     # end of getProcessList
-    
+
 
     def addProcess( self, processFullID ):
         '''
@@ -132,9 +132,9 @@ class PathwayProxy:
         try:
             aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-        except AttributeError, e:
+        except AttributeError as e:
             return
-        
+
         for aVariableReference in aVariableReferenceList:
             fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
             fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -146,7 +146,7 @@ class PathwayProxy:
 
     # end of addProcess
 
-    
+
     def removeProcess( self, processIndexList ):
         '''
         remove processes from the pathway
@@ -167,13 +167,13 @@ class PathwayProxy:
 
 #            if not ecell.eml.Eml.isEntityExist( self.theEmlSupport, processFullID ):
 #                continue
-            
+
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-            
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -185,13 +185,13 @@ class PathwayProxy:
 
 #            if not self.theEmlSupport.isEntityExist( processFullID ):
 #                continue
-            
+
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-            
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -266,9 +266,9 @@ class PathwayProxy:
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-            
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = fullID[ 1 ] + ':' + fullID[ 2 ]
@@ -279,10 +279,10 @@ class PathwayProxy:
                     return 1
 
         return 0
-        
+
     # end of addProcess
 
-    
+
     def getIncidentMatrix( self, mode=0 ):
         '''
         create the incident matrix (array)
@@ -299,9 +299,9 @@ class PathwayProxy:
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-                
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -321,7 +321,7 @@ class PathwayProxy:
                     incidentMatrix[ i ][ j ] = 1
 
         return incidentMatrix
-    
+
     # end of getIncidentMatrix
 
 
@@ -340,9 +340,9 @@ class PathwayProxy:
             try:
                 aVariableReferenceList = self.theEmlSupport.getEntityProperty( processFullID + ':VariableReferenceList' )
 
-            except AttributeError, e:
+            except AttributeError as e:
                 continue
-            
+
             for aVariableReference in aVariableReferenceList:
                 fullID = createVariableReferenceFullID( aVariableReference[ 1 ], processFullID )
                 fullIDString = ecell.ecssupport.createFullIDString( fullID )
@@ -359,7 +359,7 @@ class PathwayProxy:
                         stoichiometryMatrix[ i ][ j ] += coeff
 
         return stoichiometryMatrix
-    
+
     # end of getStoichiometryMatrix
 
 
@@ -379,13 +379,13 @@ class PathwayProxy:
                 # isReversible is handled as float
                 isReversible = float( self.theEmlSupport.getEntityProperty( processFullID + ':isReversible' )[ 0 ] )
                 reversibilityList.append( int( isReversible ) )
-                
+
             else:
                 # default value, irreversible
                 reversibilityList.append( 0 )
 
         return reversibilityList
-    
+
     # end of getReversibilityList
 
 
@@ -405,19 +405,19 @@ if __name__ == '__main__':
         anEmlSupport = EmlSupport( filename )
         pathwayProxy = anEmlSupport.createPathwayProxy()
 
-        print 'process list ='
-        print pathwayProxy.getProcessList()
-        print 'related variable list ='
-        print pathwayProxy.getVariableList()
-        print 'incident matrix ='
-        print pathwayProxy.getIncidentMatrix()
-        print 'stoichiometry matrix ='
-        print pathwayProxy.getStoichiometryMatrix()
-        print 'reversibility list ='
-        print pathwayProxy.getReversibilityList()
+        print( 'process list =' )
+        print( pathwayProxy.getProcessList() )
+        print( 'related variable list =' )
+        print( pathwayProxy.getVariableList() )
+        print( 'incident matrix =' )
+        print( pathwayProxy.getIncidentMatrix() )
+        print( 'stoichiometry matrix =' )
+        print( pathwayProxy.getStoichiometryMatrix() )
+        print( 'reversibility list =' )
+        print( pathwayProxy.getReversibilityList() )
 
     # end of main
-    
+
 
     if len( sys.argv ) > 1:
         main( sys.argv[ 1 ] )

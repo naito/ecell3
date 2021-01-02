@@ -3,8 +3,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -98,7 +98,7 @@ class DataFileManager:
     # ------------------------------------------------------------------
     def saveAll(self):
 
-        for aKey in self.theFileMap.keys():
+        for aKey in list(self.theFileMap.keys()):
             aFileName = self.theFileMap[aKey].getFileName()
             aFileName = aFileName.split('/')[-1]
             aFileName = self.theRootDirectory + '/' + aFileName
@@ -114,7 +114,7 @@ class DataFileManager:
     # ------------------------------------------------------------------
     def loadAll(self):
 
-        for aKey in self.theFileMap.keys():
+        for aKey in list(self.theFileMap.keys()):
             self.theFileMap[aKey].load()
 
     # end of loadAll()
@@ -124,7 +124,7 @@ class DataFileManager:
 
 if __name__ == "__main__":
 
-    from ECDDataFile import *
+    from .ECDDataFile import *
 
     def main():
 

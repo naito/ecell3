@@ -2,8 +2,8 @@
 #
 #       This file is part of the E-Cell System
 #
-#       Copyright (C) 1996-2021 Keio University
-#       Copyright (C) 2008-2021 RIKEN
+#       Copyright (C) 1996-2020 Keio University
+#       Copyright (C) 2008-2020 RIKEN
 #       Copyright (C) 2005-2009 The Molecular Sciences Institute
 #
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -67,7 +67,7 @@ class StepperWindow(OsogoWindow):
         """
 
         # calls superclass's constructor
-        OsogoWindow.__init__( self, aSession, 'StepperWindow.glade' )
+        OsogoWindow.__init__( self, aSession, 'StepperWindow.ui' )
 
         self.theSession = aSession
 

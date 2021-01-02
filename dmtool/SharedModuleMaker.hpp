@@ -2,8 +2,8 @@
 //
 //       This file is part of the E-Cell System
 //
-//       Copyright (C) 1996-2021 Keio University
-//       Copyright (C) 2008-2021 RIKEN
+//       Copyright (C) 1996-2020 Keio University
+//       Copyright (C) 2008-2020 RIKEN
 //       Copyright (C) 2005-2009 The Molecular Sciences Institute
 //
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -13,17 +13,17 @@
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
-//
+// 
 // E-Cell System is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public
 // License along with E-Cell System -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
+// 
 //END_HEADER
 
 
@@ -64,7 +64,7 @@ public:
               i != theSearchPath.end(); ++i )
         {
             retval += (*i);
-            retval += PATH_SEPARATOR;
+            retval += PATH_SEPARATOR; 
         }
         if ( !retval.empty() )
             retval.resize( retval.size() - 1 );
@@ -107,7 +107,7 @@ protected:
 };
 
 /**
-    SharedModuleMaker dynamically instantiates various classes of
+    SharedModuleMaker dynamically instantiates various classes of 
     objects encapsulated in shared object(.so) file.
     @sa StaticClassModuleMaker, SharedDynamicModule
 */
@@ -133,7 +133,7 @@ public:
 
     virtual const Module& getModule( const std::string& aClassName, bool forceReload = false )
     {
-        if ( forceReload )
+        if ( forceReload ) 
         {
             typename Base::ModuleMap::iterator i( this->theModuleMap.find( aClassName ) );
             if ( i != this->theModuleMap.end() &&
@@ -179,7 +179,7 @@ protected:
                 filename = (*i) + '/' + aClassname;
                 handle = lt_dlopenext( filename.c_str() );
 #endif /* LTDL_SHLIB_EXT */
-                if ( handle )
+                if ( handle ) 
                 {
                     break;
                 }
@@ -192,7 +192,7 @@ protected:
                 {
                     error = "various reasons";
                 }
-
+                  
             }
 
             if ( !handle )

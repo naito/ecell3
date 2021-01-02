@@ -75,8 +75,8 @@ command at the shell prompt:
 
 ::
 
-
-
+               
+            
 
 ECELL3-SESSION command creates a simulation SESSION object and executes
 the ESS file ``ess.py`` on it. The option [-e] can be omitted.
@@ -91,12 +91,12 @@ without an ESS file.
 
 ::
 
-
+     
     ecell3-session [ for E-Cell SE Version 3, on Python Version 2.2.1 ]
-    Copyright (C) 1996-2021 Keio University.
-    Send feedback to Koichi Takahashi
+    Copyright (C) 1996-2020 Keio University.
+    Send feedback to Koichi Takahashi 
 
-
+            
 
 The banner and the prompt shown here may vary according to the version
 you are using. If the option [-f model.eml] is given, the EML file
@@ -114,9 +114,9 @@ To give the ESS parameters from the ECELL3-SESSION command, use either
 
 ::
 
-
-
-
+               
+               
+            
 
 Both ways, ``-D`` and ``--parameters``, can be mixed.
 
@@ -578,7 +578,7 @@ Loading an ECD from Octave is also simplest. ``octave:1>``
 ``load datafile.ecd`` Now the data is stored in a matrix variable with
 the same name as the file without the extension (``datafile``).
 ``octave:2> ``\ ``mean(datafile)`` ``ans =
-
+ 
    5.0663  51.7158  51.7158  51.2396  52.2386``
 
 Binary format
@@ -693,7 +693,7 @@ some variables as well as usage of the command.
 ``$ ``\ ``ecell3-python -h`` ``[...]
 
 Configurations:
-
+ 
         PACKAGE         = ecell
         VERSION         = 3.2.0
         PYTHON          = /usr/bin/python
@@ -727,7 +727,7 @@ There is absolutely no warranty for GDB.  Type "show warranty" for details.
 This GDB was configured as "i386-redhat-linux-gnu"...
 [New Thread 1074178112 (LWP 7327)]
 ecell3-session [ E-Cell SE Version 3.2.0, on Python Version 2.2.2 ]
-Copyright (C) 1996-2021 Keio University.
+Copyright (C) 1996-2020 Keio University.
 Send feedback to Koichi Takahashi <shafi@e-cell.org>``
 ``<foo.eml, t=0>>> ``\ ```` ``Program received signal SIGINT, Interrupt.
 [Switching to Thread 1074178112 (LWP 7327)]
