@@ -139,18 +139,18 @@ class PathwayCanvas( gnomecanvas.Canvas ):
         self.theRTMap[aResizeableText]=aText
     
     #def setLabelText(self,oldLabel,newLabel):
-    #   if self.theRTMap.has_key(oldLabel):
+    #   if oldLabel in self.theRTMap.keys():
     #       self.theRTMap[newLabel]=self.theRTMap[oldLabel]
     #       del self.theRTMap[oldLabel]
     def setLabelText(self,aResizeableText,newText):
-        if self.theRTMap.has_key(aResizeableText):
+        if aResizeableText in self.theRTMap.keys():
             self.theRTMap[aResizeableText]=newText
     
     #def deregisterText(self,aLabel):
-    #   if self.theRTMap.has_key(aLabel):
+    #   if aLabel in self.theRTMap.keys():
     #       del self.theRTMap[aLabel]
     def deregisterText(self,aResizeableText):
-        if self.theRTMap.has_key(aResizeableText):
+        if aResizeableText in self.theRTMap.keys():
             del self.theRTMap[aResizeableText]
 
 

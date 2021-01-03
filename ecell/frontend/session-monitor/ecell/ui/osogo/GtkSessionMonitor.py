@@ -152,7 +152,7 @@ class GtkSessionMonitor(object):
         """
 
         # check fundamentalwindows
-        if self.theFundamentalWindows.has_key(aWindowName):
+        if aWindowName in self.theFundamentalWindows.keys():
             return self.theFundamentalWindows[ aWindowName ].exists()
 
         # check entity list windows
@@ -174,7 +174,7 @@ class GtkSessionMonitor(object):
         Returns FundamentalWindow or EntityListWindow list
         """
         # When the WindowName does not match, create nothing.
-        if self.theFundamentalWindows.has_key( aWindowName ):
+        if aWindowName in self.theFundamentalWindows.keys():
             if rootWidget == None:
                 self.theFundamentalWindows[ aWindowName ].openWindow()
             else:
@@ -194,7 +194,7 @@ class GtkSessionMonitor(object):
         """
 
         # check fundamentalwindows
-        if self.theFundamentalWindows.has_key(aWindowName):
+        if aWindowName in self.theFundamentalWindows.keys():
             return self.theFundamentalWindows[aWindowName]
 
         # check entity list windows
@@ -219,7 +219,7 @@ class GtkSessionMonitor(object):
         """
 
         # When the WindowName does not match, creates nothing.
-        if not self.theFundamentalWindows.has_key( aWindowName ):
+        if not aWindowName in self.theFundamentalWindows.keys():
             message ( "No such WindowType (%s) " %aWindowName )
             return None
 
@@ -324,7 +324,7 @@ class GtkSessionMonitor(object):
         self.thePluginManager.deletePropertyWindowOnEntityListWinsow( anEntityListWindow.thePropertyWindow )
 
         # deletes the reference to the EntityListWindow instance
-        if self.theEntityListInstanceMap.has_key( anEntityListWindow ):
+        if anEntityListWindow in self.theEntityListInstanceMap.keys():
             anEntityListWindow.close()
             del self.theEntityListInstanceMap[ anEntityListWindow ]
     

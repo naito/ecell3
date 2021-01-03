@@ -213,7 +213,7 @@ class SystemProxy( AbstractSystemProxy ):
 
                 # there is no SGE job id in the result of qstat, the job is
                 # considered to be finished
-                if not aStatusDict.has_key( aSGEJobID ):
+                if not aSGEJobID in aStatusDict.keys():
                     # read standard error file
                     aStderrFile = job.getStderrFilePath()
                     # When something is written in standard error,

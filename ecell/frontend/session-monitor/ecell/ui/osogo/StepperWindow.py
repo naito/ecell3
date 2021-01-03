@@ -246,7 +246,7 @@ class StepperWindow(OsogoWindow):
 
         self.update()
 
-        if self.theSelectedPath.has_key(aStepperID):
+        if aStepperID in self.theSelectedPath.keys():
             aPath = self.theSelectedPath[aStepperID]
             self['property_list'].get_selection().select_path(aPath)
         else:

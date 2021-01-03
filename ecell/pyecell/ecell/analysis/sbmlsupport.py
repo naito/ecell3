@@ -206,17 +206,17 @@ class SBMLIdManager:
 
     def isIdExist( self, id ):
 
-        return ( self.compartmentDict.has_key( id ) \
-                 or self.speciesDict.has_key( id ) \
-                 or self.parameterDict.has_key( id ) \
-                 or self.reactionDict.has_key( id ) )
+        return ( id in self.compartmentDict.keys() \
+                 or id in self.speciesDict.keys() \
+                 or id in self.parameterDict.keys() \
+                 or id in self.reactionDict.keys() )
 
     # end of isIdExist
 
 
     def getCompartmentFullID( self, id ):
 
-        if self.compartmentDict.has_key( id ):
+        if id in self.compartmentDict.keys():
             return self.compartmentDict[ id ]
         else:
             return None
@@ -226,7 +226,7 @@ class SBMLIdManager:
 
     def getSpeciesFullID( self, id ):
 
-        if self.speciesDict.has_key( id ):
+        if id in self.speciesDict.keys():
             return self.speciesDict[ id ]
         else:
             return None
@@ -236,7 +236,7 @@ class SBMLIdManager:
 
     def getParameterFullID( self, id ):
 
-        if self.parameterDict.has_key( id ):
+        if id in self.parameterDict.keys():
             return self.parameterDict[ id ]
         else:
             return None
@@ -246,7 +246,7 @@ class SBMLIdManager:
 
     def getReactionFullID( self, id ):
 
-        if self.reactionDict.has_key( id ):
+        if id in self.reactionDict.keys():
             return self.reactionDict[ id ]
         else:
             return None
@@ -263,7 +263,7 @@ class SBMLIdManager:
         if not self.idDict:
             self.idDict = self.createIdDict()
 
-        if self.idDict.has_key( fullIDString ):
+        if fullIDString in self.idDict.keys():
             return self.idDict[ fullIDString ]
         else:
             return ( None, None )
@@ -332,7 +332,7 @@ class SBMLIdManager:
 
     def getRuleFullID( self, i ):
 
-        if self.ruleDict.has_key( i ):
+        if i in self.ruleDict.keys():
             return self.ruleDict[ i ][ 0 ]
         else:
             return None

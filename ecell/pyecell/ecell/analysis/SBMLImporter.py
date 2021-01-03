@@ -922,7 +922,7 @@ class ReactionImporter( SBaseImporter ):
                     anASTNode.setName( '{:s}.Value'.format( variableName ) )
                     return anASTNode
 
-                elif self.theParameterDict.has_key( name ):
+                elif name in self.theParameterDict.keys():
                     return anASTNode
 
                 else:

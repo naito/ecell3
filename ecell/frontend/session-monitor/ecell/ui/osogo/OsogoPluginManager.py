@@ -76,7 +76,7 @@ class OsogoPluginManager(PluginManager):
         rootWidget --- a root widget (str or None)
         parent     --- a parentWindow (Window)    # NOT gtk.Window
         '''
-        if self.thePluginMap.has_key( classname ):
+        if classname in self.thePluginMap.keys():
             pass
         else:
             self.loadModule( classname )
@@ -94,7 +94,7 @@ class OsogoPluginManager(PluginManager):
         else:
             title = classname[:-6]
 
-            if self.thePluginWindowNumber.has_key( classname ):
+            if classname in self.thePluginWindowNumber.keys():
                 self.thePluginWindowNumber[ classname ] += 1
             else:
                 self.thePluginWindowNumber[ classname ] = 1
@@ -200,7 +200,7 @@ class OsogoPluginManager(PluginManager):
 
         # deletes it from the instance map
         
-        if self.thePluginTitleDict.has_key( anInstance ):
+        if anInstance in self.thePluginTitleDict.keys():
             del self.thePluginTitleDict[ anInstance ] 
         else:
             pass
@@ -328,7 +328,7 @@ class OsogoPluginManager(PluginManager):
         Returns None
         """
 
-        if self.thePropertyWindowOnEntityListWindows.has_key(aPropertyWindowOnEntityListWindow):
+        if aPropertyWindowOnEntityListWindow in self.thePropertyWindowOnEntityListWindows.keys():
             del self.thePropertyWindowOnEntityListWindows[aPropertyWindowOnEntityListWindow]
 
 if __name__ == "__main__":

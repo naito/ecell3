@@ -13,17 +13,17 @@
 # modify it under the terms of the GNU General Public
 # License as published by the Free Software Foundation; either
 # version 2 of the License, or (at your option) any later version.
-# 
+#
 # E-Cell System is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public
 # License along with E-Cell System -- see the file COPYING.
 # If not, write to the Free Software Foundation, Inc.,
 # 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-# 
+#
 #END_HEADER
 #
 # Designed by Koichi Takahashi <shafi@e-cell.org>
@@ -120,7 +120,7 @@ class EPRParser( object ):
 
         def raiseError( self, descr ):
             raise RuntimeError( descr )
-            
+
 
         def unexpectedElement( self, name, qname ):
             self.raiseError(
@@ -158,7 +158,7 @@ class EPRParser( object ):
                 self.nestingLevel += 1
                 if self.nestingLevel == 1 and \
                    decodedNS == 'j' and name[ 1 ] == 'ResourceID':
-                    self.capture = 'resourceID' 
+                    self.capture = 'resourceID'
                 else:
                     self.capture = None
             elif self.state == 4:
@@ -367,17 +367,17 @@ class JobDescriptionSerializer( object ):
             self.startElement( self.wsa, u'Address' )
             self.characters( endpoint[ 'uri' ] )
             self.endElement()
-            if endpoint.has_key( u'resourceID' ):
+            if u'resourceID' in endpoint.keys():
                 self.startElement( self.wsa, u'ReferenceProperties' )
                 self.startElement( self.j, u'ResourceID' )
                 self.characters( endpoint[ 'resourceID' ] )
                 self.endElement()
                 self.endElement()
-            if endpoint.has_key( u'portType' ):
+            if u'portType' in endpoint.keys():
                 self.startElement( self.wsa, u'PortType' )
                 self.characters( endpoint[ 'portType' ] )
                 self.endElement()
-            if endpoint.has_key( u'serviceName' ):
+            if u'serviceName' in endpoint.keys():
                 self.startElement( self.wsa, u'ServiceName' )
                 self.characters( endpoint[ 'serviceName' ] )
                 self.endElement()
@@ -546,7 +546,7 @@ class SessionProxy( AbstractSessionProxy ):
         '''
         # check status
         if not AbstractSessionProxy.run( self ):
-            return False 
+            return False
 
         self.__theFactoryEndpoint = self.getSystemProxy().getFactoryEndpoint()
         buildMyGSIFTPUrl = self.getSystemProxy().buildMyGSIFTPUrl
@@ -560,7 +560,7 @@ class SessionProxy( AbstractSessionProxy ):
         job = JobDescription()
         job.factoryEndpoint = self.__theFactoryEndpoint
         files = [ os.path.normpath(
-            os.path.join( absJobDirectory, self.getScriptFileName() ) ) ] 
+            os.path.join( absJobDirectory, self.getScriptFileName() ) ) ]
         for file in self.getExtraFileList():
             files.append( os.path.normpath(
                 os.path.join( absJobDirectory, file ) ) )
@@ -738,5 +738,4 @@ class SystemProxy( AbstractSystemProxy ):
             # if the status is done, copy remote output files
             # to local machine.
             if m.group( 1 ) == 'Done' and job.getStatus() != FINISHED:
-                job.setStatus( FINISHED ) 
-
+                job.setStatus( FINISHED )

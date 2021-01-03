@@ -220,13 +220,13 @@ class AutoLayout:
             coef = int(aVarrefList[3])
             if coef >0:
                 edgeOp = pnodeID + "->" + vnodeID
-                if inList.has_key(pnodeID):
+                if pnodeID in inList.keys():
                     inList[pnodeID] += [ vnodeID ]
                 else:
                     inList[pnodeID] = [ vnodeID ]
             elif coef <0:
                 edgeOp = vnodeID + "->" + pnodeID
-                if outList.has_key(pnodeID):
+                if pnodeID in outList.keys():
                     outList[pnodeID] += [ vnodeID ]
                 else:
                     outList[pnodeID] = [ vnodeID ]
@@ -234,7 +234,7 @@ class AutoLayout:
                 edgeOp = vnodeID + "->" + pnodeID
             text+= edgeOp +  ';\n'
 #        for pnodeID in outList.keys():
-#            if inList.has_key( pnodeID ):
+#            if pnodeID in inList.keys():
 #                for outvnodeid in outList[pnodeID]:
 #                    for invnodeid in inList[pnodeID]:
 #                        if outvnodeid != invnodeid:

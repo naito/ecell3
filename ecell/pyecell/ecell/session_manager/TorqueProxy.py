@@ -281,7 +281,7 @@ class SystemProxy( AbstractSystemProxy ):
                 # if there is no Torque job id in the result of qstat, the job is
                 # considered to be finished
                 # else if Status is 'C' or 'E', the job has been finished.
-                if not aStatusDict.has_key( aTorqueJobID ):
+                if not aTorqueJobID in aStatusDict.keys():
                     # read standard error file
                     aStderrFile = job.getStderrFilePath()
                     # When something is written in standard error,

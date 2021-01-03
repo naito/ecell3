@@ -390,7 +390,7 @@ class DMInfo:
 
     #THIRD
     def getClassInfoList( self, aClass ):
-        if not self.theMasterList.has_key(aClass):
+        if not aClass in self.theMasterList.keys():
             # return basic properties of dummy class
             return [ DM_ACCEPTNEWPROPERTY, DM_PROPERTYLIST, DM_DESCRIPTION, DM_BASECLASS, DM_BUILTIN ]
             #raise Exception( "%s class doesnt exist\n", aClass)

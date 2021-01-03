@@ -76,8 +76,8 @@ class ExpressionParser:
             ( bunshiName, bunboName ) \
               = stripexpr.sub( '', expressionList[ c ] ).split( '/' )
 
-            if self.namespaceDict.has_key( bunshiName ) \
-                   and self.namespaceDict.has_key( bunboName ):
+            if bunshiName in self.namespaceDict.keys() \
+                   and bunboName in self.namespaceDict.keys():
 
                 ( sbmlId, coeff ) = self.namespaceDict[ bunshiName ]
                 if type( sbmlId ) == tuple and sbmlId[ 1 ] == bunboName:
@@ -93,7 +93,7 @@ class ExpressionParser:
         expressionList = regexpr.split( formulaString )
         for c in range( 1, len( expressionList ), 2 ):
             referenceName = expressionList[ c ].replace( '.Value', '' )
-            if self.namespaceDict.has_key( referenceName ):
+            if referenceName in self.namespaceDict.keys():
                 ( sbmlId, coeff ) = self.namespaceDict[ referenceName ]
                 if type( sbmlId ) == str:
                     expressionList[ c ] = sbmlId
@@ -109,7 +109,7 @@ class ExpressionParser:
         expressionList = regexpr.split( formulaString )
         for c in range( 1, len( expressionList ), 2 ):
             referenceName = expressionList[ c ].replace( '.MolarConc', '' )
-            if self.namespaceDict.has_key( referenceName ):
+            if referenceName in self.namespaceDict.keys():
                 ( sbmlId, coeff ) = self.namespaceDict[ referenceName ]
                 if type( sbmlId ) == str:
                     raise SBMLConvertError('MolarConc of [{}] is not supported'.format( referenceName ))
@@ -264,9 +264,9 @@ class SBMLExporter:
         namingDict = {}
 
         for fullIDString in self.theEml.getSystemList():
-            if not self.idDict.has_key( fullIDString ):
+            if not fullIDString in self.idDict.keys():
                 id = createIdFromFullID( fullIDString )
-                if namingDict.has_key( id ):
+                if id in namingDict.keys():
                     ( targetFullIDString, sbmlType ) = namingDict.pop( id )
                     name = ecell.analysis.util.convertToDataString( targetFullIDString )
                     namingDict[ name ] = ( targetFullIDString, sbmlType )
@@ -284,9 +284,9 @@ class SBMLExporter:
                    and fullID[ 2 ] == 'SIZE':
                 pass
 
-            elif not self.idDict.has_key( fullIDString ):
+            elif not fullIDString in self.idDict.keys():
                 id = createIdFromFullID( fullIDString )
-                if namingDict.has_key( id ):
+                if id in namingDict.keys():
                     ( targetFullIDString, sbmlType ) = namingDict.pop( id )
                     name = ecell.analysis.util.convertToDataString( targetFullIDString )
                     namingDict[ name ] = ( targetFullIDString, sbmlType )
@@ -299,12 +299,12 @@ class SBMLExporter:
                                 = ( fullIDString, libsbml.SBML_SPECIES )
 
         for fullIDString in self.theEml.getProcessList():
-            if not self.idDict.has_key( fullIDString ):
+            if not fullIDString in self.idDict.keys():
 
                 className = self.theEml.getEntityClass( fullIDString )
                 if className == 'ExpressionFluxProcess':
                     id = createIdFromFullID( fullIDString )
-                    if namingDict.has_key( id ):
+                    if id in namingDict.keys():
                         ( targetFullIDString, sbmlType ) = namingDict.pop( id )
                         name = ecell.analysis.util.convertToDataString( targetFullIDString )
                         namingDict[ name ] = ( targetFullIDString, sbmlType )
@@ -338,7 +338,7 @@ class SBMLExporter:
 
     def searchIdFromFullID( self, fullIDString ):
 
-        if self.idDict.has_key( fullIDString ):
+        if fullIDString in self.idDict.keys():
             return self.idDict[ fullIDString ]
         else:
             return ( None, None )
