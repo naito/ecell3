@@ -13,17 +13,17 @@
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
-// 
+//
 // E-Cell System is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public
 // License along with E-Cell System -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-// 
+//
 //END_HEADER
 //
 // written by Koichi Takahashi <shafi@e-cell.org>,
@@ -291,7 +291,7 @@ public:
     T as() const
     {
         class CONVERSION_IS_NOT_FEASIBLE;
-        sizeof( CONVERSION_IS_NOT_FEASIBLE );
+        //sizeof( CONVERSION_IS_NOT_FEASIBLE );
     }
 
     static Handle create()
@@ -523,16 +523,16 @@ public:
         theValue( PolymorphValue::create() ) { }
 
     Polymorph( Polymorph const& aValue )
-        : theValue( aValue.theValue ) { } 
+        : theValue( aValue.theValue ) { }
 
     explicit Polymorph( PolymorphValue::Handle aHandle )
         : theValue( aHandle ) { }
 
-    explicit Polymorph( String const& aValue ) 
+    explicit Polymorph( String const& aValue )
         : theValue( PolymorphValue::create( aValue ) ) { }
 
     explicit Polymorph( const char* ptr,
-               std::size_t sz = static_cast< std::size_t >( -1 ) ) 
+               std::size_t sz = static_cast< std::size_t >( -1 ) )
         : theValue( PolymorphValue::create( ptr, sz ) ) { }
 
     explicit Polymorph( Real aValue )
@@ -572,7 +572,7 @@ public:
 
     /** @deprecated */
     LIBECS_DEPRECATED Real   asReal() const;
-  
+
     /** @deprecated */
     LIBECS_DEPRECATED Integer asInteger() const;
 
@@ -585,7 +585,7 @@ public:
         {
             theValue = rhs.theValue;
         }
-    
+
         return *this;
     }
 
@@ -1399,7 +1399,7 @@ template< typename Trange_ >
 inline PolymorphValue::PolymorphValue( Trange_ const& r )
     : theType( TUPLE ), theRefCount( 0 )
 {
-    typedef typename boost::range_const_iterator< Trange_ >::type const_iterator;
+    //typedef typename boost::range_const_iterator< Trange_ >::type const_iterator;
 
     theTupleValue.theNumberOfItems = boost::size( r );
 
@@ -1428,7 +1428,7 @@ inline PolymorphValue::Handle PolymorphValue::create( Trange_ const& aValue )
                  0, pbytes );
 
     return new(ptr) PolymorphValue( aValue );
-} 
+}
 
 inline bool PolymorphValue::operator==( Real const& rhs ) const
 {
@@ -1442,7 +1442,7 @@ inline bool PolymorphValue::operator==( Real const& rhs ) const
         return static_cast< Real >( theIntegerValue ) == rhs;
     case STRING:
         return false;
-    case TUPLE: 
+    case TUPLE:
         return theTupleValue.size() == 1 &&
             static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) == rhs;
     }
@@ -1461,7 +1461,7 @@ inline bool PolymorphValue::operator==( Integer const& rhs ) const
         return theIntegerValue == rhs;
     case STRING:
         return false;
-    case TUPLE: 
+    case TUPLE:
         return theTupleValue.size() == 1 &&
             static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) == rhs;
     }
@@ -1593,7 +1593,7 @@ inline bool PolymorphValue::operator<( Real const& rhs ) const
         return static_cast< Real >( theIntegerValue ) < rhs;
     case STRING:
         return false;
-    case TUPLE: 
+    case TUPLE:
         return theTupleValue.size() == 0
                 || ( theTupleValue.size() == 1 &&
                  static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) < rhs);
@@ -1613,7 +1613,7 @@ inline bool PolymorphValue::operator<( Integer const& rhs ) const
         return theIntegerValue < rhs;
     case STRING:
         return false;
-    case TUPLE: 
+    case TUPLE:
         return theTupleValue.size() == 0
                 || ( theTupleValue.size() == 1 &&
                  static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) < rhs);
@@ -1753,7 +1753,7 @@ inline bool PolymorphValue::operator>( Real const& rhs ) const
         return static_cast< Real >( theIntegerValue ) > rhs;
     case STRING:
         return true;
-    case TUPLE: 
+    case TUPLE:
         return ( theTupleValue.size() == 1 &&
                  static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) > rhs )
                 || ( theTupleValue.size() > 1 &&
@@ -1774,7 +1774,7 @@ inline bool PolymorphValue::operator>( Integer const& rhs ) const
         return theIntegerValue > rhs;
     case STRING:
         return true;
-    case TUPLE: 
+    case TUPLE:
         return ( theTupleValue.size() == 1 &&
                  static_cast< PolymorphValue const& >( theTupleValue[ 0 ] ) > rhs )
                 || ( theTupleValue.size() > 1 &&
@@ -1960,22 +1960,22 @@ inline Polymorph nullValue()
 
 
 inline String Polymorph::asString() const
-{ 
-    return as<String>(); 
+{
+    return as<String>();
 }
 
 inline Real   Polymorph::asReal() const
-{ 
-    return as<Real>(); 
+{
+    return as<Real>();
 }
-  
+
 inline Integer Polymorph::asInteger() const
-{ 
+{
     return as<Integer>();
 }
 
 inline PolymorphVector Polymorph::asPolymorphVector() const
-{ 
+{
     return as<PolymorphVector>();
 }
 
@@ -2016,6 +2016,8 @@ operator<<( std::basic_ostream< T1_, T2_ >& s,
         s << '"';
         s << aValue.as< libecs::String >();
         s << '"';
+    default:
+        break;
     }
     return s;
 }

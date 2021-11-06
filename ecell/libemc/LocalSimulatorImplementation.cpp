@@ -13,17 +13,17 @@
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
 // version 2 of the License, or (at your option) any later version.
-// 
+//
 // E-Cell System is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public
 // License along with E-Cell System -- see the file COPYING.
 // If not, write to the Free Software Foundation, Inc.,
 // 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-// 
+//
 //END_HEADER
 //
 // written by Koichi Takahashi <shafi@e-cell.org>,
@@ -80,12 +80,12 @@ libecs::Logger* LocalSimulatorImplementation::getLogger(
 
 
 void LocalSimulatorImplementation::createStepper(
-        libecs::String const& aClassname, 
+        libecs::String const& aClassname,
         libecs::String const& anId )
 {
     if( theRunningFlag )
     {
-        THROW_EXCEPTION( libecs::Exception, 
+        THROW_EXCEPTION( libecs::Exception,
                          "cannot create a Stepper during simulation" );
     }
 
@@ -113,7 +113,7 @@ inline libecs::Polymorph LocalSimulatorImplementation::buildPolymorph( const lib
                            static_cast< Integer >( attrs.isLoadable() ),
                            static_cast< Integer >( attrs.isSavable() ),
                            static_cast< Integer >( attrs.isDynamic() ),
-                           static_cast< Integer >( attrs.getType() ) ) ); 
+                           static_cast< Integer >( attrs.getType() ) ) );
 }
 
 
@@ -128,9 +128,9 @@ libecs::Polymorph LocalSimulatorImplementation::getStepperList() const
 {
     libecs::Model::StepperMap const& aStepperMap( getModel().getStepperMap() );
 
-    libecs::PolymorphVector aPolymorphVector; 
+    libecs::PolymorphVector aPolymorphVector;
     aPolymorphVector.reserve( aStepperMap.size() );
-    
+
     for( libecs::Model::StepperMap::const_iterator i( aStepperMap.begin() );
          i != aStepperMap.end(); ++i )
     {
@@ -146,13 +146,13 @@ LocalSimulatorImplementation::getStepperPropertyList(
         libecs::String const& aStepperID ) const
 {
     libecs::Stepper* const aStepperPtr( getModel().getStepper( aStepperID ) );
-    
+
     return libecs::Polymorph( aStepperPtr->getPropertyList() );
 }
 
 libecs::Polymorph
 LocalSimulatorImplementation::getStepperPropertyAttributes(
-        libecs::String const& aStepperID, 
+        libecs::String const& aStepperID,
         libecs::String const& aPropertyName ) const
 {
     libecs::Stepper* const aStepperPtr( getModel().getStepper( aStepperID ) );
@@ -166,7 +166,7 @@ void LocalSimulatorImplementation::setStepperProperty(
         libecs::Polymorph const& aValue )
 {
     libecs::Stepper* const aStepperPtr( getModel().getStepper( aStepperID ) );
-    
+
     setDirty();
     aStepperPtr->setProperty( aPropertyName, aValue );
 }
@@ -186,7 +186,7 @@ void LocalSimulatorImplementation::loadStepperProperty(
         libecs::Polymorph const& aValue )
 {
     libecs::Stepper* const aStepperPtr( getModel().getStepper( aStepperID ) );
-    
+
     setDirty();
     aStepperPtr->loadProperty( aPropertyName, aValue );
 }
@@ -214,7 +214,7 @@ void LocalSimulatorImplementation::createEntity(
 {
     if( theRunningFlag )
     {
-        THROW_EXCEPTION( libecs::Exception, 
+        THROW_EXCEPTION( libecs::Exception,
                          "cannot create an Entity during simulation" );
     }
 
@@ -255,6 +255,8 @@ libecs::Polymorph LocalSimulatorImplementation::getEntityList(
         return aSystemPtr->getProcessList();
     case libecs::EntityType::SYSTEM:
         return aSystemPtr->getSystemList();
+    default:
+        break;
     }
 
     NEVER_GET_HERE;
@@ -302,7 +304,7 @@ libecs::Polymorph LocalSimulatorImplementation::getEntityProperty(
 {
     libecs::FullPN aFullPN( aFullPNString );
     libecs::Entity const* anEntityPtr( getModel().getEntity( aFullPN.getFullID() ) );
-            
+
     return anEntityPtr->getProperty( aFullPN.getPropertyName() );
 }
 
@@ -353,14 +355,14 @@ createLogger( libecs::String const& aFullPNString )
 
 
 void LocalSimulatorImplementation::createLogger(
-        libecs::String const& aFullPNString, 
+        libecs::String const& aFullPNString,
         libecs::Polymorph aParamList )
 {
     typedef libecs::PolymorphValue::Tuple Tuple;
 
     if( theRunningFlag )
     {
-        THROW_EXCEPTION( libecs::Exception, 
+        THROW_EXCEPTION( libecs::Exception,
                          "cannot create a Logger during simulation" );
     }
 
@@ -408,8 +410,8 @@ LocalSimulatorImplementation::getLoggerData(
 
 boost::shared_ptr< libecs::DataPointVector >
 LocalSimulatorImplementation::getLoggerData(
-        libecs::String const& aFullPNString, 
-        libecs::Real aStartTime, 
+        libecs::String const& aFullPNString,
+        libecs::Real aStartTime,
         libecs::Real anEndTime ) const
 {
     return getLogger( aFullPNString )->getData( aStartTime, anEndTime );
@@ -418,8 +420,8 @@ LocalSimulatorImplementation::getLoggerData(
 
 boost::shared_ptr< libecs::DataPointVector >
 LocalSimulatorImplementation::getLoggerData(
-        libecs::String const& aFullPNString, 
-        libecs::Real aStartTime, 
+        libecs::String const& aFullPNString,
+        libecs::Real aStartTime,
         libecs::Real anEndTime,
         libecs::Real anInterval ) const
 {
@@ -440,7 +442,7 @@ libecs::Real LocalSimulatorImplementation::getLoggerEndTime(
 }
 
 void LocalSimulatorImplementation::setLoggerPolicy(
-        libecs::String const& aFullPNString, 
+        libecs::String const& aFullPNString,
         libecs::Polymorph aParamList )
 {
     typedef libecs::PolymorphValue::Tuple Tuple;
@@ -517,9 +519,9 @@ void LocalSimulatorImplementation::step( const libecs::Integer aNumSteps )
     do
     {
         getModel().step();
-        
+
         --aCounter;
-        
+
         if( aCounter == 0 )
         {
             stop();
@@ -542,8 +544,8 @@ void LocalSimulatorImplementation::step( const libecs::Integer aNumSteps )
 
 void LocalSimulatorImplementation::run()
 {
-    if( ! ( typeid( *theEventChecker ) != 
-            typeid( DefaultEventChecker ) && 
+    if( ! ( typeid( *theEventChecker.get() ) !=
+            typeid( DefaultEventChecker ) &&
             theEventHandler.get() ) )
     {
         THROW_EXCEPTION( libecs::Exception,
@@ -562,7 +564,7 @@ void LocalSimulatorImplementation::run()
             --aCounter;
         }
         while( aCounter != 0 );
-        
+
         handleEvent();
 
     }
@@ -593,7 +595,7 @@ void LocalSimulatorImplementation::run( const libecs::Real aDuration )
     getModel().getScheduler().updateEvent( 0, aStopTime );
 
 
-    if( typeid( *theEventChecker ) != typeid( DefaultEventChecker ) &&
+    if( typeid( *theEventChecker.get() ) != typeid( DefaultEventChecker ) &&
         theEventHandler.get() )
     {
         runWithEvent( aStopTime );
@@ -610,14 +612,14 @@ void LocalSimulatorImplementation::runWithEvent( libecs::Real const aStopTime )
     do
     {
         unsigned int aCounter( theEventCheckInterval );
-        do 
+        do
         {
             if( getModel().getTopEvent().getTime() > aStopTime )
             {
                 stop();
                 return;
             }
-            
+
             getModel().step();
 
             --aCounter;
@@ -672,7 +674,7 @@ void LocalSimulatorImplementation::clearEventChecker()
     setEventChecker( boost::shared_ptr< EventChecker >( new DefaultEventChecker() ) );
 }
 
-SimulatorImplementation::PolymorphMap 
+SimulatorImplementation::PolymorphMap
 LocalSimulatorImplementation::getClassInfo( libecs::String const& aClassname ) const
 {
     SimulatorImplementation::PolymorphMap aBuiltInfoMap;
