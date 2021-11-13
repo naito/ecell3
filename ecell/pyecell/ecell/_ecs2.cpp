@@ -69,11 +69,13 @@
 #include "libecs/DataPointVector.hpp"
 #include "libecs/VariableReference.hpp"
 
-static std::vector<std::string> getLibECSVersionInfo()
+using namespace libecs;
+
+static std::vector<int> getLibECSVersionInfo()
 {
-    std::vector<std::string> info{ libecs::getMajorVersion(),
-                                   libecs::getMinorVersion(),
-                                   libecs::getMicroVersion()};
+    std::vector<int> info{ getMajorVersion(),
+                           getMinorVersion(),
+                           getMicroVersion()};
     return info;
 }
 
