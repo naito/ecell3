@@ -340,6 +340,23 @@ PYBIND11_MODULE(_ecs2, m) {
         } )
         ;
 
+        py::class_< VariableReference >( m, "VariableReference")
+            .def( "coefficient", &VariableReference::getCoefficient )
+            .def( "serial",      &VariableReference::getSerial )
+            .def( "name",        &VariableReference::getName )
+            .def( "isAccessor",  &VariableReference::isAccessor )
+            /* TODO py::make_function */
+            .def( "FullID",      &VariableReference::getFullID,
+                                 py::return_value_policy::automatic_reference )
+            /* TODO py::make_function */
+            .def( "variable",    &VariableReference::getVariable,
+                                 py::return_value_policy::take_ownership )
+            .def( "__str__",     &VariableReference___str__ )
+            ;
+
+// return_copy_const_reference  ->  py::return_value_policy< py::copy_const_reference >
+// return_existing_object -> py::return_value_policy< py::reference_existing_object >
+
 
 
 
