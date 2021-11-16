@@ -123,6 +123,10 @@ inline const char* typeCodeToString( enum PropertySlotBase::Type aTypeCode )
     return "???";
 }
 
+
+
+
+
 static std::vector<int> getLibECSVersionInfo()
 {
     std::vector<int> info{ getMajorVersion(),
@@ -310,8 +314,8 @@ PYBIND11_MODULE(_ecs2, m) {
             }
             PyErr_SetString( PyExc_TypeError,
                              "The argument is neither an integer nor a string" );
-            py::error_already_set();
-            throw std::exception();
+            throw py::error_already_set();
+            // throw std::exception();
         },
               py::return_value_policy::automatic_reference )
         .def( "__len__", []( VariableReferences &self ) {
@@ -340,22 +344,106 @@ PYBIND11_MODULE(_ecs2, m) {
         } )
         ;
 
-        py::class_< VariableReference >( m, "VariableReference")
-            .def( "coefficient", &VariableReference::getCoefficient )
-            .def( "serial",      &VariableReference::getSerial )
-            .def( "name",        &VariableReference::getName )
-            .def( "isAccessor",  &VariableReference::isAccessor )
-            /* TODO py::make_function */
-            .def( "FullID",      &VariableReference::getFullID,
-                                 py::return_value_policy::automatic_reference )
-            /* TODO py::make_function */
-            .def( "variable",    &VariableReference::getVariable,
-                                 py::return_value_policy::take_ownership )
-            .def( "__str__",     &VariableReference___str__ )
-            ;
+    py::class_< VariableReference >( m, "VariableReference")
+        .def( "coefficient", &VariableReference::getCoefficient )
+        .def( "serial",      &VariableReference::getSerial )
+        .def( "name",        &VariableReference::getName )
+        .def( "isAccessor",  &VariableReference::isAccessor )
+        /* TODO py::make_function */
+        .def( "FullID",      &VariableReference::getFullID,
+                             py::return_value_policy::automatic_reference )
+        /* TODO py::make_function */
+        .def( "variable",    &VariableReference::getVariable,
+                             py::return_value_policy::take_ownership )
+        .def( "__str__",     &VariableReference___str__ )
+        ;
 
 // return_copy_const_reference  ->  py::return_value_policy< py::copy_const_reference >
 // return_existing_object -> py::return_value_policy< py::reference_existing_object >
+
+    py::class_< Stepper >( m, "Stepper")
+    //py::class_< Stepper, py::bases<>, Stepper, boost::noncopyable >( "Stepper", py::no_init )
+        .def_property( "id", &Stepper::getID, &Stepper::setID )
+        .def_property( "Priority",
+                       &Stepper::getPriority,
+                       &Stepper::setPriority )
+        .def_property( "StepInterval",
+                       &Stepper::getStepInterval,
+                       &Stepper::setStepInterval )
+        .def_property( "MaxStepInterval",
+                       &Stepper::getMaxStepInterval,
+                       &Stepper::setMaxStepInterval )
+        .def_property( "MinStepInterval",
+                       &Stepper::getMinStepInterval,
+                       &Stepper::setMinStepInterval )
+        .def_property( "RngSeed",
+                       [](){
+                         PyErr_SetString( PyExc_AttributeError, "Write-only attributes." );
+                         return py::handle( Py_None ).inc_ref();
+                       },
+                       &Stepper::setRngSeed )
+        .def( "__setattr__", []( Stepper &self, py::object key, py::object value ) {
+            self.setProperty( key.cast< std::string >(), value.cast< Polymorph >() );
+            /*
+            以下に記載された不具合の解消と思われる。一旦コメントアウト
+            https://moriyoshi.hatenablog.com/entry/20091119/1258609766
+            try
+            {
+
+                // 引数 key から self の属性値のポインタを取得
+                py::handle aDescr( PyObject_GetAttr(
+                    reinterpret_cast< PyObject* >( Py_TYPE( self ) ),
+                    key.ptr()
+                ) );
+                //if ( !aDescr || !( aDescr->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) || !aDescr.get()->ob_type->tp_descr_set )
+                // A simple "->ob_type" remains here.
+                if ( !aDescr ||
+                     !( aDescr.ptr()->ob_type->tp_flags & Py_TPFLAGS_HAVE_CLASS ) ||
+                     !aDescr.ptr()->ob_type->tp_descr_set )
+                {
+                    PyErr_Clear();
+                    std::string keyStr = key.cast< std::string >();
+                    self->setProperty( keyStr, value.cast< Polymorph >() );
+                }
+                else
+                {
+                    Py_TYPE( aDescr.ptr() )->tp_descr_set( aDescr.ptr() ), self, value.ptr() );
+                    if (PyErr_Occurred())
+                    {
+                        throw py::error_already_set();
+                    }
+                }
+            }
+            catch ( NoSlot const& anException )
+            {
+                PyErr_SetString( PyExc_AttributeError, anException.what() );
+                throw py::error_already_set();
+            }
+            */
+        })
+        .def( "__getattr__", []( Stepper &self, std::string key ) {
+            try
+            {
+                if ( key == "__members__" || key == "__methods__" )
+                {
+                    PyErr_SetString( PyExc_KeyError, key.c_str() );
+                    throw py::error_already_set();
+                }
+
+                return self.getProperty( key );
+            }
+            catch ( NoSlot const& anException )
+            {
+                PyErr_SetString( PyExc_AttributeError, anException.what() );
+                throw py::error_already_set();
+                return Polymorph();
+            }
+        });
+
+
+
+
+
 
 
 
