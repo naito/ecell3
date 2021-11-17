@@ -524,7 +524,9 @@ PYBIND11_MODULE(_ecs2, m) {
     m.doc() = "ecs";
 
     py::class_< PropertyAttributes >( m, "PropertyAttributes")
-        .def( py::init< enum PropertySlotBase::Type, bool, bool, bool, bool, bool >())
+    // py::class_< PropertyAttributes >( "PropertyAttributes",
+    //    py::init< enum PropertySlotBase::Type, bool, bool, bool, bool, bool >() )
+.def( py::init< enum PropertySlotBase::Type, bool, bool, bool, bool, bool >())
         .def( "type", &PropertyAttributes::getType )
         .def( "setable", &PropertyAttributes::isSetable )
         .def( "getable", &PropertyAttributes::isGetable )
@@ -578,6 +580,7 @@ PYBIND11_MODULE(_ecs2, m) {
         ;
 
     py::enum_< PropertySlotBase::Type >(m, "PropertyType")
+    // py::enum_< PropertySlotBase::Type >( "PropertyType" )
         .value( "POLYMORPH", PropertySlotBase::POLYMORPH )
         .value( "REAL", PropertySlotBase::REAL )
         .value( "INTEGER", PropertySlotBase::INTEGER )
@@ -585,6 +588,7 @@ PYBIND11_MODULE(_ecs2, m) {
         .export_values();
 
     py::class_< Logger::Policy >( m, "LoggerPolicy")
+    // py::class_< Logger::Policy >( "LoggerPolicy", py::init<>() )
         .def( py::init<>())
         .def_property( "minimumStep", &Logger::Policy::getMinimumStep,
                                       &Logger::Policy::setMinimumStep )
@@ -614,6 +618,7 @@ PYBIND11_MODULE(_ecs2, m) {
         });
 
     py::class_< VariableReferences >( m, "VariableReferences" )
+    // py::class_< VariableReferences >( "VariableReferences", py::no_init )
         .def( "positiveReferences", []( VariableReferences &self ) {
             Process::VariableReferenceVector const& refs(
                     self.theProc->getVariableReferenceVector() );
@@ -726,6 +731,7 @@ PYBIND11_MODULE(_ecs2, m) {
         ;
 
     py::class_< VariableReference >( m, "VariableReference")
+    // py::class_< VariableReference >( "VariableReference", py::no_init )
         .def( "coefficient", &VariableReference::getCoefficient )
         .def( "serial",      &VariableReference::getSerial )
         .def( "name",        &VariableReference::getName )
@@ -820,7 +826,7 @@ PYBIND11_MODULE(_ecs2, m) {
         });
 
     py::class_< Entity >( m, "Entity")
-    //py::class_< Entity, py::bases<>, Entity, boost::noncopyable >( "Entity", py::no_init )
+    // py::class_< Entity, py::bases<>, Entity, boost::noncopyable >( "Entity", py::no_init )
         // properties
         .def( "model", []( Entity const& self ){
             return dynamic_cast<AbstractSimulator*>(self.getModel());
