@@ -865,6 +865,29 @@ PYBIND11_MODULE(_ecs2, m) {
         .def( "configureSize", &System::configureSizeVariable )
         ;
 
+    py::class_< Process, Entity >( m, "Process")
+    // py::class_< Process, py::bases< Entity >, Process, boost::noncopyable >( "Process", py::no_init )
+        .def_property( "Activity",  &Process::getActivity,
+                                    &Process::setActivity )
+        .def( "IsContinuous", &Process::isContinuous )
+        .def_property( "Priority",  &Process::getPriority,
+                                    &Process::setPriority )
+        .def_property( "StepperID", &Process::getStepperID,
+                                    &Process::setStepperID )
+        .def( "variableReferences", []( Process *self ){
+            return py::cast( VariableReferences( self ) );
+        } ) ;
+
+    py::class_< Variable, Entity >( m, "Variable")
+    //py::class_< Variable, py::bases< Entity >, Variable, boost::noncopyable >( "Variable", py::no_init )
+        .def_property( "Value",  &Variable::getValue,
+                                 &Variable::setValue )
+        .def_property( "MolarConc",  &Variable::getMolarConc,
+                                     &Variable::setMolarConc  )
+        .def_property( "NumberConc", &Variable::getNumberConc,
+                                     &Variable::setNumberConc )
+        ;
+
 
 
 
