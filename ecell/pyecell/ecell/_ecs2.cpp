@@ -894,6 +894,25 @@ PYBIND11_MODULE(_ecs2, m) {
                                      &Variable::setNumberConc )
         ;
 
+    py::class_< Logger >( m, "Logger")
+    // py::class_< Logger, py::bases<>, Logger, boost::noncopyable >( "Logger", py::no_init )
+        .def( "StartTime", &Logger::getStartTime )
+        .def( "EndTime", &Logger::getEndTime )
+        .def( "Size", &Logger::getSize )
+        .def( "Policy", &Logger::getLoggerPolicy,
+                py::return_value_policy::automatic_reference )
+        .def( "getData",
+              ( boost::shared_ptr< DataPointVector >( Logger::* )( void ) const )
+              &Logger::getData )
+        .def( "getData",
+              ( boost::shared_ptr< DataPointVector >( Logger::* )(
+                Real, Real ) const )
+              &Logger::getData )
+        .def( "getData",
+              ( boost::shared_ptr< DataPointVector >( Logger::* )(
+                Real, Real, Real ) const )
+              &Logger::getData )
+        ;
 
 
 
