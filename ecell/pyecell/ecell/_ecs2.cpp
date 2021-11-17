@@ -856,6 +856,14 @@ PYBIND11_MODULE(_ecs2, m) {
         })
         ;
 
+    py::class_< System, Entity >( m, "Entity")
+    // py::class_< System, py::bases< Entity >, System, boost::noncopyable>( "System", py::no_init )
+        .def( "Size", &System::getSize )
+        .def( "SizeN_A", &System::getSizeN_A )
+        .def_property( "StepperID", &System::getStepperID, &System::setStepperID )
+        .def( "registerEntity", ( void( System::* )( Entity* ) )&System::registerEntity )
+        .def( "configureSize", &System::configureSizeVariable )
+        ;
 
 
 
