@@ -499,7 +499,62 @@ private:
     AbstractSimulator( AbstractSimulator const& );
 };
 
+struct return_entity : public py::return_value_policy::automatic
+// struct return_entity : public py::default_call_policies
+{
+    struct result_converter
+    {
+        template< typename T_ >
+        struct apply
+        {
+            struct type
+            {
+                PyTypeObject const *get_pytype() const
+                {
+                  return 0;
+                }
 
+                PyObject* operator()( Entity* ptr ) const
+                {
+                    if ( ptr == 0 )
+                        return py::detail::none();
+                    else
+                        return ( *this )( *ptr );
+                }
+
+                PyObject* operator()( Entity const& x ) const
+                {
+                    Entity* const ptr( const_cast< Entity* >( &x ) );
+                    PyObject* aRetval( py::detail::wrapper_base_::owner( ptr ) );
+                    if ( !aRetval )
+                    {
+                        if ( Process* tmp = dynamic_cast< Process* >( ptr ) )
+                        {
+                            aRetval = py::detail::make_reference_holder::execute( tmp );
+                        }
+                        else if ( Variable* tmp = dynamic_cast< Variable* >( ptr ) )
+                        {
+                            aRetval = py::detail::make_reference_holder::execute( tmp );
+                        }
+                        else if ( System* tmp = dynamic_cast< System* >( ptr ) )
+                        {
+                            aRetval = py::detail::make_reference_holder::execute( tmp );
+                        }
+                        else
+                        {
+                            aRetval = py::detail::make_reference_holder::execute( ptr );
+                        }
+                    }
+                    else
+                    {
+                        py::handle( aRetval ).inc_ref();
+                    }
+                    return aRetval;
+                }
+            };
+        };
+    };
+};
 
 
 
@@ -745,8 +800,8 @@ PYBIND11_MODULE(_ecs2, m) {
         .def( "__str__",     &VariableReference___str__ )
         ;
 
-// return_copy_const_reference  ->  py::return_value_policy< py::copy_const_reference >
-// return_existing_object -> py::return_value_policy< py::reference_existing_object >
+// return_copy_const_reference  ->  py::return_value_policy< py::copy_const_reference > -> py::return_value_policy::automatic_reference
+// return_existing_object -> py::return_value_policy< py::reference_existing_object > -> py::return_value_policy::take_ownership
 
     py::class_< Stepper >( m, "Stepper")
     //py::class_< Stepper, py::bases<>, Stepper, boost::noncopyable >( "Stepper", py::no_init )
@@ -914,6 +969,111 @@ PYBIND11_MODULE(_ecs2, m) {
               &Logger::getData )
         ;
 
+    py::class_< AbstractSimulator >( m, "AbstractSimulator")
+    // py::class_< AbstractSimulator, py::bases<>, boost::shared_ptr< AbstractSimulator >, boost::noncopyable  >( "AbstractSimulator", py::no_init )
+        .def_property_static( "DM_SEARCH_PATH_SEPARATOR",
+              &AbstractSimulator::getDMSearchPathSeparator )
+        .def( "rootSystem", &AbstractSimulator::getRootSystem,
+              py::return_value_policy::take_ownership >() )
+        .def( "rootSystem",
+              static_cast< System*( AbstractSimulator::* )() const >(
+                  &AbstractSimulator::getRootSystem ),
+              py::return_value_policy::take_ownership >() )
+        .def( "getClassInfo", &AbstractSimulator::getClassInfo )
+        // Stepper-related methods
+        .def( "createStepper",
+              (Stepper*(AbstractSimulator::*)(String const&, String const&))
+                  &AbstractSimulator::createStepper,
+              py::return_value_policy::take_ownership >() )
+        .def( "getStepper",
+              &AbstractSimulator::getStepper,
+              py::return_value_policy::take_ownership >() )
+        .def( "deleteStepper",  &AbstractSimulator::deleteStepper )
+        .def( "deleteEntity", &AbstractSimulator::deleteEntity )
+        .def( "getStepperList", &AbstractSimulator::getStepperList )
+        .def( "getStepperPropertyList", &AbstractSimulator::getStepperPropertyList )
+        .def( "getStepperPropertyAttributes",
+              &AbstractSimulator::getStepperPropertyAttributes )
+        .def( "setStepperProperty", &AbstractSimulator::setStepperProperty )
+        .def( "getStepperProperty", &AbstractSimulator::getStepperProperty )
+        .def( "loadStepperProperty", &AbstractSimulator::loadStepperProperty )
+        .def( "saveStepperProperty", &AbstractSimulator::saveStepperProperty )
+        .def( "getStepperClassName", &AbstractSimulator::getStepperClassName )
+
+        // Entity-related methods
+        .def( "createEntity", &AbstractSimulator::createEntity,
+              return_entity() )
+        .def( "createVariable", &AbstractSimulator::createVariable,
+              py::return_value_policy::take_ownership >() )
+        .def( "createProcess", &AbstractSimulator::createProcess,
+              py::return_value_policy::take_ownership >() )
+        .def( "createSystem", &AbstractSimulator::createSystem,
+              py::return_value_policy::take_ownership >() )
+        .def( "createSystemEntity", &AbstractSimulator::createSystemEntity,
+              return_entity() )
+        .def( "getEntity", &AbstractSimulator::getEntity,
+              return_entity() )
+        .def( "deleteEntity", &AbstractSimulator::deleteEntity )
+        .def( "getEntityList", &AbstractSimulator::getEntityList )
+        .def( "entityExists", &AbstractSimulator::entityExists )
+        .def( "getEntityPropertyList", &AbstractSimulator::getEntityPropertyList )
+        .def( "setEntityProperty", &AbstractSimulator::setEntityProperty )
+        .def( "getEntityProperty", &AbstractSimulator::getEntityProperty )
+        .def( "loadEntityProperty", &AbstractSimulator::loadEntityProperty )
+        .def( "saveEntityProperty", &AbstractSimulator::saveEntityProperty )
+        .def( "getEntityPropertyAttributes", &AbstractSimulator::getEntityPropertyAttributes )
+        .def( "getEntityClassName", &AbstractSimulator::getEntityClassName )
+
+        // Logger-related methods
+        .def( "getLoggerList", &AbstractSimulator::getLoggerList )
+        .def( "createLogger",
+              ( Logger* ( AbstractSimulator::* )( String const& ) )
+                  &AbstractSimulator::createLogger,
+              py::return_internal_reference<> () )
+        .def( "createLogger",
+              ( Logger* ( AbstractSimulator::* )( String const&, Logger::Policy const& ) )
+                  &AbstractSimulator::createLogger,
+              py::return_internal_reference<>() )
+        .def( "createLogger",
+              ( Logger* ( AbstractSimulator::* )( String const&, py::object ) )
+                  &AbstractSimulator::createLogger,
+              py::return_internal_reference<> () )
+        .def( "getLogger", &AbstractSimulator::getLogger,
+              py::return_internal_reference<>() )
+        .def( "removeLogger", &AbstractSimulator::removeLogger )
+        .def( "getLoggerData",
+              ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )( String const& ) const )
+                  &AbstractSimulator::getLoggerData )
+        .def( "getLoggerData",
+              ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )(
+                    String const&, Real const&, Real const& ) const )
+                  &AbstractSimulator::getLoggerData )
+        .def( "getLoggerData",
+              ( boost::shared_ptr< DataPointVector >( AbstractSimulator::* )(
+                   String const&, Real const&, Real const&, Real const& ) const )
+                   &AbstractSimulator::getLoggerData )
+        .def( "getLoggerStartTime", &AbstractSimulator::getLoggerStartTime )
+        .def( "getLoggerEndTime", &AbstractSimulator::getLoggerEndTime )
+        .def( "getLoggerPolicy", &AbstractSimulator::getLoggerPolicy )
+        .def( "setLoggerPolicy",
+              ( void (AbstractSimulator::*)( String const&, Logger::Policy const& ) )
+                  &AbstractSimulator::setLoggerPolicy )
+        .def( "setLoggerPolicy",
+              ( void (AbstractSimulator::*)( String const& aFullPNString, py::object aParamList ) )
+                  &AbstractSimulator::setLoggerPolicy )
+        .def( "getLoggerSize", &AbstractSimulator::getLoggerSize )
+
+        // Simulation-related methods
+        .def( "initialize", &AbstractSimulator::initialize )
+        .def( "getCurrentTime", &AbstractSimulator::getCurrentTime )
+        .def( "getNextEvent", &AbstractSimulator::getNextEvent )
+
+        // DM inspection methods
+        .def( "getPropertyInfo", &AbstractSimulator::getPropertyInfo,
+              py::return_value_policy::automatic_reference )
+        .def( "getDMInfo", &AbstractSimulator::getDMInfo )
+        .def( "markDirty", &AbstractSimulator::markDirty )
+        ;
 
 
 
