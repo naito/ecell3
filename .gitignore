@@ -23,6 +23,7 @@ configure
 /configure.ac
 depcomp
 /dmtool/dmcompile
+/doc/api
 /doc/ecell3.doxy
 /doc/users-manual/info.ent
 /ecell3_config.*
