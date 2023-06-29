@@ -34,6 +34,7 @@ depcomp
 /ecell/frontend/session-monitor/ecell3-session-monitor
 /ecell/frontend/session-monitor/setup.py
 /ecell/libecs/Defs.hpp
+/ecell/pyecell/E_Cell.egg-info
 /ecell/pyecell/build
 /ecell/pyecell/ecell3-cellml2eml
 /ecell/pyecell/ecell3-em2eml
