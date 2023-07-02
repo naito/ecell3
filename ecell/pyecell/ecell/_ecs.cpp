@@ -644,7 +644,7 @@ public:
 
         static void __dealloc__( Iterator* self )
         {
-            delete self;
+            Py_TYPE( self )->tp_free( self );
         }
 
         static PyObject* __next__( Iterator* self )
@@ -713,8 +713,9 @@ private:
         std::cout << PyArray_DescrFromObject( reinterpret_cast< PyObject* >( this ), 0 ) << '\n';
         std::cout << "DataPointVectorWrapper::asPyArray()-(1c): " << '\n';
         */
-        PyArray_Descr* descr( PyArray_DescrFromType(NPY_DOUBLE) );
             // std::cout << "DataPointVectorWrapper::asPyArray()-(2)" << '\n';
+        PyArray_Descr* descr( PyArray_DescrFromObject(
+            reinterpret_cast< PyObject* >( this ), 0 ) );
         BOOST_ASSERT( descr != NULL );
 
         // std::cout << "DataPointVectorWrapper::asPyArray()-(3)" << '\n';
@@ -996,8 +997,10 @@ PySequenceMethods DataPointVectorWrapper< Tdp_ >::__seq__ = {
 
 template< typename Tdp_ >
 PyGetSetDef DataPointVectorWrapper< Tdp_ >::__getset__[] = {
-    { const_cast< char* >( "__array_struct__" ), (getter)&DataPointVectorWrapper::__get___array__struct, NULL },
-    { const_cast< char* >( "shape" ), (getter)&DataPointVectorWrapper::__get__shape, NULL },
+    { const_cast< char* >( "__array_struct__" ),  /* name */
+      (getter)&DataPointVectorWrapper::__get___array__struct, NULL },
+    { const_cast< char* >( "shape" ),  /* name */
+      (getter)&DataPointVectorWrapper::__get__shape, NULL },
     { NULL }
 };
 
@@ -1342,21 +1345,21 @@ public:
             // std::cout << "DataPointVectorSharedPtrConverter (3)" << '\n';
             DataPointVectorWrapper<libecs::DataPoint>* a = DataPointVectorWrapper< DataPoint >::create(aVectorSharedPtr );
             // std::cout << "DataPointVectorSharedPtrConverter (4)" << '\n';
-            PyObject* aa = reinterpret_cast< PyObject* >( a );
             // std::cout << "DataPointVectorSharedPtrConverter (5)" << '\n';
+            return reinterpret_cast< PyObject* >( a );
         } else {
             // std::cout << "DataPointVectorSharedPtrConverter (6)" << '\n';
             DataPointVectorWrapper<libecs::LongDataPoint>* a = DataPointVectorWrapper< LongDataPoint >::create(aVectorSharedPtr );
             // std::cout << "DataPointVectorSharedPtrConverter (7)" << '\n';
-            PyObject* aa = reinterpret_cast< PyObject* >( a );
             // std::cout << "DataPointVectorSharedPtrConverter (8)" << '\n';
+            return reinterpret_cast< PyObject* >( a );
         }
         return aVectorSharedPtr->getElementSize() == sizeof( DataPoint ) ?
                 reinterpret_cast< PyObject* >(
-                    DataPointVectorWrapper< DataPoint >::create(
+                    DataPointVectorWrapper< libecs::DataPoint >::create(
                         aVectorSharedPtr ) ):
                 reinterpret_cast< PyObject* >(
-                    DataPointVectorWrapper< LongDataPoint >::create(
+                    DataPointVectorWrapper< libecs::LongDataPoint >::create(
                         aVectorSharedPtr ) );
     }
 };
