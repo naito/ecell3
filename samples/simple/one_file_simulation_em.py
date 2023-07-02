@@ -56,13 +56,13 @@ S = createEntityStub( 'Variable:/:S' )
 
 
 # print some values
-message( 't= \t%s' % getCurrentTime() )
-message( 'S:Value= \t%s' % S.getProperty( 'Value' ) )
-message( 'S:MolarConc= \t%s' % S.getProperty( 'MolarConc' ) )
+message( f't= \t{getCurrentTime()}' )
+message( f'S:Value= \t{S.getProperty( "Value" )}' )
+message( f'S:MolarConc= \t{S.getProperty( "MolarConc" )}' )
 # run
 duration = 2000
 message( '\n' )
-message( 'run %s sec.\n' % duration )
+message( 'run {duration} sec.\n' )
 run( duration )
 
 
