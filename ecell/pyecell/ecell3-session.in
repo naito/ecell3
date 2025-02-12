@@ -99,7 +99,7 @@ Options:
 
     Example:
        {appname} -DNAME1=VALUE1 -DNAME2=VALUE2
-       {appname} --parameters="{NAME1:VALUE1,NAME2:VALUE2}"
+       {appname} --parameters="{{NAME1:VALUE1,NAME2:VALUE2}}"
 
     Note that spaces are not allowed in names and values.
 
